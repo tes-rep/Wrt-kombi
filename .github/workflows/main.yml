@@ -283,7 +283,13 @@ jobs:
           echo "status=success" >> ${GITHUB_OUTPUT}
           echo -e "[\033[92m SUCCESS \033[0m] Status: Success"
           echo -e "INFO files list: \n$(ls -l compiled_images_${{ env.TAG_NAME }} 2>/dev/null)"
-          
+
+  build_ipk:
+    permissions:
+      contents: write
+    name: ULO online
+    runs-on: ubuntu-20.04
+    steps:       
       - name: Extract firmware
         id: extract
         run: |  
@@ -316,7 +322,7 @@ jobs:
           path: ./artifact/*
 
       - name: Upload release asset
-        uses: svenstaro/upload-release-action@v4
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./artifact/*
