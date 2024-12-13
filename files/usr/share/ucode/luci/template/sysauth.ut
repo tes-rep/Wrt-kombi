@@ -1,0 +1,204 @@
+{#
+ Copyright 2008 Steven Barth <steven@midlink.org>
+ Copyright 2008-2012 Jo-Philipp Wich <jow@openwrt.org>
+ Licensed to the public under the Apache License 2.0.
+-#}
+
+<style>
+    /* Menyembunyikan header */
+    header {
+        display: none;
+    }
+
+    /* Gaya untuk overlay */
+    #overlay {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7); /* Latar belakang transparan */
+        z-index: 10;
+    }
+
+    /* Gaya untuk shape */
+    #shape {
+        width: 300px; /* Lebar shape */
+        height: 300px; /* Tinggi shape */
+        background-color: white; /* Warna shape */
+        border-radius: 15px; /* Sudut melengkung */
+        position: relative;
+        z-index: 15; /* Pastikan shape di atas overlay */
+        padding: 20px; /* Tambahkan padding */
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Tambahkan bayangan */
+        display: flex; /* Menggunakan flex untuk memusatkan konten */
+        flex-direction: column; /* Arahkan kolom */
+        justify-content: center; /* Pusatkan secara vertikal */
+        align-items: center; /* Pusatkan secara horizontal */
+    }
+
+    /* Gaya untuk teks judul */
+    .title-text {
+        text-align: center;
+        font-size: 24px; /* Ukuran font */
+        margin-bottom: 10px; /* Jarak bawah */
+        color: black; /* Warna teks */
+        font-weight: bold; /* Huruf tebal */
+        text-transform: uppercase; /* Mengubah menjadi huruf kapital */
+    }
+
+    /* Gaya untuk teks warning */
+    .warning-text {
+        text-align: center;
+        font-size: 16px; /* Ukuran font lebih kecil */
+        color: red; /* Warna merah */
+        margin-bottom: 5px; /* Jarak bawah */
+        font-weight: bold; /* Huruf tebal */
+    }
+
+    /* Gaya untuk hitungan mundur */
+    .countdown-text {
+        font-size: 20px; /* Ukuran font hitungan mundur */
+        color: black; /* Warna teks */
+        margin-top: 10px; /* Jarak atas */
+    }
+
+    /* Gaya untuk tombol close */
+    .close-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        color: white; /* Ubah warna teks tombol menjadi putih */
+        background: white; /* Ubah warna latar belakang tombol menjadi putih */
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        z-index: 16; /* Pastikan tombol di atas shape */
+    }
+
+    /* Gaya untuk form login */
+    #loginForm {
+        display: none; /* Sembunyikan form login awal */
+        z-index: 20; /* Pastikan form berada di atas overlay */
+        position: relative;
+    }
+</style>
+
+{% include('header') %}
+
+<!-- Overlay dengan shape -->
+<div id="overlay">
+    <div id="shape">
+        <div class="warning-text">Warning : Area Terlarang</div> <!-- Teks warning -->
+        <div class="title-text">DALAM 10 DETIK SITUS INI AKAN MENGAMBIL FOTO SELFIE ANDA</div> <!-- Teks judul -->
+        <div class="countdown-text" id="countdown">10 DETIK</div> <!-- Teks hitungan mundur -->
+        <button type="button" class="close-button" onclick="closeOverlay()">X</button>
+    </div>
+</div>
+
+<!-- Form login -->
+<form id="loginForm" method="post">
+    {% if (fuser): %}
+        <div class="alert-message warning">
+            <p>{{ _('Invalid username and/or password! Please try again.') }}</p>
+        </div>
+    {% endif %}
+
+    <div class="cbi-map">
+        <center><h2 name="content">{{ _('CILIBBO.NET') }}</h2></center>
+        <script type="text/javascript">window.setTimeout("waktu()",1000); function waktu(){var tanggal=new Date(); setTimeout("waktu()",1000); document.getElementById("jam").innerHTML=tanggal.getHours()+":"+tanggal.getMinutes()+":"+tanggal.getSeconds();}</script>
+        <script language="JavaScript"> 
+            var tanggallengkap=new String(); 
+            var namahari=("Minggu Senin Selasa Rabu Kamis Jumat Sabtu"); 
+            namahari=namahari.split(" "); 
+            var namabulan=("Januari Februari Maret April Mei Juni Juli Agustus September Oktober November Desember"); 
+            namabulan=namabulan.split(" "); 
+            var tgl=new Date(); 
+            var hari=tgl.getDay(); 
+            var tanggal=tgl.getDate(); 
+            var bulan=tgl.getMonth(); 
+            var tahun=tgl.getFullYear(); 
+            tanggallengkap=namahari[hari] + ", " +tanggal + " " + namabulan[bulan] + " " + tahun; 
+        </script>
+        <center><script language='JavaScript'>document.write(tanggallengkap); </script> | <span id='jam'></span></center>
+        <div class="cbi-section">
+            <div class="cbi-section-node">
+                <div class="cbi-value">
+                    <label class="cbi-value-title">{{ _('Username') }}</label>
+                    <div class="cbi-value-field">
+                        <input class="cbi-input-text" type="text" name="luci_username" value="{{ entityencode(duser, true) }}" />
+                    </div>
+                </div>
+                <div class="cbi-value cbi-value-last">
+                    <label class="cbi-value-title">{{ _('Password') }}</label>
+                    <div class="cbi-value-field">
+                        <input class="cbi-input-text" type="password" name="luci_password" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cbi-page-actions">
+        <input type="submit" value="{{ _('Log in') }}" class="btn cbi-button cbi-button-apply" />
+        <input type="reset" value="{{ _('Reset') }}" class="btn cbi-button cbi-button-reset" />
+    </div>
+</form>
+
+{%
+    let https_ports = uci.get('uhttpd', 'main', 'listen_https') ?? [];
+
+    https_ports = uniq(filter(
+        map(
+            (type(https_ports) == 'string') ? split(https_port, /\s+/) : https_ports,
+            e => +match(e, /\d+$/)?.[0]
+        ),
+        p => (p >= 0 && p <= 65535)
+    ));
+%}
+
+<script type="text/javascript">
+//<![CDATA[
+    var input = document.getElementsByName('luci_password')[0];
+    var countdownValue = 10; // Inisialisasi hitungan mundur
+
+    if (input)
+        input.focus();
+
+    // Fungsi untuk mengupdate hitungan mundur
+    function updateCountdown() {
+        if (countdownValue > 0) {
+            document.getElementById('countdown').innerText = countdownValue + ' DETIK';
+            countdownValue--;
+        } else {
+            document.getElementById('countdown').innerText = 'Foto di Ambil!'; // Teks ketika waktu habis
+        }
+    }
+
+    // Update hitungan mundur setiap detik
+    setInterval(updateCountdown, 1000);
+
+    if (document.location.protocol != 'https:') {
+        {{ https_ports }}.forEach(function(port) {
+            var url = 'https://' + window.location.hostname + ':' + port + window.location.pathname;
+            var img = new Image();
+
+            img.onload = function() { window.location = url };
+            img.src = 'https://' + window.location.hostname + ':' + port + '{{ resource }}/icons/loading.gif?' + Math.random();
+
+            setTimeout(function() { img.src = '' }, 5000);
+        });
+    }
+
+    // Fungsi untuk menutup overlay dan menampilkan form login
+    function closeOverlay() {
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('loginForm').style.display = 'block';
+    }
+//]]>
+</script>
+
+{% include('footer') %}

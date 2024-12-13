@@ -1,0 +1,6 @@
+0 * * * * /sbin/free.sh >/dev/null 2>&1
+*/5 * * * * /www/vnstati/vnstati.sh >/dev/null 2>&1
+#* * * * * /usr/bin/radmon-kuota >/dev/null 2>&1
+#0 0 * * * /usr/bin/auto_delete.sh
+#0 */2 * * * /etc/init.d/whatsapp-bot restart >/dev/null 2>&1
+#0 0 * * * find /www/RadiusMonitor/dist/pages/data/tmp -type f ! -name 'index.php' -exec rm -f {} +
