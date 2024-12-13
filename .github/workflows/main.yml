@@ -316,7 +316,7 @@ jobs:
           path: ./artifact/*
 
       - name: Upload release asset
-        uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@v4
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./artifact/*
