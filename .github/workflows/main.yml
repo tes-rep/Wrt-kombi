@@ -23,7 +23,7 @@ on:
       target:
         description: "Select device target:"
         required: true
-        default: "all"
+        default: "Amlogic HG680P"
         type: choice
         options:
           - all
