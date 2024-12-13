@@ -41,7 +41,7 @@ on:
       rootfs_size:
          description: "ROOTFS SIZE 512 640 768 1024"
          required: true
-         default: '512'
+         default: '1024'
          type: string  
       upload-prerelease:
         description: "Upload as pre-release"
@@ -56,7 +56,7 @@ on:
       devices:
         description: "Devices"
         required: true
-        default: "s905x"
+        default: "s905x4"
         type: choice
         options:
           - s905x
@@ -294,7 +294,7 @@ jobs:
              else
              sudo unxz *.img.xz
              fi
-             los=$(sudo losetup -fP --show ${{ inputs.rename_rootfs }}.img)
+             los=$(sudo losetup -fP --show *.img)
              sudo mount ${los}p2 rootfs
              (cd rootfs && sudo tar cfz /home/runner/work/ULO-sowo/ULO-sowo/rootfs/${{ inputs.rename_rootfs }}.tar.gz *)
       - name: Building OpenWrt
