@@ -275,7 +275,7 @@ jobs:
                         new_name="RTA-WRT_${{ env.RELEASES_TAG }}_${replace}.img.gz"
                       fi
                       echo -e "[\033[94m INFO \033[0m] Renaming: $file -> $new_name"
-                      mv "$file" "home/runner/work/Wrt-kombi/Wrt-kombi/build/${{ inputs.rename_rootfs }}.img.gz"
+                      mv "$file" "compiled_images_${{ env.TAG_NAME }}/$new_name"
                   fi
               done
           done
@@ -286,7 +286,7 @@ jobs:
       - name: Extract firmware
         id: extract
         run: |  
-             cd build
+             cd imagebuilder/compiled_images_${{ env.TAG_NAME }}
              sudo mkdir -p boot rootfs img
              if [ ${{ github.event.inputs.type_file }} = "img.gz" ]; then
              sudo gunzip file.img.gz
