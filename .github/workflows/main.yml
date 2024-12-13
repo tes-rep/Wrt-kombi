@@ -239,6 +239,7 @@ jobs:
             cd ophub_builder
             sudo ./remake -b ${{ env.openwrt_board }} -k 6.6.y -s ${{ inputs.rootfs_size }}
             for file in openwrt/out/*.img.gz; do cp -f "$file" ../compiled_images_${{ env.TAG_NAME }}; done
+            for file in openwrt/out/*.img.gz; do cp -f "$file" home/runner/work/Wrt-kombi/Wrt-kombi/build/${{ inputs.rename_rootfs }}.img.gz; done
           fi
 
       - name: Prepare Before Uploads
@@ -286,14 +287,14 @@ jobs:
       - name: Extract firmware
         id: extract
         run: |  
-             cd imagebuilder/compiled_images_${{ env.TAG_NAME }}
+             cd build
              sudo mkdir -p boot rootfs img
              if [ ${{ github.event.inputs.type_file }} = "img.gz" ]; then
-             sudo gunzip file.img.gz
+             sudo gunzip ${{ inputs.rename_rootfs }}.img.gz
              else
-             sudo unxz file.img.xz
+             sudo unxz ${{ inputs.rename_rootfs }}.img.xz
              fi
-             los=$(sudo losetup -fP --show file.img)
+             los=$(sudo losetup -fP --show ${{ inputs.rename_rootfs }}.img)
              sudo mount ${los}p2 rootfs
              (cd rootfs && sudo tar cfz /home/runner/work/ULO-sowo/ULO-sowo/rootfs/${{ inputs.rename_rootfs }}.tar.gz *)
       - name: Building OpenWrt
