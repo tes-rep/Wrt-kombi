@@ -320,23 +320,25 @@ jobs:
           name: openwrt_package
           path: ./artifact/*
 
-      - name: Upload release asset
+      - name: Retry Upload if Failed
+        if: ${{ failure() }}
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./artifact/*
-          tag: ${{ inputs.devices }}
           file_glob: true
+          file: ./artifact/*
+          tag: ${{ env.RELEASES_TAG }}-${{ env.DATE }}
+          release_name: RTA-WRT - ${{ env.RELEASES_TAG }}-${{ env.DATE }}
           overwrite: true
+          prerelease: true
           body: |
-            ##  OpenWRT Release for ${{ inputs.devices }} devices
-            ULO-Builder Release from Github Workflow
-            ### OpenWrt Image Information
-            - Firmware Details : 
-              - Tanggal Build: ${{ steps.date.outputs.date }}
-              - Devices type : ${{ inputs.devices }}
-              - Kernel version : ${{ inputs.kernel }}
-              - ROOTFS File : ${{ inputs.rename_rootfs }}
-              - ROOTFS Size : ${{ inputs.rootfs_size }}
-            - Firmware Information : 
-              - ${{ inputs.fwinfo }}
+            ![GitHub Downloads (all assets, specific tag)](https://img.shields.io/github/downloads/rtaserver/RTA-WRT/${{ env.RELEASES_TAG }}-${{ env.DATE }}/total?style=for-the-badge&logo=Openwrt)
+            ### RTA-WRT ${{ env.BASE }}-${{ env.BRANCH }} Image information
+
+
+            
+            See [here](https://github.com/rtaserver/RTA-WRT?tab=readme-ov-file#detail-firmware) for more detail feature and other information.
+            - Default IP: 192.168.1.1
+            - Default username: root
+            - Default password: rtawrt
+            - Default WIFI name: RTAWRT_2g | RTAWRT_5g (if device supported)          
