@@ -285,8 +285,7 @@ jobs:
           echo -e "INFO files list: \n$(ls -l compiled_images_${{ env.TAG_NAME }} 2>/dev/null)"
 
   build_ipk:
-    permissions:
-      contents: write
+    needs: build
     name: ULO online
     runs-on: ubuntu-20.04
     steps:       
