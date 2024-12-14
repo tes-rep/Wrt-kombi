@@ -6,7 +6,7 @@
 #                https://downloads.immortalwrt.org/releases
 #=====================================================================================
 
-name: Build OpenWrt with ImageBuilder7u
+name: Build
 on:
   repository_dispatch:
   workflow_dispatch:
