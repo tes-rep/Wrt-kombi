@@ -321,7 +321,7 @@ jobs:
           path: ./artifact/*
           
       - name: Upload Firmware to Release
-        uses: svenstaro/upload-release-action@v3
+        uses: svenstaro/upload-release-action@v2
         continue-on-error: true
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
