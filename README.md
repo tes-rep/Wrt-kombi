@@ -25,7 +25,7 @@ Custom Script By FriWrt
 <p align="center">
 <a href="https://github.com/Houjie80/Wrt-kombi/releases/tag/openwrt_23.05.5-20241202"><img alt="Static Badge" src="https://img.shields.io/badge/OpenWrt--23.05.5-openwrt?style=for-the-badge&logo=openwrt&label=Download&color=%231aa5de"></a>
 <a href="https://github.com/Houjie80/Wrt-kombi/releases/tag/immortalwrt_23.05.4-20241121"><img alt="Static Badge" src="https://img.shields.io/badge/ImmortalWrt--23.05.4-immorlalwrt?style=for-the-badge&logo=openwrt&label=Download&color=%231aa5de"></a>
- <a target="_blank" href="https://github.com/Houjie80/RTA-WRT/releases"><img src="https://img.shields.io/github/downloads/Houjie80/RTA-WRT/total?style=for-the-badge&logo=Openwrt"></a>  
+ <a target="_blank" href="https://github.com/Houjie80/Wrt-kombi/releases"><img src="https://img.shields.io/github/downloads/Houjie80/RTA-WRT/total?style=for-the-badge&logo=Openwrt"></a>  
 </p>
 
 ---
