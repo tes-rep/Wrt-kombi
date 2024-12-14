@@ -6,7 +6,7 @@
 #                https://downloads.immortalwrt.org/releases
 #=====================================================================================
 
-name: Build
+name: Build OpenWrt
 on:
   repository_dispatch:
   workflow_dispatch:
@@ -238,15 +238,14 @@ jobs:
             cp -f compiled_images_${{ env.TAG_NAME }}/*rootfs.tar.gz ophub_builder/openwrt-armvirt/
             cd ophub_builder
             sudo ./remake -b ${{ env.openwrt_board }} -k 6.6.y -s ${{ inputs.rootfs_size }}
-            for file in openwrt/out/*.img.gz; do cp -f "$file" /home/runner/work/Wrt-kombi/Wrt-kombi/build; done
+            for file in openwrt/out/*.img.gz; do cp -f "$file" ../compiled_images_${{ env.TAG_NAME }}; done
             # for file in openwrt/out/*.img.gz; do cp -f "$file" home/runner/work/Wrt-kombi/Wrt-kombi/build/${{ inputs.rename_rootfs }}.img.gz; done
           fi
 
-      
       - name: Extract firmware
         id: extract
         run: |  
-             cd build
+             cd imagebuilder/compiled_images_${{ env.TAG_NAME }}
              sudo mkdir -p boot rootfs img
              if [ ${{ github.event.inputs.type_file }} = "img.gz" ]; then
              sudo gunzip *.img.gz
@@ -292,7 +291,7 @@ jobs:
           prerelease: false
           body: |
             ![GitHub Downloads (all assets, specific tag)](https://img.shields.io/github/downloads/rtaserver/RTA-WRT/${{ env.RELEASES_TAG }}-${{ env.DATE }}/total?style=for-the-badge&logo=Openwrt)
-            ### -WRT ${{ env.BASE }}-${{ env.BRANCH }} Image information
+            ### RTA-WRT ${{ env.BASE }}-${{ env.BRANCH }} Image information
         
                   
             ${{ steps.changelog.outputs.CHANGELOG }}
