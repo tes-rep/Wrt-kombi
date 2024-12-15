@@ -238,14 +238,14 @@ jobs:
             cp -f compiled_images_${{ env.TAG_NAME }}/*rootfs.tar.gz ophub_builder/openwrt-armvirt/
             cd ophub_builder
             sudo ./remake -b ${{ env.openwrt_board }} -k 6.6.y -s ${{ inputs.rootfs_size }}
-            for file in openwrt/out/*.img.gz; do cp -f "$file" ../compiled_images_${{ env.TAG_NAME }}; done
-            # for file in openwrt/out/*.img.gz; do cp -f "$file" home/runner/work/Wrt-kombi/Wrt-kombi/build/${{ inputs.rename_rootfs }}.img.gz; done
+            # for file in openwrt/out/*.img.gz; do cp -f "$file" ../compiled_images_${{ env.TAG_NAME }}; done
+            for file in openwrt/out/*.img.gz; do cp -f "$file" ${PWD}/build; done
           fi
 
       - name: Extract firmware
         id: extract
         run: |  
-             cd imagebuilder/compiled_images_${{ env.TAG_NAME }}
+             cd ${PWD}/build
              sudo mkdir -p boot rootfs img
              if [ ${{ github.event.inputs.type_file }} = "img.gz" ]; then
              sudo gunzip *.img.gz
@@ -254,7 +254,7 @@ jobs:
              fi
              los=$(sudo losetup -fP --show *.img)
              sudo mount ${los}p2 rootfs
-             (cd rootfs && sudo tar cfz /home/runner/work/Wrt-kombi/Wrt-kombi/rootfs/${{ inputs.rename_rootfs }}.tar.gz *)
+             (cd rootfs && sudo tar cfz ${PWD}/rootfs/${{ inputs.rename_rootfs }}.tar.gz *)
 
       - name: Mengatur tanggal
         id: date
