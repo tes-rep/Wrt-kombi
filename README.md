@@ -32,6 +32,7 @@ Custom Script By FriWrt
 * [Apache License 2.0](https://github.com/Houjie80/Wrt-kombi/blob/main/LICENSE)
 * [friWrt-MyWrtBuilder](https://github.com/frizkyiman/friWrt-MyWrtBuilder) by [frizkyiman](https://github.com/frizkyiman)
 * [MyWrtBuilder](https://github.com/Revincx/MyWrtBuilder) by [Revincx](https://github.com/Revincx)
+* [RTA_server-RTA-WRT](https://github.com/rtaserver/RTA-WRT) by [rtaserver](https://github.com/rtaserver)
 
 ---
 
@@ -45,6 +46,7 @@ Custom Script By FriWrt
     -> s905x - STB HG680P
     -> s905x2 - STB B860H-V5
     -> s905x-b860h - STB B860H-V1-V2
+    -> s905x4 advan AT01
 - Generic Series
     -> x86-64
 - FriendlyArm Series
@@ -63,7 +65,7 @@ Custom Script By FriWrt
 **Informasi**
 ```
 - 192.168.1.1 | pengguna: root | kata sandi: rtawrt
-- SSID: RTA-WRT_2g / RTA-WRT_5g
+- SSID: NOKIA N73-WRT_2g / NOKIA N73_5g
 - Modemmanager dengan koneksi ulang otomatis,
 - Openclash dengan rilis beta terbaru dan inti MetaCubeX Mihomo terbaru,
 - Passwall sebagai aplikasi *Tunneling* alternatif,
