@@ -28,14 +28,14 @@ Custom Script By rtaserver
 <p align="center">
 <a href="https://github.com/Houjie80/Wrt-kombi/releases/tag/openwrt_24.10.0-rc2-20241202"><img alt="Static Badge" src="https://img.shields.io/badge/OpenWrt--24.10.0-rc2-openwrt?style=for-the-badge&logo=openwrt&label=Download&color=%231aa5de"></a>
 <a href="https://github.com/Houjie80/Wrt-kombi/releases/tag/immortalwrt_23.05.4-20241121"><img alt="Static Badge" src="https://img.shields.io/badge/ImmortalWrt--23.05.4-immorlalwrt?style=for-the-badge&logo=openwrt&label=Download&color=%231aa5de"></a>
- <a target="_blank" href="https://github.com/Houjie80/Wrt-kombi/releases"><img src="https://img.shields.io/github/downloads/Houjie80/RTA-WRT/total?style=for-the-badge&logo=Openwrt"></a>  
+ <a target="_blank" href="https://github.com/Houjie80/Wrt-kombi/releases"><img src="https://img.shields.io/github/downloads/Houjie80/Wrt-kombi/total?style=for-the-badge&logo=Openwrt"></a>  
 </p>
 
 ---
 * [Apache License 2.0](https://github.com/Houjie80/Wrt-kombi/blob/main/LICENSE)
 * [friWrt-MyWrtBuilder](https://github.com/frizkyiman/friWrt-MyWrtBuilder) by [frizkyiman](https://github.com/frizkyiman)
 * [MyWrtBuilder](https://github.com/Revincx/MyWrtBuilder) by [Revincx](https://github.com/Revincx)
-* [RTA_server-RTA-WRT](https://github.com/rtaserver/RTA-WRT) by [rtaserver](https://github.com/rtaserver)
+* [rtaserver-RTA-WRT](https://github.com/rtaserver/RTA-WRT) by [rtaserver](https://github.com/rtaserver)
 
 ---
 
