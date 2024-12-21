@@ -36,6 +36,10 @@ Custom Script By rtaserver
 * [friWrt-MyWrtBuilder](https://github.com/frizkyiman/friWrt-MyWrtBuilder) by [frizkyiman](https://github.com/frizkyiman)
 * [MyWrtBuilder](https://github.com/Revincx/MyWrtBuilder) by [Revincx](https://github.com/Revincx)
 * [rtaserver-RTA-WRT](https://github.com/rtaserver/RTA-WRT) by [rtaserver](https://github.com/rtaserver)
+* [extract-img](https://github.com/edikurexe/extract-img)
+  by [mbah edi](https://github.com/edikurexe)
+* [rootfs](https://github.com/edikurexe/ULO) by [mbah edi](https://github.com/edikurexe)
+* [ULO-BUILDER](https://github.com/armarchindo/ULO-Builder) by [DBAI](https://github.com/armarchindo/ULO-Builder)
 
 ---
 
