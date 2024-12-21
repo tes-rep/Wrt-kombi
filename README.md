@@ -35,7 +35,7 @@ Custom Script By rtaserver
 * [Apache License 2.0](https://github.com/Houjie80/Wrt-kombi/blob/main/LICENSE)
 * [friWrt-MyWrtBuilder](https://github.com/frizkyiman/friWrt-MyWrtBuilder) by [frizkyiman](https://github.com/frizkyiman)
 * [MyWrtBuilder](https://github.com/Revincx/MyWrtBuilder) by [Revincx](https://github.com/Revincx)
-* [rtaserver-RTA-WRT](https://github.com/rtaserver/RTA-WRT) by [rtaserver](https://github.com/rtaserver)
+* [RTA-WRT](https://github.com/rtaserver/RTA-WRT) by [rtaserver](https://github.com/rtaserver)
 * [extract-img](https://github.com/edikurexe/extract-img)
   by [mbah edi](https://github.com/edikurexe)
 * [rootfs](https://github.com/edikurexe/ULO) by [mbah edi](https://github.com/edikurexe)
