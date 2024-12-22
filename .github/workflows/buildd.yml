@@ -42,12 +42,7 @@ on:
          description: "ROOTFS SIZE 512 640 768 1024"
          required: true
          default: '1024'
-         type: string  
-      upload-prerelease:
-        description: "Upload as pre-release"
-        required: false
-        default: "false"
-        type: boolean     
+         type: string 
       kernel:
         description: 'Kernel Version (ex. 6.6.6, 6.1.31-localversion)'
         required: true
