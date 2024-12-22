@@ -20,6 +20,9 @@ Custom Script By FriWrt
 <p align="center">
 Custom Script By rtaserver
 </p>
+<p align="center">
+Custom build By DBAI
+</p>
 <br>
 
 
