@@ -14,12 +14,12 @@ on:
       releases_branch:
         description: "Select the releases branch"
         required: false
-        default: "openwrt:24.10.0-rc2"
+        default: "openwrt:24.10.0-rc3"
         type: choice
         options:
           - immortalwrt:23.05.4
           - openwrt:23.05.5
-          - openwrt:24.10.0-rc2
+          - openwrt:24.10.0-rc3
       target:
         description: "Select device target:"
         required: true
