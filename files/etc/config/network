@@ -11,8 +11,7 @@ config globals 'globals'
 config device
 	option name 'br-lan'
 	option type 'bridge'
-	option ipv6 '0'
-	option bridge_empty '1'
+	list ports 'eth0'
 
 config interface 'lan'
 	option device 'br-lan'
@@ -33,18 +32,7 @@ config interface 'modem'
 	option proto 'dhcp'
 	option device 'eth1'
 
-config device
-	option type 'bridge'
-	option name 'br-hotspot'
-	list ports 'eth0'
 
-config interface 'coova'
-	option proto 'none'
-	option device 'tun0'
 
-config interface 'hotspot'
-	option proto 'static'
-	option device 'br-hotspot'
-	option ipaddr '10.10.30.1'
-	option netmask '255.255.255.0'
+
 
