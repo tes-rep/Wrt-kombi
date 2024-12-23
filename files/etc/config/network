@@ -1,0 +1,50 @@
+
+config interface 'loopback'
+	option device 'lo'
+	option proto 'static'
+	option ipaddr '127.0.0.1'
+	option netmask '255.0.0.0'
+
+config globals 'globals'
+	option ula_prefix 'fd94:3943:53a0::/48'
+
+config device
+	option name 'br-lan'
+	option type 'bridge'
+	option ipv6 '0'
+	option bridge_empty '1'
+
+config interface 'lan'
+	option device 'br-lan'
+	option proto 'static'
+	option ipaddr '192.168.1.1'
+	option netmask '255.255.255.0'
+	option ip6assign '60'
+
+config interface 'tethering'
+	option proto 'dhcp'
+	option device 'usb0'
+
+config interface 'wan'
+	option proto 'dhcp'
+	option device 'wwan0'
+
+config interface 'modem'
+	option proto 'dhcp'
+	option device 'eth1'
+
+config device
+	option type 'bridge'
+	option name 'br-hotspot'
+	list ports 'eth0'
+
+config interface 'coova'
+	option proto 'none'
+	option device 'tun0'
+
+config interface 'hotspot'
+	option proto 'static'
+	option device 'br-hotspot'
+	option ipaddr '10.10.30.1'
+	option netmask '255.255.255.0'
+
