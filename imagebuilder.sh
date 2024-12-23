@@ -497,7 +497,7 @@ rebuild_firmware() {
     PACKAGES+=" $OPENCLASH $MIHOMO"
 
     # Remote Services
-    #PACKAGES+=" tailscale luci-app-tailscale"
+    #PACKAGES+=" tailscale luci-app-tailscale  luci-app-droidnet luci-app-ipinfo luci-theme-initials luci-theme-hj"
 
     # NAS and Hard disk tools
     #PACKAGES+=" luci-app-diskman smartmontools kmod-usb-storage kmod-usb-storage-uas ntfs-3g"
@@ -506,7 +506,7 @@ rebuild_firmware() {
     #PACKAGES+=" docker docker-compose dockerd luci-app-dockerman"
 
     # Bandwidth And Network Monitoring
-    #PACKAGES+=" internet-detector luci-app-internet-detector internet-detector-mod-modem-restart nlbwmon luci-app-nlbwmon vnstat2 vnstati2 luci-app-vnstat2 luci-app-netmonitor"
+    #PACKAGES+=" internet-detector luci-app-internet-detector internet-detector-mod-modem-restart nlbwmon luci-app-nlbwmon vnstat2 vnstati2 netdata luci-app-netmonitor"
 
     # Material Theme
     PACKAGES+=" luci-theme-material"
