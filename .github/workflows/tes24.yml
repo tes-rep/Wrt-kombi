@@ -6,7 +6,7 @@
 #                https://downloads.immortalwrt.org/releases
 #=====================================================================================
 
-name: Build OpenWrt s905x44
+name: Build OpenWrt s905
 on:
   repository_dispatch:
   workflow_dispatch:
