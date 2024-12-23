@@ -40,40 +40,7 @@ uci add_list system.ntp.server="id.pool.ntp.org"
 uci add_list system.ntp.server="time.google.com"
 uci commit system
 
-# configure wan interface
-msg "Setup WAN and LAN Interface"
-uci set network.lan.ipaddr="192.168.1.1"
-uci set network.lan.delegate='0'
-uci set network.wan=interface
-uci set network.wan.proto='dhcp'
-uci set network.wan.device='eth1'
-uci set network.modemmanager=interface 
-uci set network.modemmanager.proto='modemmanager'
-uci set network.modemmanager.device='/sys/devices/platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb2/2-1'
-uci set network.modemmanager.apn='internet'
-uci set network.modemmanager.auth='none'
-uci set network.modemmanager.iptype='ipv4'
-uci set network.modemmanager.force_connection='1'
-uci set network.tethering=interface
-uci set network.tethering.proto='dhcp'
-uci set network.tethering.device='usb0'
-uci -q delete network.wan6
-uci commit network
-uci set firewall.@zone[1].network='wan modemmanager tethering'
-uci commit firewall
 
-# configure ipv6
-uci -q delete dhcp.lan.dhcpv6
-uci -q delete dhcp.lan.ra
-uci -q delete dhcp.lan.ndp
-uci -q delete dhcp.lan.ra_slaac
-uci -q delete dhcp.lan.ra_flags
-uci -q delete dhcp.lan.max_preferred_lifetime
-uci -q delete dhcp.lan.max_valid_lifetime
-uci commit dhcp
-uci set network.lan.delegate='0'
-uci del network.lan.ip6assign
-uci commit network
 
 # configure WLAN
 msg "Setup Wireless if available"
@@ -145,32 +112,15 @@ uci commit nlbwmon
 bash /etc/init.d/nlbwmon restart
 
 
-# Step 8: Setup Auto Vnstat Database Backup
-msg "Step 8: Setup Auto Vnstat Database Backup"
-sed -i 's/;DatabaseDir "\/var\/lib\/vnstat"/DatabaseDir "\/etc\/vnstat"/' /etc/vnstat.conf
-mkdir -p /etc/vnstat
-chmod +x /etc/init.d/vnstat_backup
-bash /etc/init.d/vnstat_backup enable
-
 
 # Step 9: Adjusting App Catagory
 msg "Step 9: Adjusting App Catagory"
 sed -i -E "s|status|services|g" /usr/lib/lua/luci/controller/base64.lua
 
+# Step 14:Default Theme #
+msg "Step 14: Set Tema"
+uci set luci.main.mediaurlbase='/luci-static/hj' && uci commit
 
-# Step 10: Configurating OpenClash
-msg "Step 10: Configurating OpenClash"
-bash /usr/bin/patchoc.sh
-sed -i '/exit 0/i #/usr/bin/patchoc.sh' /etc/rc.local
-ln -s /etc/openclash/history/config-wrt.db /etc/openclash/cache.db
-ln -s /etc/openclash/core/clash_meta  /etc/openclash/clash
-
-
-# Step 11: Adding New Line For Enable i2c Oled Display if Devices Supported
-msg "Step 11: Adding New Line For Enable i2c Oled Display if Devices Supported"
-if grep -q "Raspberry Pi 4\|Raspberry Pi 3" /proc/cpuinfo; then
-    echo -e "\ndtparam=i2c1=on\ndtparam=spi=on\ndtparam=i2s=on" >> /boot/config.txt
-fi
 
 
 # Step 12: Setup PHP
@@ -194,83 +144,6 @@ msg "restarting uhttpd ..."
 # Step 13: Setting Tinyfm
 msg "Step 13: Setting Tinyfm"
 ln -s / /www/tinyfm/rootfs
-
-
-# Step 14: Patch OpenClash
-msg "Step 14: Patch OpenClash"
-STATUS="/usr/lib/lua/luci/view/openclash/status.htm"
-DEV="/usr/lib/lua/luci/view/openclash/developer.htm"
-MYIP="/usr/lib/lua/luci/view/openclash/myip.htm"
-IMG="/luci-static/resources/openclash/img"
-CLIENT="/usr/lib/lua/luci/model/cbi/openclash/client.lua"
-CONT="/usr/lib/lua/luci/controller/openclash.lua"
-
-[ -f "/www/${IMG}/logo.png" ] && sed -i "s#https://ftp.jaist.ac.jp/pub/sourceforge.jp/storage/g/o/op/openclash/<%=RELEASE_BRANCH%>/img/logo.png#$IMG/logo.png#g" $STATUS
-[ -f "/www/${IMG}/meta.png" ] && sed -i "s#https://ftp.jaist.ac.jp/pub/sourceforge.jp/storage/g/o/op/openclash/<%=RELEASE_BRANCH%>/img/meta.png#$IMG/meta.png#g" $STATUS
-[ -f "/www/${IMG}/Wiki.svg" ] && sed -i "s#https://img.shields.io/badge/Wiki--lightgrey?logo=GitBook&style=social#$IMG/Wiki.svg#g" $STATUS
-[ -f "/www/${IMG}/Tutorials.svg" ] && sed -i "s#https://img.shields.io/badge/Tutorials--lightgrey?logo=Wikipedia&style=social#$IMG/Tutorials.svg#g" $STATUS
-[ -f "/www/${IMG}/Star.svg" ] && sed -i "s#https://img.shields.io/badge/Star--lightgrey?logo=github&style=social#$IMG/Star.svg#g" $STATUS
-[ -f "/www/${IMG}/Telegram.svg" ] && sed -i "s#https://img.shields.io/badge/Telegram--lightgrey?logo=Telegram&style=social#$IMG/Telegram.svg#g" $STATUS
-[ -f "/www/${IMG}/Sponsor.svg" ] && sed -i "s#https://img.shields.io/badge/Sponsor--lightgrey?logo=ko-fi&style=social#$IMG/Sponsor.svg#g" $STATUS
-
-if ! grep -qE "\-\- s:section|\-\-s:section" $CLIENT
-then
-	sed -i "s#s:section#-- s:section#g" $CLIENT
-	mv $MYIP $MYIP.bak
-	cat << 'EOF' > $MYIP
-<!DOCTYPE html>
-<html>
-</html>
-EOF
-fi
-
-if grep -q 'githubusercontent.com' $DEV
-then
-	sed -i 's#translate("Credits")#translate("")#g' $CLIENT
-	mv $DEV $DEV.bak
-	cat << 'EOF' > $DEV
-<style>
-.developer_ {
-  text-align: justify;
-  text-align-last: justify;
-}
-</style>
-<fieldset class="cbi-section">
-    <div class="developer_">
-        <table width="100%"><tr><td>
-        <span id="_Dreamacro"><%:Dreamacro%></span>
-        <span id="_vernesong"><%:Vernesong%></span>
-        <span id="_frainzy1477"><%:Frainzy1477%></span>
-        <span id="_SukkaW"><%:SukkaW%></span>
-        <span id="_lhie1_dev"><%:lhie1_dev%></span>
-        <span id="_ConnersHua_dev"><%:ConnersHua_dev%></span>
-        <span id="_haishanh"><%:Haishanh%></span>
-        <span id="_MaxMind"><%:MaxMind%></span>
-        <span id="_FQrabbit"><%:FQrabbit%></span>
-        <span id="_Alecthw"><%:Alecthw%></span>
-        <span id="_Tindy_X"><%:Tindy_X%></span>
-        <span id="_lmc999"><%:lmc999%></span>
-        <span id="_dlercloud"><%:Dlercloud%></span>
-        <span id="_immortalwrt"><%:Immortalwrt%></span>
-        <span id="_MetaCubeX"><%:MetaCubeX%></span>
-        </td></tr></table>
-    </div>
-</fieldset>
-EOF
-fi
-
-sed -i '87 i\	entry({"admin", "services", "openclash", "editor"}, template("openclash/editor"),_("Config Editor"), 90).leaf = true' $CONT
-cat << EOF > /usr/lib/lua/luci/view/openclash/editor.htm
-<%+header%>
-<div class="cbi-map">
-<iframe id="editor" style="width: 100%; min-height: 100vh; border: none; border-radius: 2px;"></iframe>
-</div>
-<script type="text/javascript">
-document.getElementById("editor").src = "http://" + window.location.hostname + "/tinyfm/tinyfm.php?p=etc/openclash";
-</script>
-<%+footer%>
-EOF
-
 
 # Step 16: Set All permission files
 msg "Step 16: Set All permission files"
@@ -300,15 +173,6 @@ check_permission "/usr/bin"
 msg "Step 17: Run Another Process"
 bash /root/install2.sh
 
-
-# Step 18: Set Openclash Config
-msg "Step 18: Set Openclash Config"
-if [ -f "/etc/config/openclash" ]; then
-  rm -rf /etc/config/openclash
-  mv /etc/config/openclash1 /etc/config/openclash
-else
-  msg "Openclash Config Not Found"
-fi
 
 # Step 19: sync_time.sh
 msg "Step 19: sync_time.sh Process"
