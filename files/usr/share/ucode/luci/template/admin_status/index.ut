@@ -1,0 +1,167 @@
+{#
+ Copyright 2008 Steven Barth <steven@midlink.org>
+ Copyright 2008-2022 Jo-Philipp Wich <jo@mein.io>
+ Licensed to the public under the Apache License 2.0.
+-#}
+
+{% include('header') %}
+<link rel="stylesheet" href="/luci-static/hj/css/style.css?git-23.088.30860-f464199">
+ <script type="text/javascript" src="/luci-static/hj/css/script.js"></script>
+<center>
+<h1 name="content">{{ _('houjie-wrt') }}</h1>
+
+<div id="view">
+	<div class="spinning">{{ _('Loading hJ-wrt…') }}</div>
+</div>
+
+<script type="text/javascript">//<![CDATA[
+function progressbar(query, value, max, byte)
+{
+	var pg = document.querySelector(query),
+	    vn = parseInt(value) || 0,
+	    mn = parseInt(max) || 100,
+	    fv = byte ? String.format('%1024.2mB', value) : value,
+	    fm = byte ? String.format('%1024.2mB', max) : max,
+	    pc = Math.floor((100 / mn) * vn);
+
+	if (pg) {
+		pg.firstElementChild.style.width = pc + '%';
+		pg.setAttribute('title', '%s / %s (%d%%)'.format(fv, fm, pc));
+	}
+}
+
+function renderBox(title, active, childs) {
+	childs = childs || [];
+	childs.unshift(L.itemlist(E('span'), [].slice.call(arguments, 3)));
+
+	return E('div', { class: 'ifacebox' }, [
+		E('div', { class: 'ifacebox-head center ' + (active ? 'active' : '') },
+			E('strong', title)),
+		E('div', { class: 'ifacebox-body left' }, childs)
+	]);
+}
+
+function renderBadge(icon, title) {
+	return E('span', { class: 'ifacebadge' }, [
+		E('img', { src: icon, title: title || '' }),
+		L.itemlist(E('span'), [].slice.call(arguments, 2))
+	]);
+}
+
+//]]></script>
+<script type="text/javascript">//<![CDATA[
+	window.setTimeout(
+		function() {
+			XHR.poll(3, '{{ dispatcher.build_url("admin/status/realtime/cpuusage1") }}', null,
+				function(x, json)
+				{
+					if (e = document.getElementById('cpuusage'))
+						e.innerHTML = String.format('%1f %', json[0].cpu / 2);
+				}
+			);
+			XHR.run();
+		}
+	);
+//]]></script>
+
+<script type="text/javascript">//<![CDATA[
+XHR.poll(3, '{{ dispatcher.build_url("admin", "services", "openclash", "status") }}', null, 
+function(x, status) {
+         var clash = document.getElementById('_clash');
+		if ( x && x.status == 200 ) {
+			if ( status.restricted_mode != "1" )
+			{
+			   clash.innerHTML = status.clash ? '<em><img src="/luci-static/resources/openclash/img/69207.gif"><b style=color:cyan> Running </b><img src="/luci-static/resources/openclash/img/69207.gif"></em>' : '<em><b style=color:#E74C3C> Not Running </b></em>';
+			}
+			else
+			{
+			   clash.innerHTML = status.clash ? '<em><b style=color:green> Running Limited State </b></em>' : '<em><b style=color:#E74C3C> Not Running </b></em>';
+			}
+		}
+	}
+);
+	  
+//]]></script>
+<script type="text/javascript">//<![CDATA[
+XHR.poll(3, '{{ dispatcher.build_url("admin", "services", "passwall", "global", "status") }}', null, 
+function(x, status) {
+         var wall = document.getElementById('wall');
+		if ( x && x.status == 200 ) {
+			if ( status.restricted_mode != "1" )
+			{
+			   wall.innerHTML = tcp_node_status? '<em><b style=color:cyan>Running </b></em>' : '<em><b style=color:#E74C3C> Not Running </b></em>';
+			}
+			else
+			{
+			   wall.innerHTML = tcp_node_status ? '<em><b style=color:green> Running  Limited State</b></em>' : '<em><b style=color:#E74C3C> Not Running </b></em>';
+			}
+		}
+	}
+);
+//]]>
+</script>
+
+<script type="text/javascript">//<![CDATA[
+XHR.poll(3, '{{ dispatcher.build_url("admin", "services", "zerotier", "status") }}', null,
+	function(x, data) {
+		var tb = document.getElementById('zerotier_status');
+		if (data && tb) {
+			if (data.running) {
+				var links = '<em><b><font color=cyan> Running </font></b></em>';
+				tb.innerHTML = links;
+			} else {
+				tb.innerHTML = '<em><b><font color=#E74C3C> Not Running </font></b></em>';
+			}
+		}
+	}
+);
+//]]>
+</script>
+<script type="text/javascript">//<![CDATA[
+	window.setTimeout(
+		function() {
+			XHR.poll(3, '{{ dispatcher.build_url("admin/status/realtime/temperature1") }}', null,
+				function(x, json)
+				{
+					if (e = document.getElementById('tempcpu'))
+						e.innerHTML = String.format('%1f&deg;C', json[0].cpu / 1000);
+				}
+			);
+			XHR.run();
+		}
+	);
+//]]></script>
+<script type="text/javascript">//<![CDATA[
+	window.setTimeout(
+		function() {
+			XHR.poll(3, '{{ dispatcher.build_url("admin/status/realtime/temperature2") }}', null,
+				function(x, json)
+				{
+					if (e = document.getElementById('tempddr'))
+						e.innerHTML = String.format('%1f&deg;C', json[0].cpu / 1000);
+				}
+			);
+			XHR.run();
+		}
+	);
+//]]></script>
+
+<div class="includes" style="display:none">
+{%
+	let lua_available = true;
+
+	try { require('lua'); }
+	catch(err) { lua_available = false; }
+
+	if (lua_available)
+		include('admin_status/luaindex');
+%}
+</div>
+
+<script type="text/javascript">
+	L.require('ui').then(function(ui) {
+		ui.instantiateView('status/index');
+	});
+</script>
+
+{% include('footer') %}
