@@ -497,10 +497,10 @@ rebuild_firmware() {
     PACKAGES+=" $OPENCLASH $MIHOMO"
 
     # Remote Services
-    #PACKAGES+=" luci-app-zerotier luci-app-cloudflared tailscale luci-app-tailscale"
+    #PACKAGES+=" tailscale luci-app-tailscale"
 
     # NAS and Hard disk tools
-    #PACKAGES+=" luci-app-diskman luci-app-hd-idle luci-app-disks-info smartmontools kmod-usb-storage kmod-usb-storage-uas ntfs-3g"
+    #PACKAGES+=" luci-app-diskman smartmontools kmod-usb-storage kmod-usb-storage-uas ntfs-3g"
 
     # Docker
     #PACKAGES+=" docker docker-compose dockerd luci-app-dockerman"
@@ -521,7 +521,7 @@ rebuild_firmware() {
     # Misc and some custom .ipk files
     misc=""
     if [ "$op_target" == "openwrt" ]; then
-        misc+=" luci-app-temp-status luci-app-cpu-status-mini"
+        misc+=" "
     fi
 
     if [ "$op_target" == "rpi-4" ]; then
@@ -532,7 +532,7 @@ rebuild_firmware() {
 
     if [ "$op_target" == "amlogic" ]; then
         PACKAGES+=" luci-app-amlogic ath9k-htc-firmware btrfs-progs hostapd hostapd-utils kmod-ath kmod-ath9k kmod-ath9k-common kmod-ath9k-htc kmod-cfg80211 kmod-crypto-acompress kmod-crypto-crc32c kmod-crypto-hash kmod-fs-btrfs kmod-mac80211 wireless-tools wpa-cli wpa-supplicant"
-        EXCLUDED+=" -procd-ujail"
+        EXCLUDED+=" "
     fi
 
     PACKAGES+=" $misc zram-swap adb parted losetup resize2fs luci luci-ssl block-mount luci-app-poweroff luci-app-ramfree htop bash curl wget wget-ssl tar unzip unrar gzip jq luci-app-ttyd nano httping screen openssh-sftp-server"
