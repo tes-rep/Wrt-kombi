@@ -15,13 +15,13 @@
 Builder With ImageBuilder
 </p>
 <p align="center">
-Custom Script By FriWrt
+Custom Script By <a href="https://github.com/frizkyiman/friWrt-MyWrtBuilder">FriWrt
 </p>
 <p align="center">
-Custom Script By rtaserver
+Custom Script By <a href="https://github.com/rtaserver">rtaserver
 </p>
 <p align="center">
-Custom build By DBAI
+Custom build By <a href="https://github.com/armarchindo/ULO-Builder">DBAI
 </p>
 <br>
 
