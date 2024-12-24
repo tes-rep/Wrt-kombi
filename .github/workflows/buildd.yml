@@ -14,12 +14,13 @@ on:
       releases_branch:
         description: "Select the releases branch"
         required: false
-        default: "openwrt:24.10.0-rc3"
+        default: "openwrt:24.10.0-rc4"
         type: choice
         options:
           - immortalwrt:23.05.4
           - openwrt:23.05.5
           - openwrt:24.10.0-rc3
+          - openwrt:24.10.0-rc4
       target:
         description: "Select device target:"
         required: true
@@ -46,7 +47,7 @@ on:
       kernel:
         description: 'Kernel Version (ex. 6.6.6, 6.1.31-localversion)'
         required: true
-        default: '6.1.66-DBAI'
+        default: '6.6.66'
         type: string
       devices:
         description: "Devices"
