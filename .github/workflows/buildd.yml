@@ -83,7 +83,7 @@ on:
           - ulo2
       fwinfo:
         description: 'Firmware Information'
-        required: true
+        required: false
         default: '-'
         type: string
       type_file:
@@ -333,17 +333,22 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file_glob: true
           file: ./artifact/*
-          tag: ${{ env.RELEASES_TAG }}-${{ env.DATE }}
-          release_name: RTA-WRT - ${{ env.RELEASES_TAG }}-${{ env.DATE }}
+          tag: ${{ inputs.devices }}
+          file_glob: true
           overwrite: true
-          prerelease: true
           body: |
-            ![GitHub Downloads (all assets, specific tag)](https://img.shields.io/github/downloads/rtaserver/RTA-WRT/${{ env.RELEASES_TAG }}-${{ env.DATE }}/total?style=for-the-badge&logo=Openwrt)
-            ### RTA-WRT ${{ env.BASE }}-${{ env.BRANCH }} Image information
-
-
+            ##  OpenWRT Release for ${{ inputs.devices }} devices
+            ULO-Builder Release from Github Workflow
+            ### OpenWrt Image Information
+            - Firmware Details : 
+              - Tanggal Build: ${{ steps.date.outputs.date }}
+              - Devices type : ${{ inputs.devices }}
+              - Kernel version : ${{ inputs.kernel }}
+              - ROOTFS File : ${{ inputs.rename_rootfs }}
+              - ROOTFS Size : ${{ inputs.rootfs_size }}
+            - Firmware Information : 
+              - ${{ inputs.fwinfo }}
             
             See [here](https://github.com/rtaserver/RTA-WRT?tab=readme-ov-file#detail-firmware) for more detail feature and other information.
             - Default IP: 192.168.1.1
