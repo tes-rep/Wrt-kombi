@@ -173,6 +173,10 @@ check_permission "/usr/bin"
 msg "Step 17: Run Another Process"
 bash /root/install2.sh
 
+# Step 17: Run
+msg "Step 17: ip info"
+mv /www/luci-static/resources/view/status/include/01_ipinfo.js /www/luci-static/resources/view/status/include/11_ipinfo.js
+
 
 # Step 19: sync_time.sh
 msg "Step 19: sync_time.sh Process"
