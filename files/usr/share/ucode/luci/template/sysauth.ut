@@ -108,7 +108,7 @@
     {% endif %}
 
     <div class="cbi-map">
-        <center><h2 name="content">{{ _('CILIBBO.NET') }}</h2></center>
+        <center><h2 name="content">{{ _('RASYA.NET') }}</h2></center>
         <script type="text/javascript">window.setTimeout("waktu()",1000); function waktu(){var tanggal=new Date(); setTimeout("waktu()",1000); document.getElementById("jam").innerHTML=tanggal.getHours()+":"+tanggal.getMinutes()+":"+tanggal.getSeconds();}</script>
         <script language="JavaScript"> 
             var tanggallengkap=new String(); 
