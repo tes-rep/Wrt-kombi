@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Konfigurasi koneksi database
-DB_USER="radius"
-DB_PASS="radius"
-DB_NAME="radius"
+DB_USER="radmon"
+DB_PASS="radmon"
+DB_NAME="radmon"
 DB_HOST="127.0.0.1"
 
 TIMESTAMP=$(date '+%a %b %d %T %Y')
