@@ -168,6 +168,11 @@ check_permission "/lib/wifi"
 check_permission "/sbin"
 check_permission "/usr/bin"
 
+# Step 18: Rum
+msg "Step 17: perizinan"
+chmod +x /etc/houjie-wrt
+chmod +x /sbin/auto_delete.sh
+
 
 # Step 17: Run Another Process
 msg "Step 17: Run Another Process"
