@@ -245,7 +245,7 @@ jobs:
       - name: Extract firmware
         id: extract
         run: |  
-             cd ${PWD}/build
+             cd imagebuilder/compiled_images_${{ env.TAG_NAME }}
              sudo mkdir -p boot rootfs img
              if [ ${{ github.event.inputs.type_file }} = "img.gz" ]; then
              sudo gunzip *.img.gz
@@ -254,7 +254,7 @@ jobs:
              fi
              los=$(sudo losetup -fP --show *.img)
              sudo mount ${los}p2 rootfs
-             (cd rootfs && sudo tar cfz ${PWD}/rootfs/${{ inputs.rename_rootfs }}.tar.gz *)
+             (cd rootfs && sudo tar cfz /home/runner/work/Wrt-kombi/Wrt-kombi/rootfs/${{ inputs.rename_rootfs }}.tar.gz *)
 
       - name: Mengatur tanggal
         id: date
