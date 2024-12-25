@@ -4,7 +4,7 @@
 
 </h1>
 
-<h3 align="center">Openwrt Terbaru - 24.10.0-rc2</h3>
+<h3 align="center">Openwrt Terbaru - 24.10.0-rc4</h3>
 
 <!-- <h4 align="center">Join Telegram Untuk Mendapatkan Notifikasi Update Dan Tutorial</h4>
 <p align="center">
@@ -29,8 +29,8 @@ Custom build By <a href="https://github.com/armarchindo/ULO-Builder">DBAI
 # Link Download
 
 <p align="center">
-<a href="https://github.com/Houjie80/Wrt-kombi/releases/tag/openwrt_24.10.0-rc2-20241202"><img alt="Static Badge" src="https://img.shields.io/badge/OpenWrt--24.10.0-rc2-openwrt?style=for-the-badge&logo=openwrt&label=Download&color=%231aa5de"></a>
-<a href="https://github.com/Houjie80/Wrt-kombi/releases/tag/immortalwrt_23.05.4-20241121"><img alt="Static Badge" src="https://img.shields.io/badge/ImmortalWrt--23.05.4-immorlalwrt?style=for-the-badge&logo=openwrt&label=Download&color=%231aa5de"></a>
+<a href="https://github.com/Houjie80/Wrt-kombi/releases/tag/openwrt_24.10.0-rc4-20241202"><img alt="Static Badge" src="https://img.shields.io/badge/OpenWrt--24.10.0-rc4-openwrt?style=for-the-badge&logo=openwrt&label=Download&color=%231aa5de"></a>
+<!--<a href="https://github.com/Houjie80/Wrt-kombi/releases/tag/immortalwrt_23.05.4-20241121"><img alt="Static Badge" src="https://img.shields.io/badge/ImmortalWrt--23.05.4-immorlalwrt?style=for-the-badge&logo=openwrt&label=Download&color=%231aa5de"></a>-->
  <a target="_blank" href="https://github.com/Houjie80/Wrt-kombi/releases"><img src="https://img.shields.io/github/downloads/Houjie80/Wrt-kombi/total?style=for-the-badge&logo=Openwrt"></a>  
 </p>
 
@@ -91,7 +91,7 @@ Pratinjau
 ---
 
 
-* Tampilan Masuk
+<!-- * Tampilan Masuk
 <p align="center">
     <img src="/pictures/Login.png">
 </p>
@@ -104,4 +104,4 @@ Pratinjau
 * Tampilan Terminal
 <p align="center">
     <img src="/pictures/Terminal.png">
-</p>
+</p> -->
