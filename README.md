@@ -1,6 +1,6 @@
 <h1 align="center">
   <img src="/pictures/logo.png" alt="OpenWrt" width="100">
-  <br> WRT - Custom OpenWrt<br>
+  <br> HJ-WRT - Custom OpenWrt<br>
 
 </h1>
 
