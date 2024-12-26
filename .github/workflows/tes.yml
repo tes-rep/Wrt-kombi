@@ -238,8 +238,8 @@ jobs:
             cp -f compiled_images_${{ env.TAG_NAME }}/*rootfs.tar.gz ophub_builder/openwrt-armvirt/
             cd ophub_builder
             sudo ./remake -b ${{ env.openwrt_board }} -k 6.6.y -s ${{ inputs.rootfs_size }}
-            # for file in openwrt/out/*.img.gz; do cp -f "$file" ../compiled_images_${{ env.TAG_NAME }}; done
-            for file in openwrt/out/*.img.gz; do cp -f "$file" ${PWD}/build; done
+            for file in openwrt/out/*.img.gz; do cp -f "$file" ../compiled_images_${{ env.TAG_NAME }}; done
+           # for file in openwrt/out/*.img.gz; do cp -f "$file" ${PWD}/build; done
           fi
 
       - name: Extract firmware
