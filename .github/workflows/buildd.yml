@@ -328,6 +328,12 @@ jobs:
               - ROOTFS Size : ${{ inputs.rootfs_size }}
             - Firmware Information : 
               - ${{ inputs.fwinfo }}
+            ## OpenWrt Image information
+              - Default IP: 192.168.1.1
+              - Default username: root
+              - Default password: sijitekowolu
+              - Default WIFI name: NOKIA N73 | NOKIA N73
+              - Default WIFI password: sijitekowolu   
       - name: Retry Upload if Failed
         if: ${{ failure() }}
         uses: svenstaro/upload-release-action@v2
@@ -349,9 +355,10 @@ jobs:
               - ROOTFS Size : ${{ inputs.rootfs_size }}
             - Firmware Information : 
               - ${{ inputs.fwinfo }}
-            
-            See [here](https://github.com/rtaserver/RTA-WRT?tab=readme-ov-file#detail-firmware) for more detail feature and other information.
-            - Default IP: 192.168.1.1
-            - Default username: root
-            - Default password: rtawrt
-            - Default WIFI name: RTAWRT_2g | RTAWRT_5g (if device supported)          
+             ### OpenWrt Image information
+              - Default IP: 192.168.1.1
+              - Default username: root
+              - Default password: sijitekowolu
+              - Default WIFI name: NOKIA N73 | NOKIA N73
+              - Default WIFI password: sijitekowolu 
+        
