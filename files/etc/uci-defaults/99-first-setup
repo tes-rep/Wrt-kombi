@@ -40,7 +40,27 @@ uci add_list system.ntp.server="id.pool.ntp.org"
 uci add_list system.ntp.server="time.google.com"
 uci commit system
 
-
+# configure wan interface
+msg "Setup WAN and LAN Interface"
+uci set network.lan.ipaddr="192.168.1.1"
+uci set network.lan.delegate='0'
+uci set network.wan=interface
+uci set network.wan.proto='dhcp'
+uci set network.wan.device='eth1'
+uci set network.modemmanager=interface 
+uci set network.modemmanager.proto='modemmanager'
+uci set network.modemmanager.device='/sys/devices/platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb2/2-1'
+uci set network.modemmanager.apn='internet'
+uci set network.modemmanager.auth='none'
+uci set network.modemmanager.iptype='ipv4'
+uci set network.modemmanager.force_connection='1'
+uci set network.tethering=interface
+uci set network.tethering.proto='dhcp'
+uci set network.tethering.device='usb0'
+uci -q delete network.wan6
+uci commit network
+uci set firewall.@zone[1].network='wan modemmanager tethering'
+uci commit firewall
 
 # configure WLAN
 msg "Setup Wireless if available"
