@@ -84,8 +84,11 @@ on:
       fwinfo:
         description: 'Firmware Information'
         required: false
-        default: '-'
-        type: string
+        default: "imagebuilderA.sh"
+        type: choice
+        options:
+          - imagebuilder.sh
+          - imagebuilderA.sh
       type_file:
         description: "Select type file"
         required: false
@@ -108,7 +111,7 @@ on:
 
 env:
   TZ: Asia/Jakarta
-  IMAGEBUILDER_SH: imagebuilder.sh
+  IMAGEBUILDER_SH: ${{ inputs.fwinfo }}
 jobs:
   prebuild:
     runs-on: ubuntu-latest
@@ -326,8 +329,6 @@ jobs:
               - Kernel version : ${{ inputs.kernel }}
               - ROOTFS File : ${{ inputs.rename_rootfs }}
               - ROOTFS Size : ${{ inputs.rootfs_size }}
-            - Firmware Information : 
-              - ${{ inputs.fwinfo }}
             ## OpenWrt Image information
               - Default IP: 192.168.1.1
               - Default username: root
@@ -353,8 +354,6 @@ jobs:
               - Kernel version : ${{ inputs.kernel }}
               - ROOTFS File : ${{ inputs.rename_rootfs }}
               - ROOTFS Size : ${{ inputs.rootfs_size }}
-            - Firmware Information : 
-              - ${{ inputs.fwinfo }}
              ### OpenWrt Image information
               - Default IP: 192.168.1.1
               - Default username: root
