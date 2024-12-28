@@ -405,6 +405,13 @@ custom_packages() {
     mihomo_file_ipk="mihomo_${ARCH_3}-openwrt-23.05" #$op_branch | cut -d '.' -f 1-2
     mihomo_file_ipk_down="$(curl -s ${mihomo_api} | grep "browser_download_url" | grep -oE "https.*${mihomo_file_ipk}.*.tar.gz" | head -n 1)"
 
+    #passwall
+    passwall_api="https://api.github.com/repos/xiaorouji/openwrt-passwall/releases"
+    passwall_file_ipk="luci-23.05_luci-app-passwall"
+    passwall_file_zip="passwall_packages_ipk_${ARCH_3}"
+    passwall_file_ipk_down="$(curl -s ${passwall_api} | grep "browser_download_url" | grep -oE "https.*${passwall_file_ipk}.*.ipk" | head -n 1)"
+    passwall_file_zip_down="$(curl -s ${passwall_api} | grep "browser_download_url" | grep -oE "https.*${passwall_file_zip}.*.zip" | head -n 1)"
+
 
     # Output download information
     echo -e "${STEPS} Installing OpenClash, Mihomo"
@@ -432,6 +439,21 @@ custom_packages() {
     fi
     echo -e "${INFO} Mihomo Packages downloaded successfully."
     
+    echo -e "${INFO} Downloading Passwall package"
+    curl -fsSOL ${passwall_file_ipk_down}
+    if [ "$?" -ne 0 ]; then
+        error_msg "Error: Failed to download Passwall package."
+    fi
+    curl -fsSOL ${passwall_file_zip_down}
+    if [ "$?" -ne 0 ]; then
+        error_msg "Error: Failed to download Passwall Zip package."
+    fi
+    unzip -q "passwall_packages_ipk_${ARCH_3}.zip" && rm "passwall_packages_ipk_${ARCH_3}.zip"
+    if [ "$?" -ne 0 ]; then
+        error_msg "Error: Failed to extract Passwall package."
+    fi
+    echo -e "${INFO} Passwall Packages downloaded successfully."
+
 
     echo -e "${SUCCESS} Download and extraction All complete."
     sync && sleep 3
@@ -498,6 +520,9 @@ rebuild_firmware() {
     # Tunnel option
     OPENCLASH="coreutils-nohup bash dnsmasq-full curl ca-certificates ipset ip-full libcap libcap-bin ruby ruby-yaml kmod-tun kmod-inet-diag unzip kmod-nft-tproxy luci-compat luci luci-base luci-app-openclash"
     MIHOMO+="mihomo luci-app-mihomo"
+    PASSWALL+="chinadns-ng resolveip dns2socks dns2tcp ipt2socks microsocks tcping xray-core xray-plugin luci-app-passwall"
+    PACKAGES+=" $OPENCLASH $MIHOMO" $PASSWALL"
+
     PACKAGES+=" $OPENCLASH $MIHOMO"
 
     # Remote Services
