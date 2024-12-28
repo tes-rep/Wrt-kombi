@@ -193,9 +193,6 @@ msg "Step 17: perizinan"
 chmod +x /etc/houjie-wrt
 chmod +x /sbin/auto_delete.sh
 
-# step
-msg "Step 19: pindah"
-mv /www/luci-static/resources/view/status/include/01_ipinfo.js /www/luci-static/resources/view/status/include/11_ipinfo.js
 
 
 # Step 17: Run Another Process
