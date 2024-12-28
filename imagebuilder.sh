@@ -414,7 +414,7 @@ custom_packages() {
 
 
     # Output download information
-    echo -e "${STEPS} Installing OpenClash" , Mihomo And Passwall"
+    echo -e "${STEPS} Installing OpenClash , Mihomo And Passwall"
 
     echo -e "${INFO} Downloading OpenClash package"
     curl -fsSOL ${openclash_file_ipk_down}
@@ -524,7 +524,7 @@ rebuild_firmware() {
     PASSWALL+="chinadns-ng resolveip dns2socks dns2tcp ipt2socks microsocks tcping xray-core xray-plugin luci-app-passwall"
     PACKAGES+=" $OPENCLASH $MIHOMO" $PASSWALL"
 
-    PACKAGES+=" $OPENCLASH $MIHOMO"
+  #  PACKAGES+=" $OPENCLASH $MIHOMO"
 
     # Remote Services
     PACKAGES+=" tailscale luci-app-tailscale  luci-app-droidnet luci-app-ipinfo luci-theme-initials luci-theme-hj"
