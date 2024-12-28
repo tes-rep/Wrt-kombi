@@ -74,7 +74,7 @@ Custom build By <a href="https://github.com/armarchindo/ULO-Builder">DBAI
 
 **Informasi**
 ```
-- 192.168.1.1 | pengguna: root | kata sandi: rtawrt
+- 192.168.1.1 | pengguna: root | kata sandi: sijitekowolu
 - SSID: NOKIA N73-WRT_2g / NOKIA N73_5g
 - Modemmanager dengan koneksi ulang otomatis,
 - Openclash dengan rilis beta terbaru dan inti MetaCubeX Mihomo terbaru,
