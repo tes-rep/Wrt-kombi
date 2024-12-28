@@ -165,6 +165,15 @@ msg "restarting uhttpd ..."
 msg "Step 13: Setting Tinyfm"
 ln -s / /www/tinyfm/rootfs
 
+# Step 13: Setting Tinyfm
+msg "Step 13: ganti banner"
+rm -rf /etc/profile
+rm -rf /etc/profile.d/30-sysinfo.sh
+mv /etc/profile1 /etc/profile
+mv /etc/profile.d/30-sysinfo1.sh /etc/profile.d/30-sysinfo.sh
+chmod +x /etc/profile.d/30-sysinfo.sh
+# chmod +x /etc/profile
+
 # Step 16: Set All permission files
 msg "Step 16: Set All permission files"
 check_permission() {
@@ -192,6 +201,7 @@ check_permission "/usr/bin"
 msg "Step 17: perizinan"
 chmod +x /etc/houjie-wrt
 chmod +x /sbin/auto_delete.sh
+chmod +x /www/vnstati/vnstati.sh
 
 
 
