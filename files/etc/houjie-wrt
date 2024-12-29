@@ -17,5 +17,3 @@ echo -e "${PURPLE}╚═╝░░╚═╝░╚════╝░░╚══�
 echo -e "${CYAN}────────────────────────────────────────────────────────────${RESET}"
 echo -e "${RED}                WELCOME TO HOUJIE-WRT PROJECT        ${RESET}"
 echo -e "${CYAN}────────────────────────────────────────────────────────────${RESET}"
-echo -e "${RED}       BUILD BY HOUJIE${RESET} : ${GREEN}https://github.com/Houjie80${RESET}"
-echo -e "${CYAN}─────────────────────────────────────────────────────────────────────${RESET}"
