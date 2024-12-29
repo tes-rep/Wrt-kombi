@@ -266,7 +266,7 @@ download_imagebuilder() {
     echo -e "${SUCCESS} Download Base ${op_branch} ${target_name} successfully!"
 
     # Unzip and change the directory name
-    tar -xvf *-imagebuilder-* && sync && rm -f *-imagebuilder-*.tar.zst
+    tar --zstd -xvf *-imagebuilder-* && sync && rm -f *-imagebuilder-*.tar.zst
     mv -f *-imagebuilder-* ${openwrt_dir}
 
     sync && sleep 3
@@ -347,39 +347,42 @@ custom_packages() {
     fi
     github_packages+=(
         "luci-app-netmonitor|https://api.github.com/repos/rtaserver/rta-packages/releases"
+        "luci-app-base64|https://api.github.com/repos/rtaserver/rta-packages/releases"
     )
     download_packages "github" github_packages[@]
 
     # Download IPK From Custom
     CURVER=$(echo $op_branch | awk -F. '{print $1"."$2}')
-    other_packages=(
-        "tailscale|https://downloads.$op_sourse.org/releases/24.10.0-rc3/packages/$ARCH_3/packages"
-        "luci-app-3ginfo-lite|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
-        "modemband|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
-        "luci-app-sms-tool|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
-        "luci-app-modemband|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
-        "luci-app-sms-tool-js|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
-        "speedtestcli|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
-        "luci-app-ramfree|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
+    other_packages=(    
+        "luci-app-internet-detector|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
+        "internet-detector-mod-modem-restart|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
+        "internet-detector|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
         "modemmanager-rpcd|https://downloads.$op_sourse.org/releases/packages-24.10/$ARCH_3/packages"
+        "luci-proto-modemmanager|https://downloads.$op_sourse.org/releases/packages-24.10/$ARCH_3/luci"
+        "libqmi|https://downloads.$op_sourse.org/releases/packages-24.10/$ARCH_3/packages"
+        "libmbim|https://downloads.$op_sourse.org/releases/packages-24.10/$ARCH_3/packages"
+        "modemmanager|https://downloads.$op_sourse.org/releases/packages-24.10/$ARCH_3/packages"
         "sms-tool|https://downloads.$op_sourse.org/releases/packages-24.10/$ARCH_3/packages"
-        "luci-app-diskman|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
+        "tailscale|https://downloads.$op_sourse.org/releases/packages-24.10/$ARCH_3/packages"
         "luci-app-modeminfo|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
+        #"lolcat|https://downloads$op_sourse.org/releases/packages-24.10/$ARCH_3/packages"
+        #"luci-app-mmconfig|https://op.dllkids.xyz/packages/$ARCH_3"
+        "luci-app-tailscale|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
+        "luci-app-diskman|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
         "modeminfo|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
         "atinout|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
         "luci-app-poweroff|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
         "xmm-modem|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
-        "luci-app-log-viewer|https://github.com/gSpotx2f/packages-openwrt/raw/refs/heads/master/current"
-        "luci-app-temp-status|https://github.com/gSpotx2f/packages-openwrt/raw/refs/heads/master/current"
+        "luci-app-disks-info|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
+        "luci-app-temp-status|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
+        "luci-app-ramfree|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
+        "luci-app-3ginfo-lite|https://downloads.immortalwrt.org/releases/packages-24.10/$ARCH_3/luci"
+        "modemband|https://downloads.immortalwrt.org/releases/packages-24.10/$ARCH_3/packages"
+        "luci-app-modemband|https://downloads.immortalwrt.org/releases/packages-24.10/$ARCH_3/luci"
+        "luci-app-sms-tool-js|https://downloads.immortalwrt.org/releases/packages-24.10/$ARCH_3/luci"
         "luci-theme-argon|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
-        "luci-app-droidnet|https://dl.openwrt.ai/packages-24.10/aarch64_generic/kiddin9"
-        "luci-app-internet-detector|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
-        "internet-detector-mod-modem-restart|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
-        "internet-detector|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
-        #"luci-app-eqosplus|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
+        "luci-app-eqosplus|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
         "luci-app-tinyfm|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
-        #"luci-app-zerotier|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
-        "luci-app-gpioled|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
     )
     download_packages "custom" other_packages[@]
 
@@ -411,7 +414,7 @@ custom_packages() {
 
 
     # Output download information
-    echo -e "${STEPS} Installing OpenClash" #, Mihomo And Passwall"
+    echo -e "${STEPS} Installing OpenClash , Mihomo And Passwall"
 
     echo -e "${INFO} Downloading OpenClash package"
     curl -fsSOL ${openclash_file_ipk_down}
@@ -457,15 +460,20 @@ custom_packages() {
     echo -e "${INFO} [ packages ] directory status: $(ls -al 2>/dev/null)"
 }
 
+
 # Add custom packages, lib, theme, app and i18n, etc.
 custom_config() {
     cd ${imagebuilder_path}
     echo -e "${STEPS} Start adding custom config..."
 
     echo -e "${INFO} Downloading custom script" 
+    sync_time="https://raw.githubusercontent.com/frizkyiman/auto-sync-time/main/sbin/sync_time.sh"
+    clock="https://raw.githubusercontent.com/frizkyiman/auto-sync-time/main/usr/bin/clock"
     repair_ro="https://raw.githubusercontent.com/frizkyiman/fix-read-only/main/install2.sh"
-    #mount_hdd="https://raw.githubusercontent.com/frizkyiman/auto-mount-hdd/main/mount_hdd"
+    mount_hdd="https://raw.githubusercontent.com/frizkyiman/auto-mount-hdd/main/mount_hdd"
 
+    curl -fsSL -o "${custom_files_path}/sbin/sync_time.sh" "${sync_time}"
+    curl -fsSL -o "${custom_files_path}/usr/bin/clock" "${clock}"
     curl -fsSL -o "${custom_files_path}/root/install2.sh" "${repair_ro}"
     #curl -fsSL -o "${custom_files_path}/usr/bin/mount_hdd" "${mount_hdd}"
 
@@ -497,41 +505,43 @@ rebuild_firmware() {
     echo -e "${STEPS} Start building OpenWrt with Image Builder..."
 
     # Selecting default packages, lib, theme, app and i18n, etc.
-    PACKAGES+=" file lolcat kmod-usb-net-rtl8150 kmod-usb-net-rtl8152 kmod-usb-net-asix kmod-usb-net-asix-ax88179"
-    PACKAGES+=" kmod-mii kmod-usb-net kmod-usb-wdm kmod-usb-net-qmi-wwan uqmi \
+    PACKAGES+=" file lolcat kmod-usb-net-rtl8150 kmod-usb-net-rtl8152 -kmod-usb-net-asix -kmod-usb-net-asix-ax88179"
+    PACKAGES+=" kmod-mii kmod-usb-net kmod-usb-wdm kmod-usb-net-qmi-wwan uqmi kmod-usb3 \
     kmod-usb-net-cdc-ether kmod-usb-serial-option kmod-usb-serial kmod-usb-serial-wwan qmi-utils \
     kmod-usb-serial-qualcomm kmod-usb-acm kmod-usb-net-cdc-ncm kmod-usb-net-cdc-mbim umbim \
-    modemmanager-rpcd usbutils luci-proto-mbim luci-proto-ncm \
+    modemmanager modemmanager-rpcd luci-proto-modemmanager libmbim libqmi usbutils luci-proto-mbim luci-proto-ncm \
     kmod-usb-net-huawei-cdc-ncm kmod-usb-net-cdc-ether kmod-usb-net-rndis kmod-usb-net-sierrawireless kmod-usb-ohci kmod-usb-serial-sierrawireless \
-    kmod-usb-uhci kmod-usb2 kmod-usb3 kmod-usb-ehci kmod-usb-net-ipheth usbmuxd libusbmuxd-utils libimobiledevice-utils usb-modeswitch kmod-nls-utf8 mbim-utils xmm-modem \
-    kmod-phy-broadcom kmod-phylib-broadcom kmod-tg3 iptables-nft coreutils-stty coreutils-sleep"
-    
+    kmod-usb-uhci kmod-usb2 kmod-usb-ehci kmod-usb-net-ipheth usbmuxd libusbmuxd-utils libimobiledevice-utils usb-modeswitch kmod-nls-utf8 mbim-utils xmm-modem \
+    kmod-phy-broadcom kmod-phylib-broadcom kmod-tg3 iptables-nft coreutils-stty perlbase-cpan perl"
+    PACKAGES+=" luci-app-base64 perl perlbase-essential perlbase-cpan perlbase-utf8 perlbase-time perlbase-xsloader perlbase-extutils"
+
     # Modem Tools
-    #PACKAGES+=" modeminfo luci-app-modeminfo atinout modemband luci-app-modemband sms-tool luci-app-sms-tool-js luci-app-3ginfo-lite picocom minicom"
+    PACKAGES+=" modeminfo luci-app-modeminfo atinout modemband luci-app-modemband sms-tool luci-app-sms-tool-js luci-app-lite-watchdog luci-app-3ginfo-lite picocom minicom"
 
     # Tunnel option
-    OPENCLASH="coreutils-nohup bash dnsmasq-full curl ca-certificates ipset ip-full libcap libcap-bin ruby ruby-yaml kmod-tun kmod-inet-diag unzip kmod-nft-tproxy luci-compat luci luci-base luci-app-openclash"
+    OPENCLASH+="coreutils-nohup bash dnsmasq-full curl ca-certificates ipset ip-full libcap libcap-bin ruby ruby-yaml kmod-tun kmod-inet-diag unzip kmod-nft-tproxy luci-compat luci luci-base luci-app-openclash"
     MIHOMO+="mihomo luci-app-mihomo"
-    #PASSWALL+="chinadns-ng resolveip dns2socks dns2tcp ipt2socks microsocks tcping xray-core xray-plugin luci-app-passwall"
-    PACKAGES+=" $OPENCLASH $MIHOMO" $PASSWALL"
+    PASSWALL+="chinadns-ng resolveip dns2socks dns2tcp ipt2socks microsocks tcping xray-core xray-plugin luci-app-passwall"
+    PACKAGES+=" $OPENCLASH $MIHOMO $PASSWALL"
+
+  #  PACKAGES+=" $OPENCLASH $MIHOMO"
 
     # Remote Services
-    PACKAGES+=" tailscale"
+    PACKAGES+=" tailscale luci-app-tailscale  luci-app-droidnet luci-app-ipinfo luci-theme-initials"
 
     # NAS and Hard disk tools
-    PACKAGES+=" luci-app-diskman ntfs-3g"
+    PACKAGES+=" luci-app-diskman smartmontools kmod-usb-storage kmod-usb-storage-uas ntfs-3g"
 
     # Docker
     #PACKAGES+=" docker docker-compose dockerd luci-app-dockerman"
 
     # Bandwidth And Network Monitoring
-    PACKAGES+=" luci-app-gpioled internet-detector luci-app-internet-detector internet-detector-mod-modem-restart vnstat2 vnstati2 luci-app-netmonitor"
+    PACKAGES+=" internet-detector luci-app-internet-detector internet-detector-mod-modem-restart nlbwmon luci-app-nlbwmon vnstat2 vnstati2 netdata luci-app-netmonitor"
 
-    # Speedtest
-    PACKAGES+=" speedtestcli"
-  
+    # Material Theme
+    PACKAGES+=" luci-theme-material"
+
     # PHP8
-    PACKAGES+=" php8 php8-cgi php8-fastcgi php8-fpm php8-mod-session php8-mod-ctype php8-mod-fileinfo php8-mod-zip php8-mod-iconv php8-mod-mbstring coreutils-stat zoneinfo-asia curl tar"
     PACKAGES+=" libc php8 php8-fastcgi php8-fpm coreutils-stat zoneinfo-asia php8-cgi \
     php8-cli php8-mod-bcmath php8-mod-calendar php8-mod-ctype php8-mod-curl php8-mod-dom php8-mod-exif \
     php8-mod-fileinfo php8-mod-filter php8-mod-gd php8-mod-iconv php8-mod-intl php8-mod-mbstring php8-mod-mysqli \
@@ -539,21 +549,23 @@ rebuild_firmware() {
     php8-mod-xml php8-mod-xmlreader php8-mod-xmlwriter php8-mod-zip libopenssl-legacy"
 
     # Misc and some custom .ipk files
-    misc+=" modemmanager luci-proto-modemmanager libmbim libqmi luci-app-tailscale luci-app-mmconfig \
-    luci-app-temp-status luci-app-rakitanmanager luci-theme-alpha luci-theme-argon luci-app-droidnet"
-    
+    misc=""
+    if [ "$op_target" == "openwrt" ]; then
+        misc+=" "
+    fi
+
     if [ "$op_target" == "rpi-4" ]; then
         misc+=" kmod-i2c-bcm2835 i2c-tools kmod-i2c-core kmod-i2c-gpio luci-app-oled"
     elif [ "$ARCH_2" == "x86_64" ]; then
         misc+=" kmod-iwlwifi iw-full pciutils"
     fi
-       # ubah target wifoff atau amlogic #
-    if [ "$op_target" == "wifioff" ]; then
+
+    if [ "$op_target" == "amlogic" ]; then
         PACKAGES+=" luci-app-amlogic ath9k-htc-firmware btrfs-progs hostapd hostapd-utils kmod-ath kmod-ath9k kmod-ath9k-common kmod-ath9k-htc kmod-cfg80211 kmod-crypto-acompress kmod-crypto-crc32c kmod-crypto-hash kmod-fs-btrfs kmod-mac80211 wireless-tools wpa-cli wpa-supplicant"
-        EXCLUDED+=" -procd-ujail"
+        EXCLUDED+=" "
     fi
 
-    PACKAGES+=" $misc openssh-sftp-server zram-swap adb parted losetup luci luci-ssl block-mount luci-app-poweroff luci-app-ramfree htop curl wget-ssl unzip jq luci-app-ttyd nano luci-app-tinyfm" #luci-app-eqosplus
+    PACKAGES+=" $misc zram-swap adb parted losetup resize2fs luci luci-ssl block-mount luci-app-poweroff luci-app-ramfree htop bash curl wget wget-ssl tar unzip unrar gzip jq luci-app-ttyd nano httping screen openssh-sftp-server"
 
     # Exclude package (must use - before packages name)
     EXCLUDED+=" -libgd"
