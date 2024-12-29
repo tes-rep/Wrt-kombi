@@ -87,9 +87,12 @@ on:
           - ulo2
       fwinfo:
         description: 'Firmware Information'
-        required: true
-        default: '-'
-        type: string
+        required: false
+        default: "imagebuilderA.sh"
+        type: choice
+        options:
+          - imagebuilder.sh
+          - imagebuilderA.sh
       type_file:
         description: "Select type file"
         required: false
@@ -107,7 +110,7 @@ on:
 
 env:
   TZ: Asia/Jakarta
-  IMAGEBUILDER_SH: imagebuilder.sh
+  IMAGEBUILDER_SH: ${{ inputs.fwinfo }}
 jobs:
   prebuild:
     runs-on: ubuntu-latest
@@ -297,7 +300,7 @@ jobs:
               - ROOTFS File : ${{ inputs.rename_rootfs }}
               - ROOTFS Size : ${{ inputs.rootfs_size }}
             - Firmware Information : 
-              - ${{ inputs.fwinfo }}
+              - 
       - name: Retry Upload if Failed
         if: ${{ failure() }}
         uses: svenstaro/upload-release-action@v2
@@ -318,4 +321,4 @@ jobs:
               - ROOTFS File : ${{ inputs.rename_rootfs }}
               - ROOTFS Size : ${{ inputs.rootfs_size }}
             - Firmware Information : 
-              - ${{ inputs.fwinfo }}
+              - 
