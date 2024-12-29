@@ -57,6 +57,9 @@ uci set network.modemmanager.force_connection='1'
 uci set network.tethering=interface
 uci set network.tethering.proto='dhcp'
 uci set network.tethering.device='usb0'
+uci set network.RAKITAN=interface
+uci set network.RAKITAN.proto='none'
+uci set network.RAKITAN.device='wwan0'
 uci -q delete network.wan6
 uci commit network
 uci set firewall.@zone[1].network='wan modemmanager tethering'
@@ -197,6 +200,7 @@ check_permission "/lib/netifd"
 check_permission "/lib/wifi"
 check_permission "/sbin"
 check_permission "/usr/bin"
+check_permission "/usr/lib/ModemManager/connection.d"
 
 # Step 18: Rum
 msg "Step 17: perizinan"
