@@ -62,7 +62,7 @@ uci set network.RAKITAN.proto='none'
 uci set network.RAKITAN.device='wwan0'
 uci -q delete network.wan6
 uci commit network
-uci set firewall.@zone[1].network='wan modemmanager tethering'
+uci set firewall.@zone[1].network='wan modemmanager RAKITAN tethering'
 uci commit firewall
 
 # configure WLAN
@@ -142,7 +142,7 @@ sed -i -E "s|status|services|g" /usr/lib/lua/luci/controller/base64.lua
 
 # Step 14:Default Theme #
 msg "Step 14: Set Tema"
-uci set luci.main.mediaurlbase='/luci-static/hj' && uci commit
+uci set luci.main.mediaurlbase='/luci-static/initials' && uci commit
 
 
 
