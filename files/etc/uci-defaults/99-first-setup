@@ -154,6 +154,7 @@ uci add_list uhttpd.main.index_page='index.php'
 uci commit uhttpd
 sed -i -E "s|memory_limit = [0-9]+M|memory_limit = 100M|g" /etc/php.ini
 sed -i -E "s|display_errors = On|display_errors = Off|g" /etc/php.ini
+sed -i '$a ; Set the default timezone\ndate.timezone = "Asia/Jakarta"' /etc/php.ini
 ln -s /usr/bin/php-cli /usr/bin/php
 [ -d /usr/lib/php8 ] && [ ! -d /usr/lib/php ] && ln -sf /usr/lib/php8 /usr/lib/php
 msg "patching system with php configuration done ..."
