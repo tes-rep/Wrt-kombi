@@ -536,7 +536,7 @@ rebuild_firmware() {
     #PACKAGES+=" docker docker-compose dockerd luci-app-dockerman"
 
     # Bandwidth And Network Monitoring
-    PACKAGES+=" internet-detector luci-app-internet-detector internet-detector-mod-modem-restart nlbwmon luci-app-nlbwmon vnstat2 vnstati2 netdata luci-app-netmonitor"
+    PACKAGES+=" internet-detector luci-app-internet-detector internet-detector-mod-modem-restart vnstat2 vnstati2 netdata luci-app-netmonitor"
 
     # Material Theme
     PACKAGES+=" luci-theme-material"
@@ -565,7 +565,7 @@ rebuild_firmware() {
         EXCLUDED+=" "
     fi
 
-    PACKAGES+=" $misc zram-swap adb parted losetup resize2fs luci luci-ssl block-mount luci-app-poweroff luci-app-ramfree htop bash curl wget wget-ssl tar unzip unrar gzip jq luci-app-ttyd nano httping screen openssh-sftp-server"
+    PACKAGES+=" $misc zram-swap adb parted losetup resize2fs luci luci-ssl block-mount luci-app-ramfree htop bash curl wget wget-ssl tar unzip unrar gzip jq luci-app-ttyd nano httping screen openssh-sftp-server"
 
     # Exclude package (must use - before packages name)
     EXCLUDED+=" -libgd"
