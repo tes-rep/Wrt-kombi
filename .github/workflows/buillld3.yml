@@ -66,6 +66,7 @@ on:
         options:
           - imagebuilder.sh
           - imagebuilderA.sh
+          - imagebuilderB.sh
       rename_rootfs:
         description: "ganti nama rootfs"
         required: false
