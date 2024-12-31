@@ -524,7 +524,7 @@ rebuild_firmware() {
     # PASSWALL+="chinadns-ng resolveip dns2socks dns2tcp ipt2socks microsocks tcping xray-core xray-plugin luci-app-passwall"
     PACKAGES+=" $OPENCLASH $MIHOMO"
 
-  #  PACKAGES+=" $OPENCLASH $MIHOMO"
+    #  PACKAGES+=" $OPENCLASH $MIHOMO"
 
     # Remote Services
     PACKAGES+=" tailscale luci-app-tailscale  luci-app-droidnet luci-app-ipinfo luci-theme-initials luci-theme-hj"
@@ -557,7 +557,7 @@ rebuild_firmware() {
     freeradius3-mod-expiration freeradius3-mod-expr freeradius3-mod-files freeradius3-mod-logintime \
     freeradius3-mod-mschap freeradius3-mod-pap freeradius3-mod-preprocess freeradius3-mod-radutmp \
     freeradius3-mod-realm freeradius3-mod-sql freeradius3-mod-sql-mysql freeradius3-mod-sqlcounter \
-    freeradius3-mod-unix freeradius3-utils libfreetype wget-ssl curl unzip tar zoneinfo-asia coova-chilli iptables-nft iptables-mod-hashlimit -libgd"
+    freeradius3-mod-unix freeradius3-utils libfreetype wget-ssl curl unzip tar zoneinfo-asia coova-chilli iptables-nft iptables-mod-hashlimit"
 
     # PACKAGES+=" node node-npm"
     
