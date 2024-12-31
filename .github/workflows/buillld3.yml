@@ -213,7 +213,6 @@ jobs:
         run: echo "date=$(date +'%d-%m-%y %H:%M:%S')" >> $GITHUB_OUTPUT
   
       - name: Download kernel
-        if: ${{ failure() }}
         run: |
            if [ $(echo ${{ github.event.inputs.kernel_url }} | grep "drive.") ]; then
            if [ $(echo ${{ github.event.inputs.kernel_url }} | awk -F "/" '{print $6}') ]; then
@@ -235,12 +234,12 @@ jobs:
            fi
            fi    
       - name: Extract kernel
-        if: ${{ failure() }}
         id: kernel
         run: |  
              cd build
              unzip file.zip -d /home/runner/work/Wrt-kombi/Wrt-kombi/core/kernel/
       - name: Building OpenWrt
+        if: ${{ failure() }}
         run: |
           sudo chmod +x ulo2
           sudo chmod +x ulo
