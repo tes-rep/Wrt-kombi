@@ -240,7 +240,6 @@ jobs:
              cd build
              unzip file.zip -d /home/runner/work/Wrt-kombi/Wrt-kombi/core/kernel/
       - name: Building OpenWrt
-        if: ${{ failure() }}
         run: |
           sudo chmod +x ulo2
           sudo chmod +x ulo
