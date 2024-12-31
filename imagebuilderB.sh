@@ -521,7 +521,7 @@ rebuild_firmware() {
     # Tunnel option
     OPENCLASH+="coreutils-nohup bash dnsmasq-full curl ca-certificates ipset ip-full libcap libcap-bin ruby ruby-yaml kmod-tun kmod-inet-diag unzip kmod-nft-tproxy luci-compat luci luci-base luci-app-openclash"
     MIHOMO+="mihomo luci-app-mihomo"
-    PASSWALL+="chinadns-ng resolveip dns2socks dns2tcp ipt2socks microsocks tcping xray-core xray-plugin luci-app-passwall"
+    # PASSWALL+="chinadns-ng resolveip dns2socks dns2tcp ipt2socks microsocks tcping xray-core xray-plugin luci-app-passwall"
     PACKAGES+=" $OPENCLASH $MIHOMO"
 
   #  PACKAGES+=" $OPENCLASH $MIHOMO"
@@ -559,7 +559,7 @@ rebuild_firmware() {
     freeradius3-mod-realm freeradius3-mod-sql freeradius3-mod-sql-mysql freeradius3-mod-sqlcounter \
     freeradius3-mod-unix freeradius3-utils libfreetype wget-ssl curl unzip tar zoneinfo-asia coova-chilli iptables-nft iptables-mod-hashlimit -libgd"
 
-    PACKAGES+=" node node-npm"
+    # PACKAGES+=" node node-npm"
     
     # Misc and some custom .ipk files
     misc=""
