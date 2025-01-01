@@ -401,7 +401,7 @@ custom_packages() {
     fi
 
     # Mihomo
-    mihomo_api="https://api.github.com/repos/morytyann/OpenWrt-mihomo/releases"
+    mihomo_api="https://api.github.com/rizkikotet-dev/OpenWrt-mihomo-Mod/releases"
     mihomo_file_ipk="mihomo_${ARCH_3}-openwrt-24.10" #$op_branch | cut -d '.' -f 1-2
     mihomo_file_ipk_down="$(curl -s ${mihomo_api} | grep "browser_download_url" | grep -oE "https.*${mihomo_file_ipk}.*.tar.gz" | head -n 1)"
 
@@ -521,13 +521,13 @@ rebuild_firmware() {
     # Tunnel option
     OPENCLASH+="coreutils-nohup bash dnsmasq-full curl ca-certificates ipset ip-full libcap libcap-bin ruby ruby-yaml kmod-tun kmod-inet-diag unzip kmod-nft-tproxy luci-compat luci luci-base luci-app-openclash"
     MIHOMO+="mihomo luci-app-mihomo"
-    PASSWALL+="chinadns-ng resolveip dns2socks dns2tcp ipt2socks microsocks tcping xray-core xray-plugin luci-app-passwall"
-    PACKAGES+=" $OPENCLASH $MIHOMO $PASSWALL"
+    #PASSWALL+="chinadns-ng resolveip dns2socks dns2tcp ipt2socks microsocks tcping xray-core xray-plugin luci-app-passwall"
+    PACKAGES+=" $OPENCLASH $MIHOMO"
 
   #  PACKAGES+=" $OPENCLASH $MIHOMO"
 
     # Remote Services
-    PACKAGES+=" tailscale luci-app-tailscale  luci-app-droidnet luci-app-ipinfo luci-theme-initials"
+    PACKAGES+=" tailscale luci-app-tailscale  luci-app-droidnet luci-app-ipinfo luci-theme-initials luci-theme-argon luci-app-argon-config"
 
     # NAS and Hard disk tools
     PACKAGES+=" luci-app-diskman smartmontools kmod-usb-storage kmod-usb-storage-uas ntfs-3g"
@@ -536,7 +536,7 @@ rebuild_firmware() {
     #PACKAGES+=" docker docker-compose dockerd luci-app-dockerman"
 
     # Bandwidth And Network Monitoring
-    PACKAGES+=" internet-detector luci-app-internet-detector internet-detector-mod-modem-restart nlbwmon luci-app-nlbwmon vnstat2 vnstati2 netdata luci-app-netmonitor"
+    PACKAGES+=" internet-detector luci-app-internet-detector internet-detector-mod-modem-restart vnstat2 vnstati2 netdata luci-app-netmonitor"
 
     # Material Theme
     PACKAGES+=" luci-theme-material"
