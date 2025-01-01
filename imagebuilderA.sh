@@ -527,7 +527,7 @@ rebuild_firmware() {
   #  PACKAGES+=" $OPENCLASH $MIHOMO"
 
     # Remote Services
-    PACKAGES+=" tailscale luci-app-tailscale  luci-app-droidnet luci-app-ipinfo luci-theme-initials luci-theme-argon luci-app-argon-config"
+    PACKAGES+=" luci-app-droidnet luci-app-ipinfo luci-theme-initials luci-theme-argon luci-app-argon-config"
 
     # NAS and Hard disk tools
     PACKAGES+=" luci-app-diskman smartmontools kmod-usb-storage kmod-usb-storage-uas ntfs-3g"
