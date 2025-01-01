@@ -401,7 +401,7 @@ custom_packages() {
     fi
 
     # Mihomo
-    mihomo_api="https://api.github.com/rizkikotet-dev/OpenWrt-mihomo-Mod/releases/latest"
+    mihomo_api="https://api.github.com/repos/rizkikotet-dev/OpenWrt-mihomo-Mod/releases/latest"
     mihomo_file_ipk="mihomo_${ARCH_3}-openwrt-24.10" #$op_branch | cut -d '.' -f 1-2
     mihomo_file_ipk_down="$(curl -s ${mihomo_api} | grep "browser_download_url" | grep -oE "https.*${mihomo_file_ipk}.*.tar.gz" | head -n 1)"
 
