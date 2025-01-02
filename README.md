@@ -56,7 +56,7 @@ Custom build By <a href="https://github.com/armarchindo/ULO-Builder">DBAI
     -> s905x - STB HG680P
     -> s905x2 - STB B860H-V5
     -> s905x-b860h - STB B860H-V1-V2
-    -> s905x4 advan AT01
+    -> s905x4 - advan AT01
 - Generic Series
     -> x86-64
 - FriendlyArm Series
@@ -81,7 +81,7 @@ Custom build By <a href="https://github.com/armarchindo/ULO-Builder">DBAI
 - Passwall sebagai aplikasi *Tunneling* alternatif,
 - TinyFm file manager,
 - Internet Detector Dan Lite Watchdog,
-- Tema Argon dengan beberapa gambar login kustom yang keren,
+- Tema dengan beberapa gambar login kustom yang keren,
 - 3ginfo lite dan Modeminfo, sms-tool, dan aplikasi dukungan modem lainnya,
 - Dukungan Layar OLED (hanya Raspberrry Pi 4B yang diuji),
 - dll.~
