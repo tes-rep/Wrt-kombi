@@ -14,17 +14,17 @@ on:
       releases_branch:
         description: "Select the releases branch"
         required: false
-        default: "openwrt:24.10.0-rc4"
+        default: "openwrt:24.10.0-rc5"
         type: choice
         options:
           - immortalwrt:24.10.0-rc3
           - openwrt:23.05.5
           - openwrt:24.10.0-rc3
-          - openwrt:24.10.0-rc4
+          - openwrt:24.10.0-rc5
       target:
         description: "Select device target:"
         required: true
-        default: "Amlogic HG680P"
+        default: "s905x4"
         type: choice
         options:
           - all
