@@ -539,7 +539,7 @@ rebuild_firmware() {
     PACKAGES+=" internet-detector luci-app-internet-detector internet-detector-mod-modem-restart vnstat2 vnstati2 netdata luci-app-netmonitor"
 
     # Material Theme
-    PACKAGES+=" luci-theme-material"
+    PACKAGES+=" luci-theme-material luci-theme-hj"
 
     # PHP8
     PACKAGES+=" libc php8 php8-fastcgi php8-fpm coreutils-stat zoneinfo-asia php8-cgi \
