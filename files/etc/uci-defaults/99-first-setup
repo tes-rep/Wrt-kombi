@@ -208,6 +208,7 @@ chmod +x /etc/houjie-wrt
 chmod +x /sbin/auto_delete.sh
 chmod +x /www/vnstati/vnstati.sh
 chmod +x /usr/bin/cpustat
+chmod +x /usr/bin/jam.sh
 
 
 
