@@ -45,6 +45,14 @@ on:
          required: true
          default: '1024'
          type: string 
+      type_file:
+        description: "Select type file"
+        required: false
+        default: "tar.gz"
+        type: choice
+        options:
+          - tar.gz
+          - zip    
       kernel:
         description: 'Kernel Version (ex. 6.6.6, 6.1.31-localversion)'
         required: true
@@ -238,7 +246,12 @@ jobs:
         id: kernel
         run: |  
              cd build
-             unzip file.zip -d /home/runner/work/Wrt-kombi/Wrt-kombi/core/kernel/
+             if [ ${{ github.event.inputs.type_file }} = "tar.gz" ]; then
+             tar -xzvf file.tar.gz -C /home/runner/work/Wrt-kombi/Wrt-kombi/core/kernel
+             # cd core/kernel/* && rm -rf dtb-rockchip-*.tar.gz && rm -rf dtb-allwinner-*.tar.gz
+             else
+             unzip file.zip -d /home/runner/work/Wrt-kombi/Wrt-kombi/core/kernel
+             fi
       - name: Building OpenWrt
         run: |
           sudo chmod +x ulo2
