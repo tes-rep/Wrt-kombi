@@ -307,7 +307,7 @@ jobs:
           cp -rf ./rootfs/*.tar.gz ./artifact/
           
       - name: Delivering Package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: openwrt_package
           path: ./artifact/*
