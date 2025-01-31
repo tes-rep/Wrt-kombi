@@ -89,6 +89,7 @@ on:
         options:
           - imagebuilder.sh
           - imagebuilderA.sh
+          - imagebuilderB.sh
       type_file:
         description: "Select type file"
         required: false
