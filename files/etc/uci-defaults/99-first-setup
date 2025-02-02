@@ -220,6 +220,9 @@ bash /root/install2.sh
 msg "Step 17: ip info"
 mv /www/luci-static/resources/view/status/include/01_ipinfo.js /www/luci-static/resources/view/status/include/11_ipinfo.js
 
+# Step 14:Default Theme #
+msg "Step 14: Set bahasa"
+uci set luci.main.lang='en' && uci commit
 
 # Step 19: sync_time.sh
 msg "Step 19: sync_time.sh Process"
