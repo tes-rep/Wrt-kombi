@@ -522,7 +522,7 @@ rebuild_firmware() {
 
     # Tunnel option
     OPENCLASH+="coreutils-nohup bash dnsmasq-full curl ca-certificates ipset ip-full libcap libcap-bin ruby ruby-yaml kmod-tun kmod-inet-diag unzip kmod-nft-tproxy luci-compat luci luci-base luci-app-openclash"
-    NIKKI+="mihomo luci-app-nikki"
+    NIKKI+="nikki luci-app-nikki"
     #PASSWALL+="chinadns-ng resolveip dns2socks dns2tcp ipt2socks microsocks tcping xray-core xray-plugin luci-app-passwall"
     PACKAGES+=" $OPENCLASH $NIKKI"
 
