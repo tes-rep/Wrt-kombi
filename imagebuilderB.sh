@@ -412,9 +412,9 @@ custom_packages() {
     passwall_file_ipk_down="$(curl -s ${passwall_api} | grep "browser_download_url" | grep -oE "https.*${passwall_file_ipk}.*.ipk" | head -n 1)"
     passwall_file_zip_down="$(curl -s ${passwall_api} | grep "browser_download_url" | grep -oE "https.*${passwall_file_zip}.*.zip" | head -n 1)"
 
-    # Nikki URL generation
-   # nikki_file_ipk="nikki_${ARCH_3}-openwrt-${VEROP}"
-   # nikki_file_ipk_down=$(curl -s "https://api.github.com/repos/rizkikotet-dev/OpenWrt-nikki-Mod/releases" | grep "browser_download_url" | grep -oE "https.*${nikki_file_ipk}.*.tar.gz" | head -n 1)
+    #Nikki URL generation
+     nikki_file_ipk="nikki_${ARCH_3}-openwrt-24.10"
+     nikki_file_ipk_down=$(curl -s "https://api.github.com/repos/rizkikotet-dev/OpenWrt-nikki-Mod/releases" | grep "browser_download_url" | grep -oE "https.*${nikki_file_ipk}.*.tar.gz" | head -n 1)
 
     # Output download information
     echo -e "${STEPS} Installing OpenClash , Mihomo And Passwall"
@@ -446,6 +446,16 @@ custom_packages() {
     fi
     echo -e "${INFO} Passwall Packages downloaded successfully."
 
+    echo -e "${INFO} Downloading nikki package"
+    curl -fsSOL ${nikki_file_ipk_down}
+    if [ "$?" -ne 0 ]; then
+        error_msg "Error: Failed to download Mihomo package."
+    fi
+    tar -xzvf "nikki_${ARCH_3}-openwrt-24.10.tar.gz" && rm "nikki_${ARCH_3}-openwrt-24.10.tar.gz"
+    if [ "$?" -ne 0 ]; then
+        error_msg "Error: Failed to extract Mihomo package."
+    fi
+    echo -e "${INFO} nikki Packages downloaded successfully."
 
     echo -e "${SUCCESS} Download and extraction All complete."
     sync && sleep 3
