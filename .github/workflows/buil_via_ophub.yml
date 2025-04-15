@@ -130,7 +130,7 @@ jobs:
           fi
   build:
     needs: prebuild
-    runs-on: Ubuntu 24.04
+    runs-on: Ubuntu 24.4
     if: ${{ github.event.repository.owner.id }} == ${{ github.event.sender.id }}
     name: "${{ matrix.target }}"
     strategy:
