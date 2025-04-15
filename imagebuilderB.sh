@@ -401,9 +401,9 @@ custom_packages() {
     fi
 
     # Mihomo
-    mihomo_api="https://api.github.com/repos/rizkikotet-dev/OpenWrt-mihomo-Mod/releases/latest"
-    mihomo_file_ipk="mihomo_${ARCH_3}-openwrt-24.10" #$op_branch | cut -d '.' -f 1-2
-    mihomo_file_ipk_down="$(curl -s ${mihomo_api} | grep "browser_download_url" | grep -oE "https.*${mihomo_file_ipk}.*.tar.gz" | head -n 1)"
+   # mihomo_api="https://api.github.com/repos/rizkikotet-dev/OpenWrt-mihomo-Mod/releases/latest"
+  #  mihomo_file_ipk="mihomo_${ARCH_3}-openwrt-24.10" #$op_branch | cut -d '.' -f 1-2
+   # mihomo_file_ipk_down="$(curl -s ${mihomo_api} | grep "browser_download_url" | grep -oE "https.*${mihomo_file_ipk}.*.tar.gz" | head -n 1)"
 
     #passwall
     passwall_api="https://api.github.com/repos/xiaorouji/openwrt-passwall/releases"
@@ -412,6 +412,9 @@ custom_packages() {
     passwall_file_ipk_down="$(curl -s ${passwall_api} | grep "browser_download_url" | grep -oE "https.*${passwall_file_ipk}.*.ipk" | head -n 1)"
     passwall_file_zip_down="$(curl -s ${passwall_api} | grep "browser_download_url" | grep -oE "https.*${passwall_file_zip}.*.zip" | head -n 1)"
 
+    # Nikki URL generation
+   # nikki_file_ipk="nikki_${ARCH_3}-openwrt-${VEROP}"
+   # nikki_file_ipk_down=$(curl -s "https://api.github.com/repos/rizkikotet-dev/OpenWrt-nikki-Mod/releases" | grep "browser_download_url" | grep -oE "https.*${nikki_file_ipk}.*.tar.gz" | head -n 1)
 
     # Output download information
     echo -e "${STEPS} Installing OpenClash , Mihomo And Passwall"
@@ -427,17 +430,6 @@ custom_packages() {
         error_msg "Error: Failed to extract OpenClash package."
     fi
     echo -e "${INFO} OpenClash Packages downloaded successfully."
-
-    echo -e "${INFO} Downloading Mihomo package"
-    curl -fsSOL ${mihomo_file_ipk_down}
-    if [ "$?" -ne 0 ]; then
-        error_msg "Error: Failed to download Mihomo package."
-    fi
-    tar -xzvf "mihomo_${ARCH_3}-openwrt-24.10.tar.gz" && rm "mihomo_${ARCH_3}-openwrt-24.10.tar.gz"
-    if [ "$?" -ne 0 ]; then
-        error_msg "Error: Failed to extract Mihomo package."
-    fi
-    echo -e "${INFO} Mihomo Packages downloaded successfully."
 
     echo -e "${INFO} Downloading Passwall package"
     curl -fsSOL ${passwall_file_ipk_down}
@@ -520,9 +512,9 @@ rebuild_firmware() {
 
     # Tunnel option
     OPENCLASH+="coreutils-nohup bash dnsmasq-full curl ca-certificates ipset ip-full libcap libcap-bin ruby ruby-yaml kmod-tun kmod-inet-diag unzip kmod-nft-tproxy luci-compat luci luci-base luci-app-openclash"
-    MIHOMO+="mihomo luci-app-mihomo"
+    #MIHOMO+="mihomo luci-app-mihomo"
     #PASSWALL+="chinadns-ng resolveip dns2socks dns2tcp ipt2socks microsocks tcping xray-core xray-plugin luci-app-passwall"
-    PACKAGES+=" $OPENCLASH $MIHOMO"
+    PACKAGES+=" $OPENCLASH"
 
   #  PACKAGES+=" $OPENCLASH $MIHOMO"
 
