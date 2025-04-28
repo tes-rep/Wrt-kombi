@@ -6,7 +6,7 @@
 #                https://downloads.immortalwrt.org/releases
 #=====================================================================================
 
-name: Build OpenWrt with ImageBuilder
+name: Build OpenWrt with Ori
 
 on:
   repository_dispatch:
@@ -15,10 +15,10 @@ on:
       releases_branch:
         description: "Select the releases branch"
         required: false
-        default: "openwrt:23.05.5"
+        default: "openwrt:24.10.1"
         type: choice
         options:
-          - openwrt:23.05.5
+          - openwrt:24.10.1
           - openwrt:23.05.4
           - openwrt:23.05.3
           - openwrt:23.05.2
@@ -72,6 +72,7 @@ on:
         type: choice
         options:
           - ophub/kernel
+          - Houjie80/kernel2
       kernel_usage:
         description: "Set the tags of the stable kernel."
         required: false
@@ -254,7 +255,7 @@ jobs:
           cd imagebuilder
           if [[ "${{ env.TARGET_NAME }}" == "amlogic" ]]; then
             echo -e "${MSG_STEPS} Cloning Ophub Repacking Amlogic"
-            git clone --depth 1 https://github.com/ophub/amlogic-s9xxx-openwrt.git ophub_builder
+            git clone --depth 1 https://github.com/Dirgha80/amlogic-s9xxx-openwrt.git ophub_builder
             mkdir -p ophub_builder/openwrt-armvirt
             cp -f compiled_images/*rootfs.tar.gz ophub_builder/openwrt-armvirt/
             cd ophub_builder
@@ -279,6 +280,7 @@ jobs:
               "x86-64-generic-ext4-combined|x86-64-Generic_ext4-combined"
               "_amlogic_s905x_|Amlogic_HG680P"
               "_amlogic_s905x-tbee|Amlogic_tbee"
+              "_amlogic_s905x4-advan|Amlogic_s905x4"
               "_amlogic_s905x-b860h_|Amlogic_B860HV1-V2"
               "_amlogic_s905x2_|Amlogic_B860HV5"
           )
