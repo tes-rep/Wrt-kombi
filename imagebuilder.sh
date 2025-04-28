@@ -382,7 +382,7 @@ custom_packages() {
         "luci-app-sms-tool-js|https://downloads.immortalwrt.org/releases/packages-24.10/$ARCH_3/luci"
         "luci-theme-argon|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
         "luci-app-eqosplus|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
-        "luci-app-tinyfm|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
+        "luci-app-tinyfilemanager|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
     )
     download_packages "custom" other_packages[@]
 
@@ -522,7 +522,7 @@ rebuild_firmware() {
     OPENCLASH+="coreutils-nohup bash dnsmasq-full curl ca-certificates ipset ip-full libcap libcap-bin ruby ruby-yaml kmod-tun kmod-inet-diag unzip kmod-nft-tproxy luci-compat luci luci-base luci-app-openclash"
     MIHOMO+="mihomo luci-app-mihomo"
     #PASSWALL+="chinadns-ng resolveip dns2socks dns2tcp ipt2socks microsocks tcping xray-core xray-plugin luci-app-passwall"
-    PACKAGES+=" $OPENCLASH $MIHOMO"
+    PACKAGES+=" $OPENCLASH "
 
   #  PACKAGES+=" $OPENCLASH $MIHOMO"
 
