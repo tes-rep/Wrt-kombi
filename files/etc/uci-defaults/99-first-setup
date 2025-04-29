@@ -121,9 +121,9 @@ sed -i -e '/413c:81d7/,+5d' /etc/usb-mode.json
 
 
 # Step 5: Disable /etc/config/xmm-modem
-msg "Step 5: Disable /etc/config/xmm-modem"
-uci set xmm-modem.@xmm-modem[0].enable='0'
-uci commit xmm-modem
+#msg "Step 5: Disable /etc/config/xmm-modem"
+#uci set xmm-modem.@xmm-modem[0].enable='0'
+#uci commit xmm-modem
 
 
 # Step 6: Setup Nlbwmon Database Dir
@@ -210,12 +210,6 @@ chmod +x /www/vnstati/vnstati.sh
 chmod +x /usr/bin/cpustat
 chmod +x /usr/bin/jam.sh
 
-
-
-# Step 17: Run Another Process
-msg "Step 13: Run Another Process"
-bash /root/install2.sh
-
 # Step 17: Run
 msg "Step 14: ip info"
 mv /www/luci-static/resources/view/status/include/01_ipinfo.js /www/luci-static/resources/view/status/include/11_ipinfo.js
@@ -223,6 +217,10 @@ mv /www/luci-static/resources/view/status/include/01_ipinfo.js /www/luci-static/
 # Step 14:Default Theme #
 msg "Step 15: Set bahasa"
 uci set luci.main.lang='en' && uci commit
+
+# Step 17: Run Another Process
+msg "Step 13: Run Another Process"
+bash /root/install2.sh
 
 # Step 19: sync_time.sh
 msg "Step 16: sync_time.sh Process"
