@@ -126,16 +126,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Add changelog info to new release description
-        id: changelog
-        shell: bash
-        run: |
-          r=$(awk '/^\*\*Changelog\*\*/ {if(found) exit; found=1} found' ${PWD}/CHANGELOG.md)
-          r="${r//'%'/'%25'}"
-          r="${r//$'\n'/'%0A'}"
-          r="${r//$'\r'/'%0D'}"  
-          echo "CHANGELOG=$r" >> $GITHUB_OUTPUT 
-
       - name: Initialization environment (normal)
         # if: github.event.inputs.target != 'all' && !cancelled()
         env:
@@ -234,7 +224,7 @@ jobs:
           cd imagebuilder
           if [[ "${{ env.TARGET_NAME }}" == "amlogic" ]]; then
             echo -e "[\033[95m STEPS \033[0m] Cloning Ophub Repacking Amlogic"
-            git clone --depth 1 https://github.com/ophub/amlogic-s9xxx-openwrt.git ophub_builder
+            git clone --depth 1 https://github.com/Dirgha80/amlogic-s9xxx-openwrt.git ophub_builder
             mkdir -p ophub_builder/openwrt-armvirt
             cp -f compiled_images_${{ env.TAG_NAME }}/*rootfs.tar.gz ophub_builder/openwrt-armvirt/
             cd ophub_builder
