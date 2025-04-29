@@ -380,9 +380,9 @@ custom_packages() {
         "modemband|https://downloads.immortalwrt.org/releases/packages-24.10/$ARCH_3/packages"
         "luci-app-modemband|https://downloads.immortalwrt.org/releases/packages-24.10/$ARCH_3/luci"
         "luci-app-sms-tool-js|https://downloads.immortalwrt.org/releases/packages-24.10/$ARCH_3/luci"
-        #"luci-theme-argon|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
+        "luci-theme-argon|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
         "luci-app-eqosplus|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
-        "luci-app-tinyfm|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
+        "luci-app-tinyfilemanager|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
     )
     download_packages "custom" other_packages[@]
 
@@ -401,9 +401,9 @@ custom_packages() {
     fi
 
     # Mihomo
-    mihomo_api="https://api.github.com/repos/rizkikotet-dev/OpenWrt-mihomo-Mod/releases/latest"
-    mihomo_file_ipk="mihomo_${ARCH_3}-openwrt-24.10" #$op_branch | cut -d '.' -f 1-2
-    mihomo_file_ipk_down="$(curl -s ${mihomo_api} | grep "browser_download_url" | grep -oE "https.*${mihomo_file_ipk}.*.tar.gz" | head -n 1)"
+   # mihomo_api="https://api.github.com/repos/rizkikotet-dev/OpenWrt-mihomo-Mod/releases/latest"
+  #  mihomo_file_ipk="mihomo_${ARCH_3}-openwrt-24.10" #$op_branch | cut -d '.' -f 1-2
+   # mihomo_file_ipk_down="$(curl -s ${mihomo_api} | grep "browser_download_url" | grep -oE "https.*${mihomo_file_ipk}.*.tar.gz" | head -n 1)"
 
     #passwall
     passwall_api="https://api.github.com/repos/xiaorouji/openwrt-passwall/releases"
@@ -412,6 +412,9 @@ custom_packages() {
     passwall_file_ipk_down="$(curl -s ${passwall_api} | grep "browser_download_url" | grep -oE "https.*${passwall_file_ipk}.*.ipk" | head -n 1)"
     passwall_file_zip_down="$(curl -s ${passwall_api} | grep "browser_download_url" | grep -oE "https.*${passwall_file_zip}.*.zip" | head -n 1)"
 
+    #Nikki URL generation
+     nikki_file_ipk="nikki_${ARCH_3}-openwrt-24.10"
+     nikki_file_ipk_down=$(curl -s "https://api.github.com/repos/rizkikotet-dev/OpenWrt-nikki-Mod/releases" | grep "browser_download_url" | grep -oE "https.*${nikki_file_ipk}.*.tar.gz" | head -n 1)
 
     # Output download information
     echo -e "${STEPS} Installing OpenClash , Mihomo And Passwall"
@@ -428,17 +431,6 @@ custom_packages() {
     fi
     echo -e "${INFO} OpenClash Packages downloaded successfully."
 
-    echo -e "${INFO} Downloading Mihomo package"
-    curl -fsSOL ${mihomo_file_ipk_down}
-    if [ "$?" -ne 0 ]; then
-        error_msg "Error: Failed to download Mihomo package."
-    fi
-    tar -xzvf "mihomo_${ARCH_3}-openwrt-24.10.tar.gz" && rm "mihomo_${ARCH_3}-openwrt-24.10.tar.gz"
-    if [ "$?" -ne 0 ]; then
-        error_msg "Error: Failed to extract Mihomo package."
-    fi
-    echo -e "${INFO} Mihomo Packages downloaded successfully."
-
     echo -e "${INFO} Downloading Passwall package"
     curl -fsSOL ${passwall_file_ipk_down}
     if [ "$?" -ne 0 ]; then
@@ -454,6 +446,16 @@ custom_packages() {
     fi
     echo -e "${INFO} Passwall Packages downloaded successfully."
 
+    echo -e "${INFO} Downloading nikki package"
+    curl -fsSOL ${nikki_file_ipk_down}
+    if [ "$?" -ne 0 ]; then
+        error_msg "Error: Failed to download Mihomo package."
+    fi
+    tar -xzvf "nikki_${ARCH_3}-openwrt-24.10.tar.gz" && rm "nikki_${ARCH_3}-openwrt-24.10.tar.gz"
+    if [ "$?" -ne 0 ]; then
+        error_msg "Error: Failed to extract Mihomo package."
+    fi
+    echo -e "${INFO} nikki Packages downloaded successfully."
 
     echo -e "${SUCCESS} Download and extraction All complete."
     sync && sleep 3
@@ -512,22 +514,21 @@ rebuild_firmware() {
     modemmanager modemmanager-rpcd luci-proto-modemmanager libmbim libqmi usbutils luci-proto-mbim luci-proto-ncm \
     kmod-usb-net-huawei-cdc-ncm kmod-usb-net-cdc-ether kmod-usb-net-rndis kmod-usb-net-sierrawireless kmod-usb-ohci kmod-usb-serial-sierrawireless \
     kmod-usb-uhci kmod-usb2 kmod-usb-ehci kmod-usb-net-ipheth usbmuxd libusbmuxd-utils libimobiledevice-utils usb-modeswitch kmod-nls-utf8 mbim-utils xmm-modem \
-    kmod-phy-broadcom kmod-phylib-broadcom kmod-tg3 iptables-nft coreutils-stty perlbase-cpan perl"
-    PACKAGES+=" luci-app-base64 perl perlbase-essential perlbase-cpan perlbase-utf8 perlbase-time perlbase-xsloader perlbase-extutils"
+    kmod-phy-broadcom kmod-phylib-broadcom kmod-tg3 iptables-nft coreutils-stty"
+    PACKAGES+=" luci-app-base64 perl perlbase-essential perlbase-cpan perlbase-utf8 perlbase-time perlbase-xsloader perlbase-extutils perlbase-cpan perl"
 
     # Modem Tools
-    PACKAGES+=" modeminfo luci-app-modeminfo atinout modemband luci-app-modemband sms-tool luci-app-sms-tool-js -luci-app-lite-watchdog luci-app-3ginfo-lite picocom minicom"
+    #PACKAGES+=" modeminfo luci-app-modeminfo atinout modemband luci-app-modemband sms-tool luci-app-sms-tool-js luci-app-lite-watchdog luci-app-3ginfo-lite picocom minicom"
 
     # Tunnel option
     OPENCLASH+="coreutils-nohup bash dnsmasq-full curl ca-certificates ipset ip-full libcap libcap-bin ruby ruby-yaml kmod-tun kmod-inet-diag unzip kmod-nft-tproxy luci-compat luci luci-base luci-app-openclash"
-    MIHOMO+="mihomo luci-app-mihomo"
+    NIKKI+="nikki luci-app-nikki"
     #PASSWALL+="chinadns-ng resolveip dns2socks dns2tcp ipt2socks microsocks tcping xray-core xray-plugin luci-app-passwall"
-    PACKAGES+=" $OPENCLASH $MIHOMO"
+    PACKAGES+=" $OPENCLASH $NIKKI"
 
-  #  PACKAGES+=" $OPENCLASH $MIHOMO"
 
     # Remote Services
-    PACKAGES+=" luci-app-droidnet luci-app-ipinfo luci-theme-initials luci-theme-argon luci-app-argon-config"
+    PACKAGES+=" tailscale luci-app-tailscale  luci-app-droidnet luci-app-ipinfo luci-theme-initials luci-theme-hj luci-theme-argon luci-app-argon-config"
 
     # NAS and Hard disk tools
     PACKAGES+=" luci-app-diskman smartmontools kmod-usb-storage kmod-usb-storage-uas ntfs-3g"
@@ -539,7 +540,7 @@ rebuild_firmware() {
     PACKAGES+=" internet-detector luci-app-internet-detector internet-detector-mod-modem-restart vnstat2 vnstati2 netdata luci-app-netmonitor"
 
     # Material Theme
-    PACKAGES+=" luci-theme-material luci-theme-hj"
+    PACKAGES+=" luci-theme-material"
 
     # PHP8
     PACKAGES+=" libc php8 php8-fastcgi php8-fpm coreutils-stat zoneinfo-asia php8-cgi \
@@ -565,7 +566,7 @@ rebuild_firmware() {
         EXCLUDED+=" "
     fi
 
-    PACKAGES+=" $misc zram-swap adb parted losetup resize2fs luci luci-ssl block-mount luci-app-poweroff luci-app-ramfree htop bash curl wget wget-ssl tar unzip unrar gzip jq luci-app-ttyd nano httping screen openssh-sftp-server"
+    PACKAGES+=" $misc zram-swap adb parted losetup resize2fs luci luci-ssl block-mount luci-app-ramfree htop bash curl wget wget-ssl tar unzip unrar gzip jq luci-app-ttyd nano httping screen openssh-sftp-server"
 
     # Exclude package (must use - before packages name)
     EXCLUDED+=" -libgd"
