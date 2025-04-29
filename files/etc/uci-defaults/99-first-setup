@@ -104,29 +104,29 @@ msg "Step 1: Configure Password Login OpenWrt"
 (echo "sijitekowolu"; sleep 1; echo "sijitekowolu") | passwd > /dev/null
 
 
-# Step 3: Remove login password required when accessing terminal
-msg "Step 3: Remove login password required when accessing terminal"
+# Step 2: Remove login password required when accessing terminal
+msg "Step 2: Remove login password required when accessing terminal"
 uci set ttyd.@ttyd[0].command='/bin/bash --login'
 uci commit ttyd
 
 
-# Step 4: Remove huawei me909s usb-modeswitch
-msg "Step 4: Remove huawei me909s usb-modeswitch"
+# Step 3: Remove huawei me909s usb-modeswitch
+msg "Step 3: Remove huawei me909s usb-modeswitch"
 sed -i -e '/12d1:15c1/,+5d' /etc/usb-mode.json
 
 
-# Step 5: Remove dw5821e usb-modeswitch
-msg "Step 5: Remove dw5821e usb-modeswitch"
+# Step 4: Remove dw5821e usb-modeswitch
+msg "Step 4: Remove dw5821e usb-modeswitch"
 sed -i -e '/413c:81d7/,+5d' /etc/usb-mode.json
 
 
-# Step 6: Disable /etc/config/xmm-modem
-msg "Step 6: Disable /etc/config/xmm-modem"
+# Step 5: Disable /etc/config/xmm-modem
+msg "Step 5: Disable /etc/config/xmm-modem"
 uci set xmm-modem.@xmm-modem[0].enable='0'
 uci commit xmm-modem
 
 
-# Step 7: Setup Nlbwmon Database Dir
+# Step 6: Setup Nlbwmon Database Dir
 # msg "Step 7: Setup Nlbwmon Database Dir"
 # uci set nlbwmon.@nlbwmon[0].database_directory='/etc/nlbwmon'
 # uci set nlbwmon.@nlbwmon[0].commit_interval='3h'
@@ -137,17 +137,17 @@ uci commit xmm-modem
 
 
 # Step 9: Adjusting App Catagory
-msg "Step 9: Adjusting App Catagory"
+msg "Step 6: Adjusting App Catagory"
 sed -i -E "s|status|services|g" /usr/lib/lua/luci/controller/base64.lua
 
 # Step 14:Default Theme #
-msg "Step 14: Set Tema"
+msg "Step 7: Set Tema"
 uci set luci.main.mediaurlbase='/luci-static/hj' && uci commit
 
 
 
 # Step 12: Setup PHP
-msg "Step 12: Setup PHP"
+msg "Step 8: Setup PHP"
 msg "system not using php-cgi, patching php config ..."
 uci set uhttpd.main.ubus_prefix='/ubus'
 uci set uhttpd.main.interpreter='.php=/usr/bin/php-cgi'
@@ -166,11 +166,11 @@ msg "restarting uhttpd ..."
 
 
 # Step 13: Setting Tinyfm
-msg "Step 13: Setting Tinyfm"
+msg "Step 9: Setting Tinyfm"
 ln -s / /www/tinyfm/rootfs
 
 # Step 13: Setting Tinyfm
-msg "Step 13: ganti banner"
+msg "Step 10: ganti banner"
 rm -rf /etc/profile
 rm -rf /etc/profile.d/30-sysinfo.sh
 mv /etc/profile1 /etc/profile
@@ -179,7 +179,7 @@ chmod +x /etc/profile.d/30-sysinfo.sh
 # chmod +x /etc/profile
 
 # Step 16: Set All permission files
-msg "Step 16: Set All permission files"
+msg "Step 11: Set All permission files"
 check_permission() {
     local DIR=${1:-.}
 
@@ -203,7 +203,7 @@ check_permission "/usr/bin"
 check_permission "/usr/lib/ModemManager/connection.d"
 
 # Step 18: Rum
-msg "Step 17: perizinan"
+msg "Step 12: perizinan"
 chmod +x /etc/houjie-wrt
 chmod +x /sbin/auto_delete.sh
 chmod +x /www/vnstati/vnstati.sh
@@ -213,19 +213,19 @@ chmod +x /usr/bin/jam.sh
 
 
 # Step 17: Run Another Process
-msg "Step 17: Run Another Process"
+msg "Step 13: Run Another Process"
 bash /root/install2.sh
 
 # Step 17: Run
-msg "Step 17: ip info"
+msg "Step 14: ip info"
 mv /www/luci-static/resources/view/status/include/01_ipinfo.js /www/luci-static/resources/view/status/include/11_ipinfo.js
 
 # Step 14:Default Theme #
-msg "Step 14: Set bahasa"
+msg "Step 15: Set bahasa"
 uci set luci.main.lang='en' && uci commit
 
 # Step 19: sync_time.sh
-msg "Step 19: sync_time.sh Process"
+msg "Step 16: sync_time.sh Process"
 chmod +x /sbin/sync_time.sh
 # Log success
 msg "First Setup settings successfully applied..."
