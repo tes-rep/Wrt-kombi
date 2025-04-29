@@ -81,11 +81,20 @@ on:
         required: false
         default: "false"
         type: boolean
+      fwinfo:
+        description: 'Firmware Information'
+        required: false
+        default: "imagebuilderA.sh"
+        type: choice
+        options:
+          - imagebuilder.sh
+          - imagebuilderA.sh
+          - imagebuilderB.sh  
 
 
 env:
   TZ: Asia/Jakarta
-  IMAGEBUILDER_SH: imagebuilder.sh
+  IMAGEBUILDER_SH: ${{ inputs.fwinfo }}
 
 jobs:
   prebuild:
