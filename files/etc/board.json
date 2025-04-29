@@ -1,0 +1,16 @@
+{
+	"model": {
+		"id": "amlogic,sc2",
+		"name": "Amlogic S905X4"
+	},
+	"network": {
+		"lan": {
+			"device": "eth0",
+			"protocol": "static"
+		},
+		"wan": {
+			"ports": ["eth1", "usb0"],
+			"protocol": "dhcp"
+		}
+	}
+}
