@@ -15,7 +15,7 @@ on:
       releases_branch:
         description: "Select the releases branch"
         required: false
-        default: "openwrt:23.05.5"
+        default: "openwrt:24.10.1"
         type: choice
         options:
           - immortalwrt:24.10.1
