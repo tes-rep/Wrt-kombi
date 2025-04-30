@@ -78,6 +78,7 @@ on:
           - stable
           - flippy
           - dev
+          - s905x4
       upload-prerelease:
         description: "Upload as pre-release"
         required: false
