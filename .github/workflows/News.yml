@@ -302,5 +302,9 @@ jobs:
             - Default password: sijitekowolu
             - Default WIFI name: NOKIA N73 | NOKIA N73_5G
             - Default WIFI password: sijitekowolu
-            ### Install to EMMC
-            - Login to OpenWrt → System → Amlogic Service → Install OpenWrt
+            ###   Firmware Details : 
+              - Tanggal Build: ${{ steps.date.outputs.date }}
+              - Devices type : ${{ inputs.target }}
+              - Kernel version : ${{ inputs.kernel }}
+              - ROOTFS File : ${{ inputs.releases_branch }}
+              - ROOTFS Size : ${{ inputs.rootfs_size }}
