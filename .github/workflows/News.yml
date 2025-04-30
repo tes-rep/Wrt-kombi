@@ -26,7 +26,7 @@ on:
       target:
         description: "Select device Target"
         required: true
-        default: "all"
+        default: "Amlogic AT01"
         type: choice
         options:
           - all
@@ -49,7 +49,7 @@ on:
       openwrt_kernel:
         description: "Select kernel version"
         required: false
-        default: "6.1.y_6.6.y"
+        default: "6.6.y_6.12.y"
         type: choice
         options:
           - 5.4.y
@@ -57,13 +57,14 @@ on:
           - 5.15.y
           - 6.1.y
           - 6.6.y
+          - 6.12.y
           - 6.1.y_6.6.y
           - 5.15.y_5.10.y
           - 6.6.y_6.12.y
       kernel_repo:
         description: "Set the kernel repository"
         required: false
-        default: "ophub/kernel"
+        default: "Houjie80/kernel2"
         type: choice
         options:
           - ophub/kernel
