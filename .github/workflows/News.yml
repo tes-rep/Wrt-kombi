@@ -43,6 +43,7 @@ on:
           - Amlogic B860H-V1-V2
           - Amlogic AT01
           - Amlogic HG680-FJ
+          - Amlogic AT01_Amlogic HG680-FJ
       rootfs_size:
         description: "ROOTFS Size, (512, 640, 756, 1024)"
         required: true
