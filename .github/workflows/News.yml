@@ -261,6 +261,7 @@ jobs:
               "_amlogic_s905x-b860h_|Amlogic_B860HV1-V2"
               "_amlogic_s905x2_|Amlogic_B860HV5"
               "_amlogic_s905x4-advan_|Amlogic_AT01"
+              "_amlogic_s905x2-hg680-fj_|Amlogic HG680-FJ"
           )
           for pattern in "${search_replace_patterns[@]}"; do
               search="${pattern%%|*}"
