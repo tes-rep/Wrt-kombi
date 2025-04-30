@@ -42,6 +42,7 @@ on:
           - Amlogic B860H-V5
           - Amlogic B860H-V1-V2
           - Amlogic AT01
+          - Amlogic HG680-FJ
       rootfs_size:
         description: "ROOTFS Size, (512, 640, 756, 1024)"
         required: true
@@ -176,7 +177,7 @@ jobs:
             echo "TAG_NAME=openwrt_amlogic_s905x" >> $GITHUB_ENV
           elif [ "$TARGET" == "Amlogic B860H-V5" ]; then
             echo "TARGET_NAME=amlogic" >> $GITHUB_ENV
-            echo "openwrt_board=s905x-b860h" >> $GITHUB_ENV
+            echo "openwrt_board=s905x2-b860h-v5" >> $GITHUB_ENV
             echo "TAG_NAME=openwrt_amlogic_s905x-b860h" >> $GITHUB_ENV
           elif [ "$TARGET" == "Amlogic B860H-V1-V2" ]; then
             echo "TARGET_NAME=amlogic" >> $GITHUB_ENV
@@ -186,6 +187,10 @@ jobs:
             echo "TARGET_NAME=amlogic" >> $GITHUB_ENV
             echo "openwrt_board=s905x4-advan" >> $GITHUB_ENV
             echo "TAG_NAME=openwrt_amlogic_s905x4" >> $GITHUB_ENV
+          elif [ "$TARGET" == "Amlogic HG680-FJ" ]; then
+            echo "TARGET_NAME=amlogic" >> $GITHUB_ENV
+            echo "openwrt_board=s905x2-hg680-fj" >> $GITHUB_ENV
+            echo "TAG_NAME=openwrt_amlogic_s905x4" >> $GITHUB_ENV 
           fi
           echo "status=success" >> ${GITHUB_OUTPUT}
           echo -e "[\033[92m SUCCESS \033[0m] Status: Success"
