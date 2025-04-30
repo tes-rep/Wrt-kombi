@@ -191,7 +191,7 @@ jobs:
           elif [ "$TARGET" == "Amlogic HG680-FJ" ]; then
             echo "TARGET_NAME=amlogic" >> $GITHUB_ENV
             echo "openwrt_board=s905x2-hg680-fj" >> $GITHUB_ENV
-            echo "TAG_NAME=openwrt_amlogic_s905x4" >> $GITHUB_ENV 
+            echo "TAG_NAME=openwrt_amlogic_s905x2-hg680-fj" >> $GITHUB_ENV 
           fi
           echo "status=success" >> ${GITHUB_OUTPUT}
           echo -e "[\033[92m SUCCESS \033[0m] Status: Success"
