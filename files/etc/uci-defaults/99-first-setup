@@ -142,7 +142,7 @@ sed -i -E "s|status|services|g" /usr/lib/lua/luci/controller/base64.lua
 
 # Step 14:Default Theme #
 msg "Step 7: Set Tema"
-uci set luci.main.mediaurlbase='/luci-static/hj' && uci commit
+uci set luci.main.mediaurlbase='/luci-static/argon' && uci commit
 
 
 
