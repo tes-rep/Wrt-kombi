@@ -380,7 +380,7 @@ custom_packages() {
         "modemband|https://downloads.immortalwrt.org/releases/packages-24.10/$ARCH_3/packages"
         "luci-app-modemband|https://downloads.immortalwrt.org/releases/packages-24.10/$ARCH_3/luci"
         "luci-app-sms-tool-js|https://downloads.immortalwrt.org/releases/packages-24.10/$ARCH_3/luci"
-        "luci-theme-argon|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
+        # "luci-theme-argon|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
         "luci-app-eqosplus|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
         "luci-app-tinyfilemanager|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
     )
@@ -528,7 +528,7 @@ rebuild_firmware() {
 
 
     # Remote Services
-    PACKAGES+=" tailscale luci-app-tailscale  luci-app-droidnet luci-app-ipinfo luci-theme-initials luci-theme-hj luci-theme-argon luci-app-argon-config"
+    PACKAGES+=" tailscale luci-app-tailscale  luci-app-droidnet luci-app-ipinfo luci-theme-initials luci-theme-argon luci-app-argon-config"
 
     # NAS and Hard disk tools
     PACKAGES+=" luci-app-diskman smartmontools kmod-usb-storage kmod-usb-storage-uas ntfs-3g"
