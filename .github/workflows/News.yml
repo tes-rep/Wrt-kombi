@@ -196,7 +196,10 @@ jobs:
           echo "status=success" >> ${GITHUB_OUTPUT}
           echo -e "[\033[92m SUCCESS \033[0m] Status: Success"
 
-
+      - name: Mengatur tanggal
+        id: date
+        run: echo "date=$(date +'%d-%m-%y %H:%M:%S')" >> $GITHUB_OUTPUT
+        
       - name: Build Rootfs [ ${{ inputs.releases_branch }} ]
         id: imagebuilder
         if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
@@ -305,6 +308,6 @@ jobs:
             ###   Firmware Details : 
               - Tanggal Build: ${{ steps.date.outputs.date }}
               - Devices type : ${{ inputs.target }}
-              - Kernel version : ${{ inputs.kernel }}
+              - Kernel version : ${{ inputs.openwrt_kernel }}
               - ROOTFS File : ${{ inputs.releases_branch }}
               - ROOTFS Size : ${{ inputs.rootfs_size }}
