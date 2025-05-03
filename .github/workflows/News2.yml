@@ -219,29 +219,20 @@ jobs:
           cd imagebuilder
           rm -rf $(ls . | grep -v "^bin$" | xargs) 2>/dev/null
           df -hT ${PWD}
-
+          
       - name: Prepare file First
         run: |
           cd imagebuilder
           echo -e "[\033[95m STEPS \033[0m] Prepare File.."
           mkdir -p compiled_images_${{ env.TAG_NAME }}
           if [[ "${{ env.TARGET_NAME }}" != "amlogic" ]]; then
-            for file in bin/targets/*/*/*rootfs.tar.gz; do
-                if [ -f "$file" ]; then
-                  new_name="HOUJIE-WRT_${{ env.RELEASES_TAG }}-rootfs.tar.gz"
-                  mv "$file" compiled_images_${{ env.TAG_NAME }}/$new_name
-                fi
-              done
+            for file in bin/targets/*/*/*.img.gz; do mv "$file" compiled_images_${{ env.TAG_NAME }}; done
           else
-              for file in bin/targets/*/*/*.img.gz; do
-                if [ -f "$file" ]; then
-                  new_name="HJ-WRT_$(basename "$file" .img.gz)_${{ env.TAG_NAME }}-rootfs.img.gz"
-                  mv "$file" compiled_images_${{ env.TAG_NAME }}/$new_name
-                fi
-              done
+            for file in bin/targets/*/*/*rootfs.tar.gz; do mv "$file" compiled_images_${{ env.TAG_NAME }}; done
           fi
           echo -e "INFO files list: \n$(ls -l compiled_images_${{ env.TAG_NAME }} 2>/dev/null)"
 
+      
       - name: Packaging OpenWrt For Amlogic
         run: |
           cd imagebuilder
