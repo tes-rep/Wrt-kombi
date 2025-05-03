@@ -228,7 +228,7 @@ jobs:
           if [[ "${{ env.TARGET_NAME }}" != "amlogic" ]]; then
             for file in bin/targets/*/*-rootfs.tar.gz; do
                 if [ -f "$file" ]; then
-                  new_name="HJ-WRT_$(basename "$file" -rootfs.tar.gz)_${{ env.TAG_NAME }}-rootfs.tar.gz"
+                  new_name="HOUJIE-WRT_${{ env.RELEASES_TAG }}.tar.gz"
                   mv "$file" compiled_images_${{ env.TAG_NAME }}/$new_name
                 fi
               done
@@ -287,8 +287,7 @@ jobs:
                   if [[ "$file" =~ k[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9-]+)? ]]; then
                   kernel="${BASH_REMATCH[0]}"
             fi
-             new_name="HJ-WRT-${OP_BASE}-${BRANCH}-${replace}-${kernel}.img.gz"
-            echo "${replace}-${kernel:-}${TUNNEL}|${RELEASE_URL}/${new_name}" >> artifacts.txt
+             new_name="HOUJIE-WRT_${{ env.RELEASES_TAG }}_${replace}_${kernel}.img.gz"
             echo -e "${INFO} Renaming: $file → $new_name"
             mv "$file" "compiled_images_${{ env.TAG_NAME }}/$new_name" || echo -e "${WARNING} Failed to rename $file"
            done
@@ -296,7 +295,7 @@ jobs:
            # Process .tar.gz files
            for file in *"${search}"*.tar.gz; do
             [[ -f "$file" ]] || continue
-             new_name="HJ-WRT-${OP_BASE}-${BRANCH}-${replace}.tar.gz"
+             new_name="HOUJIE-WRT_${{ env.RELEASES_TAG }}_${replace}.tar.gz"
             echo -e "${INFO} Renaming: $file → $new_name"
             mv "$file" "compiled_images_${{ env.TAG_NAME }}/$new_name" || echo -e "${WARNING} Failed to rename $file"
            done
