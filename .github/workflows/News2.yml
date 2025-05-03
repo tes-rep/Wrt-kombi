@@ -226,9 +226,19 @@ jobs:
           echo -e "[\033[95m STEPS \033[0m] Prepare File.."
           mkdir -p compiled_images_${{ env.TAG_NAME }}
           if [[ "${{ env.TARGET_NAME }}" != "amlogic" ]]; then
-            for file in bin/targets/*/*/*.img.gz; do mv "$file" compiled_images_${{ env.TAG_NAME }}; done
+            for file in bin/targets/*/*-rootfs.tar.gz; do
+                if [ -f "$file" ]; then
+                  new_name="HJ-WRT_$(basename "$file" -rootfs.tar.gz)_${{ env.TAG_NAME }}-rootfs.tar.gz"
+                  mv "$file" compiled_images/$new_name
+                fi
+              done
           else
-            for file in bin/targets/*/*/*rootfs.tar.gz; do mv "$file" compiled_images_${{ env.TAG_NAME }}; done
+              for file in bin/targets/*/*.img.gz; do
+                if [ -f "$file" ]; then
+                  new_name="HJ-WRT_$(basename "$file" .img.gz)_${{ env.TAG_NAME }}.img.gz"
+                  mv "$file" compiled_images/$new_name
+                fi
+              done
           fi
           echo -e "INFO files list: \n$(ls -l compiled_images_${{ env.TAG_NAME }} 2>/dev/null)"
 
@@ -270,21 +280,27 @@ jobs:
               search="${pattern%%|*}"
               replace="${pattern##*|}"
 
-              for file in compiled_images/*${search}*.img.gz; do
-                  if [[ -f "$file" ]]; then
-                      if [[ "$file" =~ k[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9-]+)? ]]; then
-                    kernel="${BASH_REMATCH[0]}"
-                    fi
-                        if [[ -n "$kernel" ]]; then
-                    new_name="HOUJIE-WRT_${{ env.RELEASES_TAG }}_${replace}_${kernel}.img.gz"
-                else
-                    new_name="HOUJIE-WRT_${{ env.RELEASES_TAG }}_${replace}.img.gz"
-                fi
-                      echo -e "${MSG_INFO} Renaming: $file -> $new_name"
-                      mv "$file" "compiled_images_${{ env.TAG_NAME }}/$new_name"
-                  fi
-              done
-          done
+           # Process .img.gz files
+          for file in compiled_images/*${search}*.img.gz; do
+                  [[ -f "$file" ]] || continue
+                  kernel=""
+                  if [[ "$file" =~ k[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9-]+)? ]]; then
+                  kernel="${BASH_REMATCH[0]}"
+            fi
+             new_name="HJ-WRT-${OP_BASE}-${BRANCH}-${replace}-${kernel}.img.gz"
+            echo "${replace}-${kernel:-}${TUNNEL}|${RELEASE_URL}/${new_name}" >> artifacts.txt
+            echo -e "${INFO} Renaming: $file → $new_name"
+            mv "$file" "$new_name" || echo -e "${WARNING} Failed to rename $file"
+           done
+
+           # Process .tar.gz files
+           for file in *"${search}"*.tar.gz; do
+            [[ -f "$file" ]] || continue
+             new_name="HJ-WRT-${OP_BASE}-${BRANCH}-${replace}.tar.gz"
+            echo -e "${INFO} Renaming: $file → $new_name"
+            mv "$file" "$new_name" || echo -e "${WARNING} Failed to rename $file"
+           done
+           done
           echo "status=success" >> ${GITHUB_OUTPUT}
           echo -e "${MSG_SUCCESS} Status: Success"
           echo -e "INFO files list: \n$(ls -l compiled_images 2>/dev/null)"
