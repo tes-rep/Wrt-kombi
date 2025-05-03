@@ -228,14 +228,14 @@ jobs:
           if [[ "${{ env.TARGET_NAME }}" != "amlogic" ]]; then
             for file in bin/targets/*/*-rootfs.tar.gz; do
                 if [ -f "$file" ]; then
-                  new_name="HOUJIE-WRT_${{ env.RELEASES_TAG }}.tar.gz"
+                  new_name="HOUJIE-WRT_${{ env.RELEASES_TAG }}_rootfs.tar.gz"
                   mv "$file" compiled_images_${{ env.TAG_NAME }}/$new_name
                 fi
               done
           else
               for file in bin/targets/*/*.img.gz; do
                 if [ -f "$file" ]; then
-                  new_name="HJ-WRT_$(basename "$file" .img.gz)_${{ env.TAG_NAME }}.img.gz"
+                  new_name="HJ-WRT_$(basename "$file" .img.gz)_${{ env.TAG_NAME }}_rootfs.img.gz"
                   mv "$file" compiled_images_${{ env.TAG_NAME }}/$new_name
                 fi
               done
