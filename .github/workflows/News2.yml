@@ -290,7 +290,7 @@ jobs:
              new_name="HJ-WRT-${OP_BASE}-${BRANCH}-${replace}-${kernel}.img.gz"
             echo "${replace}-${kernel:-}${TUNNEL}|${RELEASE_URL}/${new_name}" >> artifacts.txt
             echo -e "${INFO} Renaming: $file → $new_name"
-            mv "$file" "$new_name" || echo -e "${WARNING} Failed to rename $file"
+            mv "$file" "compiled_images_${{ env.TAG_NAME }}/$new_name" || echo -e "${WARNING} Failed to rename $file"
            done
 
            # Process .tar.gz files
@@ -298,7 +298,7 @@ jobs:
             [[ -f "$file" ]] || continue
              new_name="HJ-WRT-${OP_BASE}-${BRANCH}-${replace}.tar.gz"
             echo -e "${INFO} Renaming: $file → $new_name"
-            mv "$file" "$new_name" || echo -e "${WARNING} Failed to rename $file"
+            mv "$file" "compiled_images_${{ env.TAG_NAME }}/$new_name" || echo -e "${WARNING} Failed to rename $file"
            done
            done
           echo "status=success" >> ${GITHUB_OUTPUT}
