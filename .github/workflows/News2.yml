@@ -240,7 +240,7 @@ jobs:
                 fi
               done
           fi
-          echo -e "INFO files list: \n$(ls -l compiled_images_${{ env.TAG_NAME }}/$new_name 2>/dev/null)"
+          echo -e "INFO files list: \n$(ls -l compiled_images_${{ env.TAG_NAME }} 2>/dev/null)"
 
       - name: Packaging OpenWrt For Amlogic
         run: |
