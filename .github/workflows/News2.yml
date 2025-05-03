@@ -229,14 +229,14 @@ jobs:
             for file in bin/targets/*/*-rootfs.tar.gz; do
                 if [ -f "$file" ]; then
                   new_name="HJ-WRT_$(basename "$file" -rootfs.tar.gz)_${{ env.TAG_NAME }}-rootfs.tar.gz"
-                  mv "$file" compiled_images/$new_name
+                  mv "$file" compiled_images_${{ env.TAG_NAME }}/$new_name
                 fi
               done
           else
               for file in bin/targets/*/*.img.gz; do
                 if [ -f "$file" ]; then
                   new_name="HJ-WRT_$(basename "$file" .img.gz)_${{ env.TAG_NAME }}.img.gz"
-                  mv "$file" compiled_images/$new_name
+                  mv "$file" compiled_images_${{ env.TAG_NAME }}/$new_name
                 fi
               done
           fi
