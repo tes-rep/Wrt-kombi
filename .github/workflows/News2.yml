@@ -272,7 +272,7 @@ jobs:
               replace="${pattern##*|}"
 
            # Process .img.gz files
-          for file in compiled_images/*${search}*.img.gz; do
+          for file in compiled_images_${{ env.TAG_NAME }}/*${search}*.img.gz; do
                   [[ -f "$file" ]] || continue
                   kernel=""
                   if [[ "$file" =~ k[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9-]+)? ]]; then
@@ -284,7 +284,7 @@ jobs:
            done
 
            # Process .tar.gz files
-           for file in *"${search}"*.tar.gz; do
+           for file in compiled_images_${{ env.TAG_NAME }}/*${search}*.tar.gz; do
             [[ -f "$file" ]] || continue
              new_name="HOUJIE-WRT_${{ env.RELEASES_TAG }}_${replace}.tar.gz"
             echo -e "${INFO} Renaming: $file → $new_name"
