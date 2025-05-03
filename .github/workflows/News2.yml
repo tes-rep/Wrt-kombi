@@ -279,7 +279,7 @@ jobs:
                         new_name="HOUJIE-WRT_${{ env.RELEASES_TAG }}_${replace}.tar.gz"
                       fi
                       echo -e "${MSG_INFO} Renaming: $file -> $new_name"
-                      mv "$file" "compiled_images/$new_name"
+                      mv "$file" "compiled_images_${{ env.TAG_NAME }}/$new_name"
                   fi
               done
           done
