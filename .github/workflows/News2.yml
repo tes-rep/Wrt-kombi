@@ -317,5 +317,6 @@ jobs:
               - Tanggal Build: ${{ steps.date.outputs.date }}
               - Devices type : ${{ inputs.target }}
               - Kernel version : ${{ inputs.openwrt_kernel }}
+              - Kernel version : $kernel
               - ROOTFS File : ${{ inputs.releases_branch }}
               - ROOTFS Size : ${{ inputs.rootfs_size }}
