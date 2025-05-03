@@ -278,15 +278,15 @@ jobs:
                   if [[ "$file" =~ k[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9-]+)? ]]; then
                   kernel="${BASH_REMATCH[0]}"
             fi
-             new_name="HOUJIE-WRT_${{ env.RELEASES_TAG }}_${replace}_${kernel}.img.gz"
+             new_name="HOUJIE-WRT_${op_branch}_${replace}_${kernel}.img.gz"
             echo -e "${INFO} Renaming: $file → $new_name"
             mv "$file" "compiled_images_${{ env.TAG_NAME }}/$new_name" || echo -e "${WARNING} Failed to rename $file"
            done
 
            # Process .tar.gz files
-           for file in compiled_images_${{ env.TAG_NAME }}${{ env.TAG_NAME }}/*${search}*.tar.gz; do
+           for file in compiled_images_${{ env.TAG_NAME }}/*${search}*.tar.gz; do
             [[ -f "$file" ]] || continue
-             new_name="HOUJIE-WRT_${{ env.RELEASES_TAG }}_${replace}.tar.gz"
+             new_name="HOUJIE-WRT_${op_branch}_${replace}.tar.gz"
             echo -e "${INFO} Renaming: $file → $new_name"
             mv "$file" "compiled_images_${{ env.TAG_NAME }}/$new_name" || echo -e "${WARNING} Failed to rename $file"
            done
@@ -299,7 +299,7 @@ jobs:
         uses: ncipollo/release-action@main
         if: ${{ steps.prepare2.outputs.status }} == 'success' && !cancelled()
         with:
-          tag: HOUJIE-Wrt_${{ env.RELEASES_TAG }}
+          tag: HOUJIE-Wrt_${{ env.RELEASES_TAG }}-${op_branch}
           artifacts: imagebuilder/compiled_images_${{ env.TAG_NAME }}/*
           allowUpdates: true
           removeArtifacts: false
