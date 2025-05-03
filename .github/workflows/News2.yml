@@ -226,7 +226,7 @@ jobs:
           echo -e "[\033[95m STEPS \033[0m] Prepare File.."
           mkdir -p compiled_images_${{ env.TAG_NAME }}
           if [[ "${{ env.TARGET_NAME }}" != "amlogic" ]]; then
-            for file in bin/targets/*/*/*-rootfs.tar.gz; do
+            for file in bin/targets/*/*/*rootfs.tar.gz; do
                 if [ -f "$file" ]; then
                   new_name="HOUJIE-WRT_${{ env.RELEASES_TAG }}-rootfs.tar.gz"
                   mv "$file" compiled_images_${{ env.TAG_NAME }}/$new_name
