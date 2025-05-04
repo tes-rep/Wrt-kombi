@@ -193,8 +193,8 @@ jobs:
             echo "openwrt_board=s905x2-hg680-fj" >> $GITHUB_ENV
             echo "TAG_NAME=HJ-WRT_amlogic_s905x2-hg680-fj" >> $GITHUB_ENV 
           fi
-          echo "BASE=${RELEASE_BRANCH%:*}" >> $GITHUB_ENV
-          echo "BRANCH=${RELEASE_BRANCH#*:}" >> $GITHUB_ENV
+          echo "BASE=${RELEASES_BRANCH%:*}" >> $GITHUB_ENV
+          echo "BRANCH=${RELEASES_BRANCH#*:}" >> $GITHUB_ENV
           echo "BASE=$BASE" >> $GITHUB_OUTPUT
           echo "BRANCH=$BRANCH" >> $GITHUB_OUTPUT
           echo "status=success" >> ${GITHUB_OUTPUT}
@@ -214,6 +214,7 @@ jobs:
           chmod +x ${IMAGEBUILDER_SH}
           bash ${IMAGEBUILDER_SH} ${RELEASES_BRANCH} "${{ env.TARGET_NAME }}"
           echo "RELEASES_TAG=${RELEASES_BRANCH/:/_}" >> ${GITHUB_ENV}
+          echo "RELEASES_TAG2=${RELEASES_BRANCH#*:}" >> ${GITHUB_ENV}
           echo "status=success" >> ${GITHUB_OUTPUT}
           echo -e "[\033[92m SUCCESS \033[0m] Status: Success"
   
@@ -282,7 +283,7 @@ jobs:
                   if [[ "$file" =~ k[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9-]+)? ]]; then
                   kernel="${BASH_REMATCH[0]}"
             fi
-             new_name="HOUJIE-WRT_${{ env.BASE }}_${replace}_${kernel}.img.gz"
+             new_name="HOUJIE-WRT_${{ env.RELEASES_TAG2 }}_${replace}_${kernel}.img.gz"
             echo -e "${INFO} Renaming: $file → $new_name"
             mv "$file" "compiled_images_${{ env.TAG_NAME }}/$new_name" || echo -e "${WARNING} Failed to rename $file"
            done
@@ -303,7 +304,7 @@ jobs:
         uses: ncipollo/release-action@main
         if: ${{ steps.prepare2.outputs.status }} == 'success' && !cancelled()
         with:
-          tag: HOUJIE-Wrt_${{ env.RELEASES_TAG }}-${op_branch}
+          tag: HOUJIE-Wrt_${{ env.RELEASES_TAG }}-${{ env.BASE }}
           artifacts: imagebuilder/compiled_images_${{ env.TAG_NAME }}/*
           allowUpdates: true
           removeArtifacts: false
