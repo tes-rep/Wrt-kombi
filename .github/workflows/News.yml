@@ -299,7 +299,7 @@ jobs:
         uses: ncipollo/release-action@main
         if: ${{ steps.prepare2.outputs.status }} == 'success' && !cancelled()
         with:
-          tag: HOUJIE-Wrt_${{ github.ref_name }}_${{ env.RELEASES_TAG }}
+          tag: HOUJIE-Wrt_${{ github.ref_name }}_${{ env.RELEASES_TAG2 }}
           artifacts: imagebuilder/compiled_images_${{ env.TAG_NAME }}/*
           allowUpdates: true
           removeArtifacts: false
