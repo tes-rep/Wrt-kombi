@@ -270,13 +270,13 @@ jobs:
               search="${pattern%%|*}"
               replace="${pattern##*|}"
 
-              for file in compiled_images/*${search}*.img.gz; do
+              for file in compiled_images_${{ env.TAG_NAME }}/*${search}*.img.gz; do
                   if [[ -f "$file" ]]; then
                       if [[ "${{ env.TARGET_NAME }}" == "amlogic" ]]; then
                         kernel=$(echo "$file" | grep -oP 'k[0-9.]+')
-                        new_name="HOUJIE-WRT_${{ env.RELEASES_TAG }}_${replace}_${kernel}.img.gz"
+                        new_name="HJ-WRT_${{ env.RELEASES_TAG }}_${replace}_${kernel}.img.gz"
                       else
-                        new_name="HOUJIE-WRT_${{ env.RELEASES_TAG }}_${replace}.img.gz"
+                        new_name="HJ-WRT_${{ env.RELEASES_TAG }}_${replace}.img.gz"
                       fi
                       echo -e "${MSG_INFO} Renaming: $file -> $new_name"
                       mv "$file" "compiled_images_${{ env.TAG_NAME }}/$new_name"
@@ -309,5 +309,6 @@ jobs:
               - Tanggal Build: ${{ steps.date.outputs.date }}
               - Devices type : ${{ inputs.target }}
               - Kernel version : ${{ inputs.openwrt_kernel }}
+              - Kernel version : $kernel
               - ROOTFS File : ${{ inputs.releases_branch }}
               - ROOTFS Size : ${{ inputs.rootfs_size }}
