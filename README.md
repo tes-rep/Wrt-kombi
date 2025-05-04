@@ -43,6 +43,7 @@ Custom build By <a href="https://github.com/armarchindo/ULO-Builder">DBAI
   by [mbah edi](https://github.com/edikurexe)
 * [rootfs](https://github.com/edikurexe/ULO) by [mbah edi](https://github.com/edikurexe)
 * [ULO-BUILDER](https://github.com/armarchindo/ULO-Builder) by [DBAI](https://github.com/armarchindo/ULO-Builder)
+*  [ophub](https://github.com/ophub/amlogic-s9xxx-openwrt)
 
 ---
 
