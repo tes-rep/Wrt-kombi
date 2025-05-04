@@ -47,7 +47,7 @@ on:
       rootfs_size:
         description: "ROOTFS Size, (512, 640, 756, 1024)"
         required: true
-        default: "512"
+        default: "1024"
       openwrt_kernel:
         description: "Select kernel version"
         required: false
@@ -210,6 +210,7 @@ jobs:
           chmod +x ${IMAGEBUILDER_SH}
           bash ${IMAGEBUILDER_SH} ${RELEASES_BRANCH} "${{ env.TARGET_NAME }}"
           echo "RELEASES_TAG=${RELEASES_BRANCH/:/_}" >> ${GITHUB_ENV}
+          echo "RELEASES_TAG2=${RELEASES_BRANCH#*:}" >> ${GITHUB_ENV}
           echo "status=success" >> ${GITHUB_OUTPUT}
           echo -e "[\033[92m SUCCESS \033[0m] Status: Success"
   
@@ -263,26 +264,33 @@ jobs:
               "_amlogic_s905x_|Amlogic_HG680P"
               "_amlogic_s905x-b860h_|Amlogic_B860HV1-V2"
               "_amlogic_s905x2_|Amlogic_B860HV5"
-              "_amlogic_s905x4-advan_|Amlogic_AT01"
-              "_amlogic_s905x2-hg680-fj_|Amlogic HG680-FJ"
-          )
+              "_amlogic_s905x4-advan_|amlogic_s905x4-advan"
+              "_amlogic_s905x2-hg680-fj_|amlogic_s905x2-hg680-fj"
+          )       
           for pattern in "${search_replace_patterns[@]}"; do
               search="${pattern%%|*}"
               replace="${pattern##*|}"
 
-              for file in compiled_images_${{ env.TAG_NAME }}/*${search}*.img.gz; do
-                  if [[ -f "$file" ]]; then
-                      if [[ "${{ env.TARGET_NAME }}" == "amlogic" ]]; then
-                        kernel=$(echo "$file" | grep -oP 'k[0-9.]+')
-                        new_name="HJ-WRT_${{ env.RELEASES_TAG }}_${replace}_${kernel}.img.gz"
-                      else
-                        new_name="HJ-WRT_${{ env.RELEASES_TAG }}_${replace}.img.gz"
-                      fi
-                      echo -e "${MSG_INFO} Renaming: $file -> $new_name"
-                      mv "$file" "compiled_images_${{ env.TAG_NAME }}/$new_name"
-                  fi
-              done
-          done
+           # Process .img.gz files
+          for file in compiled_images_${{ env.TAG_NAME }}/*${search}*.img.gz; do
+                  [[ -f "$file" ]] || continue
+                  kernel=""
+                  if [[ "$file" =~ k[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9-]+)? ]]; then
+                  kernel="${BASH_REMATCH[0]}"
+            fi
+             new_name="HOUJIE-WRT_${{ env.RELEASES_TAG2 }}_${replace}_${kernel}.img.gz"
+            echo -e "${INFO} Renaming: $file → $new_name"
+            mv "$file" "compiled_images_${{ env.TAG_NAME }}/$new_name" || echo -e "${WARNING} Failed to rename $file"
+           done
+
+           # Process .tar.gz files
+           for file in compiled_images_${{ env.TAG_NAME }}/*${search}*.tar.gz; do
+            [[ -f "$file" ]] || continue
+             new_name="HOUJIE-WRT_${{ env.RELEASES_TAG2 }}_${replace}.tar.gz"
+            echo -e "${INFO} Renaming: $file → $new_name"
+            mv "$file" "compiled_images_${{ env.TAG_NAME }}/$new_name" || echo -e "${WARNING} Failed to rename $file"
+           done
+           done
           echo "status=success" >> ${GITHUB_OUTPUT}
           echo -e "${MSG_SUCCESS} Status: Success"
           echo -e "INFO files list: \n$(ls -l compiled_images 2>/dev/null)"
