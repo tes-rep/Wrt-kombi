@@ -219,7 +219,7 @@ jobs:
           cd imagebuilder
           rm -rf $(ls . | grep -v "^bin$" | xargs) 2>/dev/null
           df -hT ${PWD}
-
+          
       - name: Prepare file First
         run: |
           cd imagebuilder
@@ -232,6 +232,7 @@ jobs:
           fi
           echo -e "INFO files list: \n$(ls -l compiled_images_${{ env.TAG_NAME }} 2>/dev/null)"
 
+      
       - name: Packaging OpenWrt For Amlogic
         run: |
           cd imagebuilder
@@ -264,25 +265,32 @@ jobs:
               "_amlogic_s905x-b860h_|Amlogic_B860HV1-V2"
               "_amlogic_s905x2_|Amlogic_B860HV5"
               "_amlogic_s905x4-advan_|Amlogic_AT01"
-              "_amlogic_s905x2-hg680-fj_|Amlogic HG680-FJ"
+              "_amlogic_s905x2-hg680-fj_|Amlogic_HG680-FJ"
           )
           for pattern in "${search_replace_patterns[@]}"; do
               search="${pattern%%|*}"
               replace="${pattern##*|}"
 
-              for file in compiled_images/*${search}*.img.gz; do
-                  if [[ -f "$file" ]]; then
-                      if [[ "${{ env.TARGET_NAME }}" == "amlogic" ]]; then
-                        kernel=$(echo "$file" | grep -oP 'k[0-9.]+')
-                        new_name="HOUJIE-WRT_${{ env.RELEASES_TAG }}_${replace}_${kernel}.img.gz"
-                      else
-                        new_name="HOUJIE-WRT_${{ env.RELEASES_TAG }}_${replace}.img.gz"
-                      fi
-                      echo -e "${MSG_INFO} Renaming: $file -> $new_name"
-                      mv "$file" "compiled_images_${{ env.TAG_NAME }}/$new_name"
-                  fi
-              done
-          done
+           # Process .img.gz files
+          for file in compiled_images_${{ env.TAG_NAME }}/*${search}*.img.gz; do
+                  [[ -f "$file" ]] || continue
+                  kernel=""
+                  if [[ "$file" =~ k[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9-]+)? ]]; then
+                  kernel="${BASH_REMATCH[0]}"
+            fi
+             new_name="HOUJIE-WRT_${RELEASES_BRANCH/:/_}_${replace}_${kernel}.img.gz"
+            echo -e "${INFO} Renaming: $file → $new_name"
+            mv "$file" "compiled_images_${{ env.TAG_NAME }}/$new_name" || echo -e "${WARNING} Failed to rename $file"
+           done
+
+           # Process .tar.gz files
+           for file in compiled_images_${{ env.TAG_NAME }}/*${search}*.tar.gz; do
+            [[ -f "$file" ]] || continue
+             new_name="HOUJIE-WRT_${op_branch}_${replace}.tar.gz"
+            echo -e "${INFO} Renaming: $file → $new_name"
+            mv "$file" "compiled_images_${{ env.TAG_NAME }}/$new_name" || echo -e "${WARNING} Failed to rename $file"
+           done
+           done
           echo "status=success" >> ${GITHUB_OUTPUT}
           echo -e "${MSG_SUCCESS} Status: Success"
           echo -e "INFO files list: \n$(ls -l compiled_images 2>/dev/null)"
@@ -291,7 +299,7 @@ jobs:
         uses: ncipollo/release-action@main
         if: ${{ steps.prepare2.outputs.status }} == 'success' && !cancelled()
         with:
-          tag: HOUJIE-Wrt_${{ env.RELEASES_TAG }}
+          tag: HOUJIE-Wrt_${{ env.RELEASES_TAG }}-${op_branch}
           artifacts: imagebuilder/compiled_images_${{ env.TAG_NAME }}/*
           allowUpdates: true
           removeArtifacts: false
@@ -309,5 +317,6 @@ jobs:
               - Tanggal Build: ${{ steps.date.outputs.date }}
               - Devices type : ${{ inputs.target }}
               - Kernel version : ${{ inputs.openwrt_kernel }}
+              - Kernel version : $kernel
               - ROOTFS File : ${{ inputs.releases_branch }}
               - ROOTFS Size : ${{ inputs.rootfs_size }}
