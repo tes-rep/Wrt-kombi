@@ -291,7 +291,7 @@ jobs:
            # Process .tar.gz files
            for file in compiled_images_${{ env.TAG_NAME }}/*${search}*.tar.gz; do
             [[ -f "$file" ]] || continue
-             new_name="HOUJIE-WRT_${op_branch}_${replace}.tar.gz"
+             new_name="HOUJIE-WRT_${{ env.RELEASES_TAG2 }}_${replace}.tar.gz"
             echo -e "${INFO} Renaming: $file → $new_name"
             mv "$file" "compiled_images_${{ env.TAG_NAME }}/$new_name" || echo -e "${WARNING} Failed to rename $file"
            done
