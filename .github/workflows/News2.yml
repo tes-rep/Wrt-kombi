@@ -193,6 +193,8 @@ jobs:
             echo "openwrt_board=s905x2-hg680-fj" >> $GITHUB_ENV
             echo "TAG_NAME=HJ-WRT_amlogic_s905x2-hg680-fj" >> $GITHUB_ENV 
           fi
+          echo "BASE=${RELEASE_BRANCH%:*}" >> $GITHUB_ENV
+          echo "BRANCH=${RELEASE_BRANCH#*:}" >> $GITHUB_ENV
           echo "status=success" >> ${GITHUB_OUTPUT}
           echo -e "[\033[92m SUCCESS \033[0m] Status: Success"
 
