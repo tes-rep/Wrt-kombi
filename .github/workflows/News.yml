@@ -44,6 +44,7 @@ on:
           - Amlogic AT01
           - Amlogic HG680-FJ
           - Amlogic AT01_Amlogic HG680-FJ
+          - s922x
       rootfs_size:
         description: "ROOTFS Size, (512, 640, 756, 1024)"
         required: true
@@ -192,6 +193,10 @@ jobs:
             echo "TARGET_NAME=amlogic" >> $GITHUB_ENV
             echo "openwrt_board=s905x2-hg680-fj" >> $GITHUB_ENV
             echo "TAG_NAME=openwrt_amlogic_s905x2-hg680-fj" >> $GITHUB_ENV 
+          elif [ "$TARGET" == "s922x" ]; then
+            echo "TARGET_NAME=amlogic" >> $GITHUB_ENV
+            echo "openwrt_board=s922x-ugoos-am6" >> $GITHUB_ENV
+            echo "TAG_NAME=openwrt_amlogic_s922x" >> $GITHUB_ENV   
           fi
           echo "status=success" >> ${GITHUB_OUTPUT}
           echo -e "[\033[92m SUCCESS \033[0m] Status: Success"
