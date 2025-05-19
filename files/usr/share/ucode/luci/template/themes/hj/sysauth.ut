@@ -156,12 +156,12 @@
 <form id="loginForm" method="post">
     {% if (fuser): %}
         <div class="alert-message warning">
-            <p>{{ _('Invalid username and/or password! Please try again.') }}</p>
+            <p>{{ _('Nama pengguna dan/atau kata sandi salah boss! Silakan coba lagi.') }}</p>
         </div>
     {% endif %}
 
     <div class="cbi-map">
-        <center><h2 name="content">{{ _('RASYA.NET') }}</h2></center>
+        <center><h2 name="content">{{ _('HOUJIE_WRT') }}</h2></center>
         <script type="text/javascript">window.setTimeout("waktu()",1000); function waktu(){var tanggal=new Date(); setTimeout("waktu()",1000); document.getElementById("jam").innerHTML=tanggal.getHours()+":"+tanggal.getMinutes()+":"+tanggal.getSeconds();}</script>
         <script language="JavaScript"> 
             var tanggallengkap=new String(); 
