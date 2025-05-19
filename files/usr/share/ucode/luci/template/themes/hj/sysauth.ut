@@ -94,6 +94,48 @@
         z-index: 20; /* Pastikan form berada di atas overlay */
         position: relative;
     }
+    .login_form_container{
+    position: relative;
+    width: 380px;
+    height: 550px;
+    max-width: 380px;
+    max-height: 550px;
+    # background: #0c1022;
+    border-radius: 30px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-top: 140px;
+}
+.login_form_container::before{
+    
+    position: absolute;
+    width: 170%;
+    height: 170%;
+    content: '';
+    background-image: conic-gradient(transparent, transparent, transparent, #ffd700);
+    animation: rotate_border 4s linear infinite;
+
+}
+.login_form_container::after{
+    
+    position: absolute;
+    width: 170%;
+    height: 170%;
+    content: '';
+    background-image: conic-gradient(transparent, transparent, transparent, #00FA9A);
+    animation: rotate_border 4s linear infinite;
+    animation-delay: -2s;
+}
+@keyframes rotate_border{
+    0%{
+        transform: rotate(0deg);
+    }
+    100%{
+        transform: rotate(360deg);
+    }
+}
 </style>
 
 {% include('header') %}
@@ -110,6 +152,7 @@
 </div>
 
 <!-- Form login -->
+<div class="login_form_container">
 <form id="loginForm" method="post">
     {% if (fuser): %}
         <div class="alert-message warning">
@@ -157,6 +200,7 @@
         <input type="reset" value="{{ _('Reset') }}" class="btn cbi-button cbi-button-reset" />
     </div>
 </form>
+</div>
 
 {%
     let https_ports = uci.get('uhttpd', 'main', 'listen_https') ?? [];
@@ -201,7 +245,7 @@
         } else {
             document.getElementById('countdown').innerText = 'Good Bye';
             // Alihkan ke alamat IP setelah hitungan mundur selesai
-            window.location.href = 'http://10.10.10.1:3990';
+            window.location.href = 'http://facebook.com';
         }
     }
 
