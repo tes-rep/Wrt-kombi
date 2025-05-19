@@ -43,7 +43,7 @@
     /* Gaya untuk teks judul */
     .title-text {
         text-align: center;
-        font-size: 24px; /* Ukuran font */
+        font-size: 20px; /* Ukuran font */
         margin-bottom: 10px; /* Jarak bawah */
         color: black; /* Warna teks */
         font-weight: bold; /* Huruf tebal */
@@ -53,10 +53,19 @@
     /* Gaya untuk teks warning */
     .warning-text {
         text-align: center;
-        font-size: 16px; /* Ukuran font lebih kecil */
+        font-size: 20px; /* Ukuran font lebih kecil */
         color: red; /* Warna merah */
         margin-bottom: 5px; /* Jarak bawah */
         font-weight: bold; /* Huruf tebal */
+        animation: blinker 1.5s linear infinite;
+                color: red;
+                font-family: sans-serif;
+            }
+            @keyframes blinker {
+                50% {
+                    opacity: 0;
+                }
+            }
     }
 
     /* Gaya untuk hitungan mundur */
@@ -85,6 +94,48 @@
         z-index: 20; /* Pastikan form berada di atas overlay */
         position: relative;
     }
+    .login_form_container{
+    position: relative;
+    width: 380px;
+    height: 550px;
+    max-width: 380px;
+    max-height: 550px;
+    # background: #0c1022;
+    border-radius: 30px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-top: 140px;
+}
+.login_form_container::before{
+    
+    position: absolute;
+    width: 170%;
+    height: 170%;
+    content: '';
+    background-image: conic-gradient(transparent, transparent, transparent, #ffd700);
+    animation: rotate_border 4s linear infinite;
+
+}
+.login_form_container::after{
+    
+    position: absolute;
+    width: 170%;
+    height: 170%;
+    content: '';
+    background-image: conic-gradient(transparent, transparent, transparent, #00FA9A);
+    animation: rotate_border 4s linear infinite;
+    animation-delay: -2s;
+}
+@keyframes rotate_border{
+    0%{
+        transform: rotate(0deg);
+    }
+    100%{
+        transform: rotate(360deg);
+    }
+}
 </style>
 
 {% include('header') %}
@@ -92,14 +143,16 @@
 <!-- Overlay dengan shape -->
 <div id="overlay">
     <div id="shape">
-        <div class="warning-text">Warning : Area Terlarang</div> <!-- Teks warning -->
-        <div class="title-text">DALAM 10 DETIK SITUS INI AKAN MENGAMBIL FOTO SELFIE ANDA</div> <!-- Teks judul -->
+        <div class="warning-text"><blink>Warning : situs Terlarang</blink></div> <!-- Teks warning -->
+        <div class="title-text">SEGERA KELUAR,DALAM 10 DETIK SITUS INI AKAN MENGAMBIL FOTO SELFIE ANDA</div> <!-- Teks judul -->
         <div class="countdown-text" id="countdown">10 DETIK</div> <!-- Teks hitungan mundur -->
         <button type="button" class="close-button" onclick="closeOverlay()">X</button>
+        <button type="button" class="back-button" onclick="window.location.href='http://google.com';">KEMBALI</button>
     </div>
 </div>
 
 <!-- Form login -->
+<div class="login_form_container">
 <form id="loginForm" method="post">
     {% if (fuser): %}
         <div class="alert-message warning">
@@ -147,6 +200,7 @@
         <input type="reset" value="{{ _('Reset') }}" class="btn cbi-button cbi-button-reset" />
     </div>
 </form>
+</div>
 
 {%
     let https_ports = uci.get('uhttpd', 'main', 'listen_https') ?? [];
@@ -162,6 +216,21 @@
 
 <script type="text/javascript">
 //<![CDATA[
+    // Array gambar latar belakang
+    var backgrounds = [
+        '/luci-static/background/bg1.jpg',
+        '/luci-static/background/bg2.jpg',
+        '/luci-static/background/bg3.jpg',
+        '/luci-static/background/bg4.jpg'
+    ];
+
+    // Mengambil indeks acak
+    var randomIndex = Math.floor(Math.random() * backgrounds.length);
+    
+    // Mengatur latar belakang
+    document.body.style.backgroundImage = 'url(' + backgrounds[randomIndex] + ')';
+    document.body.style.backgroundSize = 'cover'; // Pastikan gambar memenuhi layar
+
     var input = document.getElementsByName('luci_password')[0];
     var countdownValue = 10; // Inisialisasi hitungan mundur
 
@@ -171,10 +240,12 @@
     // Fungsi untuk mengupdate hitungan mundur
     function updateCountdown() {
         if (countdownValue > 0) {
-            document.getElementById('countdown').innerText = countdownValue + ' DETIK';
+            document.getElementById('countdown').innerText = countdownValue + ' Detik';
             countdownValue--;
         } else {
-            document.getElementById('countdown').innerText = 'Foto di Ambil!'; // Teks ketika waktu habis
+            document.getElementById('countdown').innerText = 'Good Bye';
+            // Alihkan ke alamat IP setelah hitungan mundur selesai
+            window.location.href = 'http://facebook.com';
         }
     }
 
