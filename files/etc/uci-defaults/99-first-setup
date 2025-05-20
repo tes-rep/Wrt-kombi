@@ -222,6 +222,11 @@ uci set luci.main.lang='en' && uci commit
 msg "Step 13: Run Another Process"
 bash /root/install2.sh
 
+# Step 17: Run
+msg "Step 15: ganti nama minoho ke nikki"
+mv /etc/mihomo /etc/nikki
+
+
 # Step 19: sync_time.sh
 msg "Step 16: sync_time.sh Process"
 chmod +x /sbin/sync_time.sh
