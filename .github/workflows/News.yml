@@ -113,6 +113,8 @@ jobs:
         run: |
           if [ "${{ inputs.target }}" == "all" ]; then
             echo "target=['Raspberry Pi 3B','Raspberry Pi 4B','NanoPi R2C','NanoPi R2S','NanoPi R4S','Orange Pi R1 Plus','Orange Pi R1 Plus LTS','x86-64','Amlogic HG680P','Amlogic B860H-V5','Amlogic AT01','Amlogic B860H-V1-V2']" >> $GITHUB_OUTPUT
+          elif [ "${{ inputs.target }}" == "Amlogic AT01_Amlogic HG680-FJ" ]; then  
+            echo "target=['Amlogic AT01','Amlogic HG680-FJ']" >> $GITHUB_OUTPUT
           else
             echo "target=['${{ inputs.target }}']" >> $GITHUB_OUTPUT
           fi
