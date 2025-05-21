@@ -43,8 +43,7 @@ on:
           - Amlogic B860H-V1-V2
           - Amlogic AT01
           - Amlogic HG680-FJ
-          - Amlogic AT01_Amlogic HG680-FJ
-          - s922x
+          - Amlogic AT01_Amlogic HG680P
       rootfs_size:
         description: "ROOTFS Size, (512, 640, 756, 1024)"
         required: true
@@ -67,11 +66,12 @@ on:
       kernel_repo:
         description: "Set the kernel repository"
         required: false
-        default: "Houjie80/kernel2"
+        default: "tes-rep/kernel"
         type: choice
         options:
           - ophub/kernel
           - Houjie80/kernel2
+          - tes-rep/kernel
       kernel_usage:
         description: "Set the tags of the stable kernel."
         required: false
@@ -114,6 +114,8 @@ jobs:
         run: |
           if [ "${{ inputs.target }}" == "all" ]; then
             echo "target=['Raspberry Pi 3B','Raspberry Pi 4B','NanoPi R2C','NanoPi R2S','NanoPi R4S','Orange Pi R1 Plus','Orange Pi R1 Plus LTS','x86-64','Amlogic HG680P','Amlogic B860H-V5','Amlogic AT01','Amlogic B860H-V1-V2']" >> $GITHUB_OUTPUT
+          elif [ "${{ inputs.target }}" == "Amlogic AT01_Amlogic HG680P" ]; then  
+            echo "target=['Amlogic AT01','Amlogic HG680P']" >> $GITHUB_OUTPUT
           else
             echo "target=['${{ inputs.target }}']" >> $GITHUB_OUTPUT
           fi
@@ -243,7 +245,7 @@ jobs:
           cd imagebuilder
           if [[ "${{ env.TARGET_NAME }}" == "amlogic" ]]; then
             echo -e "[\033[95m STEPS \033[0m] Cloning Ophub Repacking Amlogic"
-            git clone --depth 1 https://github.com/Dirgha80/amlogic-s9xxx-openwrt.git ophub_builder
+            git clone --depth 1 https://github.com/tes-rep/amlogic-s9xxx-openwrt.git ophub_builder
             mkdir -p ophub_builder/openwrt-armvirt
             cp -f compiled_images_${{ env.TAG_NAME }}/*rootfs.tar.gz ophub_builder/openwrt-armvirt/
             cd ophub_builder
