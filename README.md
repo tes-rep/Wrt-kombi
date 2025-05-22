@@ -4,7 +4,7 @@
 
 </h1>
 
-<h3 align="center">Openwrt Terbaru - 24.10.0-rc7</h3>
+<h3 align="center">Openwrt Terbaru - 24.10.1</h3>
 
 <!-- <h4 align="center">Join Telegram Untuk Mendapatkan Notifikasi Update Dan Tutorial</h4>
 <p align="center">
