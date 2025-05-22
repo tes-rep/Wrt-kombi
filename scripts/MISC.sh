@@ -26,7 +26,7 @@ setup_base_config() {
     case "${BASE}" in
         openwrt)
             log "INFO" "Applying OpenWrt-specific configuration"
-            sed -i '/# setup misc settings/ a\mv \/www\/luci-static\/resources\/view\/status\/include\/29_temp.js \/www\/luci-static\/resources\/view\/status\/include\/17_temp.js' files/etc/uci-defaults/99-first-setup
+            sed -i '/# setup misc settings/ a\mv \/www\/luci-static\/resources\/view\/status\/include\/29_temp.js \/www\/luci-static\/resources\/view\/status\/include\/17_temp.js' files/etc/uci-defaults/99-init-settings.sh
             ;;
         immortalwrt)
             log "INFO" "Applying ImmortalWrt-specific configuration"
