@@ -4,7 +4,7 @@
 
 </h1>
 
-<h3 align="center">Openwrt Terbaru - <a href="https://github.com/tes-rep/Wrt-kombi/releases/tag/HOUJIE-Wrt_24.10.1-dev">HJ-WRT</h3>
+<h3 align="center"><a href="https://github.com/tes-rep/Wrt-kombi/releases/tag/HOUJIE-Wrt_24.10.1-dev">HJ-WRT terbaru</h3>
 
 <!-- <h4 align="center">Join Telegram Untuk Mendapatkan Notifikasi Update Dan Tutorial</h4>
 <p align="center">
