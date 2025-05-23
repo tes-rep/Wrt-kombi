@@ -242,7 +242,7 @@ jobs:
           if [[ "${{ env.TARGET_NAME }}" == "amlogic" ]]; then
             echo -e "[\033[95m STEPS \033[0m] Cloning Ophub Repacking Amlogic"
             git clone --depth 1 https://github.com/tes-rep/amlogic-s9xxx-openwrt.git ophub_builder
-            mkdir -p ophub_builder/openwrt-armvirt
+            mkdir -p ophub_builder/openwrt-armsr-armv8-generic
             cp -f compiled_images_${{ env.TAG_NAME }}/*rootfs.tar.gz ophub_builder/openwrt-armvirt/
             cd ophub_builder
             sudo ./remake -b ${{ env.openwrt_board }} -k ${{ inputs.openwrt_kernel }} -s ${{ inputs.rootfs_size }}
