@@ -101,6 +101,7 @@ on:
 env:
   TZ: Asia/Jakarta
   IMAGEBUILDER_SH: ${{ inputs.fwinfo }}
+  WORKING_DIR: imagebuilder
 
 jobs:
   prebuild:
