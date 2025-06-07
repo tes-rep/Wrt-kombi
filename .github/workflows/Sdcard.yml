@@ -256,7 +256,7 @@ jobs:
         id: modsdcard
         if: steps.repack.outputs.status == 'success'
         run: |
-          cd imagebuilder
+          cd ${WORKING_DIR}
           chmod +x scripts/MODSDCARD.sh
             ./scripts/MODSDCARD.sh
           echo "status=success" >> $GITHUB_OUTPUT
