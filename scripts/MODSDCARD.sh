@@ -38,7 +38,7 @@ build_mod_sdcard() {
     fi
 
     # Download modification files
-    ariadl "https://github.com/rizkikotet-dev/mod-boot-sdcard/archive/refs/heads/main.zip" "main.zip"
+    ariadl "https://github.com/tes-rep/mod-boot-sdcard/archive/refs/heads/main.zip" "main.zip"
 
     # Extract files
     log "INFO" "Extracting mod-boot-sdcard..."
