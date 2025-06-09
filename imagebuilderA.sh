@@ -387,7 +387,7 @@ custom_packages() {
     download_packages "custom" other_packages[@]
 
     # OpenClash
-    openclash_api="https://api.github.com/repos/vernesong/OpenClash/releases"
+    openclash_api="https://api.github.com/repos/tes-rep/OpenClash/releases"
     openclash_file_ipk="luci-app-openclash"
     openclash_file_ipk_down="$(curl -s ${openclash_api} | grep "browser_download_url" | grep -oE "https.*${openclash_file_ipk}.*.ipk" | head -n 1)"
 
