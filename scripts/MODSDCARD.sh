@@ -16,7 +16,7 @@ build_mod_sdcard() {
     fi
 
     # Validate and set paths
-    if ! cd "$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images_openwrt_amlogic_s905x"; then
+    if ! cd "$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images"; then
         error_msg "Failed to change directory to $GITHUB_WORKSPACE/$WORKING_DIR/compiled_images"
         return 1
     fi
