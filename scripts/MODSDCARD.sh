@@ -148,7 +148,7 @@ build_mod_sdcard() {
 
     local kernel
     kernel=$(grep -oP 'k[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9-]+)?' <<<"${file_name}")
-    local new_name="HOUJIE-${suffix}-${kernel}-${TUNNEL}-MODSDCARD-Build-By-Fidz_Xidz-X.img.gz"
+    local new_name="HOUJIE-${suffix}-${kernel}-MODSDCARD-Build-By-HJ.img.gz"
 
     mv "${file_name}.gz" "../${new_name}" || {
         error_msg "Failed to rename image file"
