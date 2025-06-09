@@ -229,13 +229,13 @@ jobs:
         run: |
           cd imagebuilder
           echo -e "[\033[95m STEPS \033[0m] Prepare File.."
-          mkdir -p compiled_images_${{ env.TAG_NAME }}
+          mkdir -p compiled_images/mod
           if [[ "${{ env.TARGET_NAME }}" != "amlogic" ]]; then
-            for file in bin/targets/*/*/*.img.gz; do mv "$file" compiled_images_${{ env.TAG_NAME }}; done
+            for file in bin/targets/*/*/*.img.gz; do mv "$file" compiled_images; done
           else
-            for file in bin/targets/*/*/*rootfs.tar.gz; do mv "$file" compiled_images_${{ env.TAG_NAME }}; done
+            for file in bin/targets/*/*/*rootfs.tar.gz; do mv "$file" compiled_images; done
           fi
-          echo -e "INFO files list: \n$(ls -l compiled_images_${{ env.TAG_NAME }} 2>/dev/null)"
+          echo -e "INFO files list: \n$(ls -l compiled_images 2>/dev/null)"
 
       - name: Packaging OpenWrt For Amlogic
         id: repack
@@ -245,10 +245,10 @@ jobs:
             echo -e "[\033[95m STEPS \033[0m] Cloning Ophub Repacking Amlogic"
             git clone --depth 1 https://github.com/tes-rep/amlogic-s9xxx-openwrt.git ophub_builder
             mkdir -p ophub_builder/openwrt-armsr
-            cp -f compiled_images_${{ env.TAG_NAME }}/*rootfs.tar.gz ophub_builder/openwrt-armsr/
+            cp -f compiled_images/*rootfs.tar.gz ophub_builder/openwrt-armsr/
             cd ophub_builder
             sudo ./remake -b ${{ env.openwrt_board }} -k ${{ inputs.openwrt_kernel }} -s ${{ inputs.rootfs_size }}
-            for file in openwrt/out/*.img.gz; do cp -f "$file" ../compiled_images_${{ env.TAG_NAME }}; done
+            for file in openwrt/out/*.img.gz; do cp -f "$file" ../compiled_images; done
           fi
           echo "status=success" >> $GITHUB_OUTPUT
 
@@ -287,7 +287,7 @@ jobs:
               replace="${pattern##*|}"
 
            # Process .img.gz files
-          for file in compiled_images_${{ env.TAG_NAME }}/*${search}*.img.gz; do
+          for file in compiled_images/*${search}*.img.gz; do
                   [[ -f "$file" ]] || continue
                   kernel=""
                   if [[ "$file" =~ k[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9-]+)? ]]; then
@@ -295,15 +295,15 @@ jobs:
             fi
              new_name="HOUJIE-WRT_${{ env.RELEASES_TAG2 }}_${replace}_${kernel}.img.gz"
             echo -e "${INFO} Renaming: $file → $new_name"
-            mv "$file" "compiled_images_${{ env.TAG_NAME }}/$new_name" || echo -e "${WARNING} Failed to rename $file"
+            mv "$file" "compiled_images/mod/$new_name" || echo -e "${WARNING} Failed to rename $file"
            done
 
            # Process .tar.gz files
-           for file in compiled_images_${{ env.TAG_NAME }}/*${search}*.tar.gz; do
+           for file in compiled_images/*${search}*.tar.gz; do
             [[ -f "$file" ]] || continue
              new_name="HOUJIE-WRT_${{ env.RELEASES_TAG2 }}_${replace}.tar.gz"
             echo -e "${INFO} Renaming: $file → $new_name"
-            mv "$file" "compiled_images_${{ env.TAG_NAME }}/$new_name" || echo -e "${WARNING} Failed to rename $file"
+            mv "$file" "compiled_images/mod/$new_name" || echo -e "${WARNING} Failed to rename $file"
            done
            done
           echo "status=success" >> ${GITHUB_OUTPUT}
@@ -316,7 +316,7 @@ jobs:
         if: ${{ steps.prepare2.outputs.status }} == 'success' && !cancelled()
         with:
           tag: HOUJIE-Wrt_${{ env.RELEASES_TAG2 }}-${{ github.ref_name }}
-          artifacts: imagebuilder/compiled_images_${{ env.TAG_NAME }}/*
+          artifacts: imagebuilder/compiled_images/mod/*
           allowUpdates: true
           removeArtifacts: false
           replacesArtifacts: true
