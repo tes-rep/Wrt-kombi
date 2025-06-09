@@ -17,11 +17,11 @@ build_mod_sdcard() {
 
     # Validate and set paths
     if ! cd "$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images_openwrt_amlogic_s905x"; then
-        error_msg "Failed to change directory to $GITHUB_WORKSPACE/$WORKING_DIR/compiled_images_openwrt_amlogic_s905x"
+        error_msg "Failed to change directory to $GITHUB_WORKSPACE/$WORKING_DIR/compiled_images"
         return 1
     fi
 
-    local imgpath="$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images_openwrt_amlogic_s905x"
+    local imgpath="$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images"
     local file_to_process="$image_path"
 
     cleanup() {
@@ -148,9 +148,9 @@ build_mod_sdcard() {
 
     local kernel
     kernel=$(grep -oP 'k[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9-]+)?' <<<"${file_name}")
-    local new_name="HOUJIE-${suffix}-${kernel}-MODSDCARD-Build-By-HJ.img.gz"
+    local new_name="HOUJIE-${suffix}-${kernel}-MODSDCARD.img.gz"
 
-    mv "${file_name}.gz" "../${new_name}" || {
+    mv "${file_name}.gz" "compiled_images/mod/${new_name}" || {
         error_msg "Failed to rename image file"
         return 1
     }
@@ -188,7 +188,7 @@ process_builds() {
 
 main() {
     local exit_code=0
-    local img_dir="$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images_openwrt_amlogic_s905x"
+    local img_dir="$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images"
 
     # konfigurasi builds MATRIXTARGET
     local builds=()
