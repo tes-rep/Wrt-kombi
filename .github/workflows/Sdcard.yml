@@ -252,17 +252,10 @@ jobs:
           fi
           echo "status=success" >> $GITHUB_OUTPUT
 
-      - name: Mod SDCard
-        id: modsdcard
-        if: steps.repack.outputs.status == 'success'
-        run: |
-          chmod +x scripts/MODSDCARD.sh
-            ./scripts/MODSDCARD.sh
-          echo "status=success" >> $GITHUB_OUTPUT
-
+      
       - name: Prepare Before Uploads
         id: prepare2
-        if: steps.modsdcard.outputs.status == 'success'
+        if: steps.repack.outputs.status == 'success'
         run: |
           cd imagebuilder
           echo -e "${MSG_STEPS} Replace Name"
@@ -309,11 +302,19 @@ jobs:
           echo "status=success" >> ${GITHUB_OUTPUT}
           echo -e "${MSG_SUCCESS} Status: Success"
           echo -e "INFO files list: \n$(ls -l compiled_images 2>/dev/null)"
+          
+      - name: Mod SDCard  
+        id: modsdcard
+        if: steps.prepare2.outputs.status == 'success'
+        run: |
+          chmod +x scripts/MODSDCARD.sh
+            ./scripts/MODSDCARD.sh
+          echo "status=success" >> $GITHUB_OUTPUT
 
       
       - name: Upload the packaged OpenWrt
         uses: ncipollo/release-action@main
-        if: ${{ steps.prepare2.outputs.status }} == 'success' && !cancelled()
+        if: ${{ steps.modsdcard.outputs.status }} == 'success' && !cancelled()
         with:
           tag: HOUJIE-Wrt_${{ env.RELEASES_TAG2 }}-${{ github.ref_name }}
           artifacts: imagebuilder/compiled_images/mod/*
