@@ -17,11 +17,11 @@ build_mod_sdcard() {
 
     # Validate and set paths
     if ! cd "$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images_${{ env.TAG_NAME }}"; then
-        error_msg "Failed to change directory to $GITHUB_WORKSPACE/$WORKING_DIR/compiled_images_${{ env.TAG_NAME }}"
+        error_msg "Failed to change directory to $GITHUB_WORKSPACE/$WORKING_DIR/compiled_images_openwrt_amlogic_s905x"
         return 1
     fi
 
-    local imgpath="$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images_${{ env.TAG_NAME }}"
+    local imgpath="$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images_openwrt_amlogic_s905x"
     local file_to_process="$image_path"
 
     cleanup() {
@@ -188,7 +188,7 @@ process_builds() {
 
 main() {
     local exit_code=0
-    local img_dir="$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images_${{ env.TAG_NAME }}"
+    local img_dir="$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images_openwrt_amlogic_s905x"
 
     # konfigurasi builds MATRIXTARGET
     local builds=()
