@@ -223,8 +223,12 @@ msg "Step 13: Run Another Process"
 bash /root/install2.sh
 
 # Step 17: Run
-msg "Step 15: ganti nama minoho ke nikki"
+msg "Step 15: ganti nama mihomo ke nikki"
 mv /etc/mihomo /etc/nikki
+
+# Step 17: Run
+msg "Step 17: add port"
+chmod +x /root/addport.sh && /root/addport.sh
 
 
 # Step 19: sync_time.sh
