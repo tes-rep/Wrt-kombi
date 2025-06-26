@@ -1,117 +1,969 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+  <title>Network Monitor</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <!-- Add dashboard.js here! -->
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <script type="text/javascript" src="http://192.168.1.1:19999/dashboard.js"></script>
-  <script>var netdataTheme='white'; // or 'slate' for the dark onevar netdataPrepCallback=function(){// code here // remove all css files - netdata will not load any now NETDATA.requiredCSS=[];};</script>
-<style>.wrap{max-width: 1200px; margin: 0 auto;}h3{margin-bottom: 30px; text-align: center;}.charts{display: flex; flex-flow: row wrap; justify-content: space-around;}.charts > div{margin-bottom: 6rem; position: relative;}</style>
+  <script>var netdataTheme='white'; var netdataPrepCallback=function(){NETDATA.requiredCSS=[];};</script>
+
+<style>
+/* CSS Variables & Base */
+:root {
+  --primary: #667eea; --secondary: #764ba2; --accent: #f093fb;
+  --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+  --text-primary: #2d3748; --text-secondary: #718096; --border: #e2e8f0;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1); --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1); --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font: 400 1rem/1.6 'Inter', sans-serif;
+  background: #3F5582;
+  min-height: 100vh;
+  color: var(--text-primary);
+}
+
+.container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+/* Layout Components */
+.header, .charts-section, .stats-section {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-xl);
+  text-align: center;
+}
+
+.header {
+  margin-bottom: 25px; padding: 20px 12px; border-radius: 12px; box-shadow: var(--shadow-md);
+}
+
+.charts-section, .stats-section {
+  border-radius: 24px; padding: 40px; margin-bottom: 40px;
+}
+
+.header h1 {
+  font: 700 1.9rem/1 'Inter'; margin-bottom: 6px; letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+.header .subtitle { font-size: 0.85rem; color: var(--text-secondary); }
+
+.charts-title, .stats-title {
+  font: 600 2rem/1 'Inter'; color: var(--text-primary); margin-bottom: 40px;
+}
+
+.stats-title { margin-bottom: 8px; }
+.stats-subtitle { color: var(--text-secondary); font-size: 1.1rem; }
+
+/* Grid Systems */
+.info-charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 25px; }
+.charts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
+.charts-grid-secondary { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 40px; }
+.button-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+
+/* Chart Containers */
+.chart-container {
+  background: white; border-radius: 16px; padding: 20px; border: 1px solid var(--border);
+  box-shadow: var(--shadow-md); transition: all 0.3s ease; min-height: 280px;
+  display: flex; flex-direction: column; justify-content: center;
+}
+
+.chart-container:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+
+.info-chart-container {
+  background: white; border-radius: 10px; padding: 16px; border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm); transition: all 0.3s ease; min-height: 110px;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  text-align: center; position: relative; overflow: hidden;
+}
+
+.info-chart-container::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+
+.info-chart-container:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
+.info-chart-icon {
+  width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center;
+  justify-content: center; margin-bottom: 8px; color: white; font-size: 14px;
+  background: linear-gradient(135deg, var(--primary), var(--accent)); transition: all 0.3s ease;
+}
+
+.info-chart-icon.connected { background: linear-gradient(135deg, var(--success), #34d399); }
+.info-chart-icon.disconnected { background: linear-gradient(135deg, var(--danger), #f87171); }
+.info-chart-icon.checking { background: linear-gradient(135deg, var(--warning), #fbbf24); }
+
+.info-chart-title {
+  font: 600 0.7rem/1 'Inter'; color: var(--text-secondary); text-transform: uppercase;
+  letter-spacing: 0.05em; margin-bottom: 6px;
+}
+
+.info-chart-value {
+  font: 600 1.1rem/1 'JetBrains Mono'; color: var(--text-primary); transition: all 0.3s ease;
+}
+
+.info-chart-value.connected { color: var(--success); }
+.info-chart-value.disconnected { color: var(--danger); }
+.info-chart-value.checking { color: var(--warning); }
+
+/* Status Components */
+.status-indicator { display: inline-flex; align-items: center; gap: 6px; }
+
+.status-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--success);
+  animation: pulse-dot 2s infinite;
+}
+
+.status-dot.disconnected { background: var(--danger); animation: none; }
+.status-dot.checking { background: var(--warning); animation: pulse-dot 1s infinite; }
+
+@keyframes pulse-dot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.1); } }
+
+/* Button Styles */
+.chart-button {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white; border: none; padding: 16px 20px; border-radius: 12px; cursor: pointer;
+  font: 600 0.875rem/1 'Inter'; text-transform: uppercase; letter-spacing: 0.05em;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: var(--shadow-md);
+  position: relative; overflow: hidden; display: flex; align-items: center;
+  justify-content: center; gap: 8px;
+}
+
+.chart-button::before {
+  content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.chart-button:hover::before { left: 100%; }
+.chart-button:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.chart-button:active { transform: translateY(0); }
+.chart-button.active {
+  background: linear-gradient(135deg, #4facfe, #43e97b);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Image Container */
+.chart-image-container {
+  position: relative; width: 100%; background: white; border-radius: 16px;
+  box-shadow: var(--shadow-md); border: 1px solid var(--border);
+  overflow: hidden; transition: all 0.3s ease; padding: 32px; margin: 0 auto;
+}
+
+.chart-image {
+  display: none; width: 100%; height: auto; border-radius: 12px;
+  box-shadow: var(--shadow-sm); transition: all 0.3s ease; object-fit: contain;
+}
+
+.chart-image:hover { transform: scale(1.01); box-shadow: var(--shadow-md); }
+
+.chart-image-container::before {
+  content: ''; position: absolute; top: 50%; left: 50%; width: 40px; height: 40px;
+  margin: -20px 0 0 -20px; border: 3px solid rgba(102, 126, 234, 0.3);
+  border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;
+  opacity: 0; pointer-events: none; z-index: 1;
+}
+
+.chart-image-container.loading::before { opacity: 1; }
+
+/* Animations */
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading {
+  display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(102, 126, 234, 0.3);
+  border-radius: 50%; border-top-color: #667eea; animation: spin 1s ease-in-out infinite;
+}
+
+/* Responsive Design - Mobile First Approach */
+@media (max-width: 320px) {
+  .container { padding: 12px; }
+  .header { padding: 12px 6px; }
+  .header h1 { font-size: 1.2rem; }
+  .header .subtitle { font-size: 0.7rem; }
+  .charts-section, .stats-section { padding: 20px; }
+  
+  .info-charts-grid { gap: 4px; margin-bottom: 12px; }
+  .info-chart-container { padding: 8px; min-height: 65px; }
+  .info-chart-icon { width: 20px; height: 20px; font-size: 9px; margin-bottom: 3px; }
+  .info-chart-title { font-size: 0.55rem; margin-bottom: 2px; }
+  .info-chart-value { font-size: 0.75rem; }
+  
+  .charts-grid, .charts-grid-secondary { gap: 6px; }
+  .button-grid { gap: 8px; grid-template-columns: repeat(2, 1fr); } /* 2 columns on very small screens */
+  .chart-container { padding: 6px; min-height: 140px; }
+  .chart-button { padding: 8px 4px; font-size: 0.6rem; }
+  .chart-image-container { padding: 12px; margin: 8px auto; border-radius: 10px; }
+  .chart-image { max-height: 240px; border-radius: 3px; }
+}
+
+@media (min-width: 321px) and (max-width: 480px) {
+  .container { padding: 12px; }
+  .header { padding: 14px 8px; }
+  .header h1 { font-size: 1.4rem; }
+  .header .subtitle { font-size: 0.75rem; }
+  .charts-section, .stats-section { padding: 20px; }
+  
+  .info-charts-grid { gap: 6px; margin-bottom: 16px; }
+  .info-chart-container { padding: 10px; min-height: 75px; }
+  .info-chart-icon { width: 24px; height: 24px; font-size: 10px; margin-bottom: 4px; }
+  .info-chart-title { font-size: 0.6rem; margin-bottom: 3px; }
+  .info-chart-value { font-size: 0.85rem; }
+  
+  .charts-grid, .charts-grid-secondary, .button-grid { gap: 8px; }
+  .chart-container { padding: 8px; min-height: 160px; }
+  .chart-button { padding: 10px 8px; font-size: 0.7rem; }
+  .chart-image-container { padding: 16px; margin: 12px auto; border-radius: 12px; }
+  .chart-image { max-height: 280px; border-radius: 4px; }
+  .chart-image:hover { transform: none; }
+}
+
+@media (min-width: 481px) and (max-width: 767px) {
+  .chart-image-container { padding: 20px; margin: 16px auto; border-radius: 14px; }
+  .chart-image { max-height: 350px; border-radius: 6px; }
+  .chart-image:hover { transform: scale(1.01); }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .chart-image-container { padding: 24px; max-width: 700px; }
+  .chart-image { max-height: 450px; border-radius: 8px; }
+  .chart-image:hover { transform: scale(1.02); }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .chart-image-container { padding: 32px; max-width: 900px; }
+  .chart-image { max-height: 500px; }
+}
+
+@media (min-width: 1200px) {
+  .chart-image-container { padding: 40px; max-width: 1100px; }
+  .chart-image { max-height: 600px; }
+}
+
+@media (max-width: 768px) {
+  .container { padding: 16px; }
+  .header { padding: 16px 10px; }
+  .header h1 { font-size: 1.6rem; }
+  .header .subtitle { font-size: 0.8rem; }
+  .charts-section, .stats-section { padding: 24px; }
+  .charts-title, .stats-title { font-size: 1.6rem; margin-bottom: 24px; }
+  
+  .info-charts-grid { gap: 8px; margin-bottom: 20px; }
+  .info-chart-container { padding: 12px; min-height: 90px; }
+  .info-chart-icon { width: 28px; height: 28px; font-size: 12px; margin-bottom: 6px; }
+  .info-chart-title { font-size: 0.65rem; margin-bottom: 4px; }
+  .info-chart-value { font-size: 0.95rem; }
+  
+  .charts-grid, .button-grid { gap: 12px; }
+  .charts-grid-secondary { gap: 12px; }
+  .chart-container { padding: 12px; min-height: 200px; }
+  .chart-button { padding: 12px 16px; font-size: 0.75rem; }
+}
+
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary: #8b5cf6;
+    --secondary: #6366f1;
+    --accent: #f472b6;
+    --text-primary: #f7fafc;
+    --text-secondary: #a0aec0;
+    --border: #4a5568;
+    --success: #10b981;
+    --warning: #fbbf24;
+    --danger: #ef4444;
+    --shadow-sm: 0 1px 3px rgba(255,255,255,0.1);
+    --shadow-md: 0 4px 6px -1px rgba(255,255,255,0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(255,255,255,0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(255,255,255,0.1);
+  }
+
+  body {
+    background: #1a202c;
+    color: var(--text-primary);
+  }
+
+  .header,
+  .charts-section,
+  .stats-section,
+  .chart-container,
+  .info-chart-container,
+  .chart-image-container {
+    background: rgba(26, 32, 44, 0.95);
+    color: var(--text-primary);
+  }
+
+  .chart-button {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+  }
+
+  .chart-button.active {
+    background: linear-gradient(135deg, #34d399, #3b82f6);
+  }
+
+  .chart-image-container {
+    border: 1px solid var(--border);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root { --text-primary: #f7fafc; --text-secondary: #a0aec0; --border: #4a5568; }
+}
+/* Jadwal Solat styles */
+        .jadwal-solat {
+            width: 100%;
+            margin-bottom: 15px;
+            border: 1px solid var(--primary-color);
+            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .jadwal-solat-header {
+            background-color: rgba(0, 243, 255, 0.1);
+            color: var(--primary-color);
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            border-bottom: 1px solid var(--primary-color);
+        }
+
+        .jadwal-solat-body {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            padding: 10px;
+        }
+
+        .jadwal-item {
+            text-align: center;
+            margin: 5px;
+            flex: 1;
+            min-width: 60px;
+        }
+
+        .jadwal-waktu {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .jadwal-nama {
+            font-size: 12px;
+            color: var(--primary-color);
+        }
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .main {
+                padding: 15px;
+            }
+            
+            .login-button {
+                padding: 10px;
+            }
+            
+            .table2 th, .table2 td {
+                padding: 6px 4px;
+                font-size: 12px;
+            }
+            
+            .jadwal-item {
+                min-width: 50px;
+            }
+            
+            .jadwal-nama {
+                font-size: 10px;
+            }
+        }
+
+[data-theme="dark"] {
+  --primary: #8b5cf6;
+  --secondary: #6366f1;
+  --accent: #f472b6;
+  --text-primary: #f7fafc;
+  --text-secondary: #a0aec0;
+  --border: #4a5568;
+  --success: #10b981;
+  --warning: #fbbf24;
+  --danger: #ef4444;
+  --shadow-sm: 0 1px 3px rgba(255,255,255,0.1);
+  --shadow-md: 0 4px 6px -1px rgba(255,255,255,0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(255,255,255,0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(255,255,255,0.1);
+}
+
+[data-theme="dark"] body {
+  background: #1a202c;
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .header,
+[data-theme="dark"] .charts-section,
+[data-theme="dark"] .stats-section,
+[data-theme="dark"] .chart-container,
+[data-theme="dark"] .info-chart-container,
+[data-theme="dark"] .chart-image-container {
+  background: rgba(26, 32, 44, 0.95);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .chart-button {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+}
+
+[data-theme="dark"] .chart-button.active {
+  background: linear-gradient(135deg, #34d399, #3b82f6);
+}
+
+[data-theme="dark"] .chart-image-container {
+  border: 1px solid var(--border);
+}
+[data-theme="dark"] select,
+[data-theme="dark"] #selectKota {
+  background-color: #2d3748;
+  color: #f7fafc;
+  border: 1px solid #4a5568;
+}
+
+/* New CSS for prayer time backgrounds */
+.button-grid .status-value { /* Targeting the divs holding prayer times */
+  background: rgba(255, 255, 255, 0.1); /* Slightly transparent white background */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border */
+  border-radius: 8px; /* Rounded corners */
+  padding: 10px 5px; /* Padding inside each item */
+  font-size: 0.9em; /* Adjust font size if needed */
+  font-weight: 600; /* Make text bolder */
+  color: #fff; /* White text for better contrast on dark background */
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2); /* Small text shadow for readability */
+  box-shadow: var(--shadow-sm); /* Subtle shadow */
+  transition: all 0.2s ease-in-out; /* Smooth transition for hover effects */
+  cursor: default; /* Change cursor to default as they are not buttons */
+}
+
+.button-grid .status-value:hover {
+    background: rgba(255, 255, 255, 0.15); /* Slightly darker on hover */
+    transform: translateY(-2px); /* Slight lift effect */
+    box-shadow: var(--shadow-md);
+}
+
+/* Optional: Add specific colors for each prayer time for distinction */
+/* #sholat-imsak { background: linear-gradient(135deg, #1abc9c, #16a085); } Removed Imsak */
+#sholat-subuh { background: linear-gradient(135deg, #3498db, #2980b9); }
+#sholat-dzuhur { background: linear-gradient(135deg, #f1c40f, #f39c12); }
+#sholat-ashar { background: linear-gradient(135deg, #e67e22, #d35400); }
+#sholat-maghrib { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+#sholat-isya { background: linear-gradient(135deg, #2c3e50, #1a252f); }
+
+/* Dark mode adjustments for these new styles */
+[data-theme="dark"] .button-grid .status-value {
+  background: rgba(45, 53, 64, 0.5); /* Darker background in dark mode */
+  border: 1px solid rgba(74, 85, 104, 0.4);
+  color: var(--text-primary); /* Use text-primary variable */
+  text-shadow: none;
+}
+
+[data-theme="dark"] .button-grid .status-value:hover {
+    background: rgba(45, 53, 64, 0.7);
+}
+
+/* If you use specific colors for each, ensure they contrast well in dark mode,
+   or define dark mode specific gradients for them. For now, using the same. */
+/* [data-theme="dark"] #sholat-imsak { background: linear-gradient(135deg, #1abc9c, #16a085); } Removed Imsak */
+[data-theme="dark"] #sholat-subuh { background: linear-gradient(135deg, #3498db, #2980b9); }
+[data-theme="dark"] #sholat-dzuhur { background: linear-gradient(135deg, #f1c40f, #f39c12); }
+[data-theme="dark"] #sholat-ashar { background: linear-gradient(135deg, #e67e22, #d35400); }
+[data-theme="dark"] #sholat-maghrib { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+[data-theme="dark"] #sholat-isya { background: linear-gradient(135deg, #2c3e50, #1a252f); }
+
+/* Further responsive adjustments for the new styles */
+@media (max-width: 480px) {
+  .button-grid .status-value {
+    padding: 8px 4px;
+    font-size: 0.8em;
+  }
+}
+</style>
 </head>
+
 <body>
-  <main class="wrap"><br>
-<center>
-	   <div data-netdata="net.eth1"
-			data-title="WAN1"
-			data-chart-library="gauge"
-			data-after="-150"
-			data-width="25%" 
-			data-points="720"
-			data-gauge-generate-gradient="[0,5,10,60,100]"
-			data-gauge-gradient-percent-color-0="#6e0a04"
-			data-gauge-gradient-percent-color-5="#6e0a04"
-			data-gauge-gradient-percent-color-10="#bf7a11"
-			data-gauge-gradient-percent-color-60="#decb00"
-			data-gauge-gradient-percent-color-100="#2ea611"
-			data-colors="#006786">
-	   </div>
-	   <div data-netdata="net.wwan0"
-			data-title="WAN2"
-			data-chart-library="gauge"
-			data-after="-150"
-			data-width="25%" 
-			data-points="720"
-			data-gauge-generate-gradient="[0,5,10,60,100]"
-			data-gauge-gradient-percent-color-0="#6e0a04"
-			data-gauge-gradient-percent-color-5="#6e0a04"
-			data-gauge-gradient-percent-color-10="#bf7a11"
-			data-gauge-gradient-percent-color-60="#decb00"
-			data-gauge-gradient-percent-color-100="#2ea611"
-			data-colors="#006786">
-	   </div>
-	  <br><br>
-	   <div data-netdata="system.cpu" 
-			data-chart-library="easypiechart" 
-			data-title="CPU" 
-			data-units="%" 
-			data-easypiechart-max-value="100" 
-			data-width="18%" 
-			data-points="720" 
-			data-colors="#006786">
-	   </div>
-	   <div data-netdata="net.br-lan" 
-			data-chart-library="easypiechart" 
-			data-title="LAN" 
-			data-width="18%" 
-			data-points="720" 
-			data-colors="#006786">
-	   </div>
-	   <div data-netdata="net.br-hotspot" 
-			data-chart-library="easypiechart" 
-			data-title="CLIENT" 
-			data-width="18%" 
-			data-points="720" 
-			data-colors="#006786">
-	   </div>
-	   <div data-netdata="system.ram" 
-			data-dimensions="used|buffers|active|wired" 
-			data-append-options="percentage" 
-			data-chart-library="easypiechart" 
-			data-title="Used RAM" 
-			data-units="%" 
-			data-easypiechart-max-value="100" 
-			data-width="18%" 
-			data-points="720"
-			data-colors="#006786">
-	   </div>
-	   <div data-netdata="net.br-hotspot" 
-			data-chart-library="dygraph" 
-			data-height="150px"			
-			data-width="100%" 
-			data-after="-720" 
-			data-points="720" 
-			data-colors="#f7b707">
-	   </div>
-<!-- <div id="MyClockDisplay" class="clock" onload="showTime()"></div> -->
-<center>
-<script type="text/javascript">function showTime(){var date=new Date(); var h=date.getHours(); var m=date.getMinutes(); var s=date.getSeconds(); var session="AM"; if(h==0){h=12;}if(h > 12){h=h - 12; session="PM";}h=(h < 10) ? "0" + h : h; m=(m < 10) ? "0" + m : m; s=(s < 10) ? "0" + s : s; var time=h + ":" + m + ":" + s + " " + session; document.getElementById("MyClockDisplay").innerText=time; document.getElementById("MyClockDisplay").textContent=time; setTimeout(showTime, 1000);}showTime(); </script>
-<style>body{background: white;}.clock{color: #5bc0de; font-size: 30px; font-family: Franklin Gothic Medium;text-shadow: 1px 1px 0px #000; letter-spacing: 2px;}</style>
-<center><header class="jsx-516063367 hamburger icon-hamburger"></header><div id="wimi-ipv4" class="jsx-1634742381 info-box info-box--ipv4">
-<!-- <div id="cookie-button">IP</div></div> -->
-<script class="jsx-989262791"> (function (){var lazyToSrc=eval(arguments[0]), requestIPv4=eval(arguments[1]); document.getElementById("cookie-button").addEventListener("click", function (){document.querySelector(".main-header__wrapper").classList.toggle("active");}), lazyToSrc("img[data-lazy-src]");})(function (a){fetch("https://iptools-4.top10vpn.com/ip/?genToken=1").then((b)=>{b.json().then((b)=>{(document.getElementById("wimi-ipv4").innerText=b.ip), fetch("/api/jade/",{method: "POST", body: JSON.stringify({ip: b.ip, token: b.token})}).then((b)=>{b.json().then((b)=>{;});});});});});</script></center>
-<style id="__jsx-1634742381"> .info-box.info-box--ipv4.jsx-1634742381{color: #5bc0de; font-size: 30px; font-family: Franklin Gothic Medium;text-shadow: 1px 1px 0px #000; letter-spacing: 2px;}</style>
+  <div class="container">
+    <header class="header" style="position: relative;">
 
-<center>
-    <img src="/vnstati/br-hotspot_vnstat_s.png" width="430" border="0" alt="summary">
-    <br>
-    <img src="/vnstati/br-hotspot_vnstat_5.png" width="430" border="0" alt="5 minutes">
-    <br>
-    <img src="/vnstati/br-hotspot_vnstat_h.png" width="430" border="0" alt="hourly">
-    <br>
-    <img src="/vnstati/br-hotspot_vnstat_d.png" width="430" border="0" alt="daily">
-    <br>
-    <img src="/vnstati/br-hotspot_vnstat_m.png" width="430" border="0" alt="monthly">
-    <br>
-    <img src="/vnstati/br-hotspot_vnstat_y.png" width="430" border="0" alt="yearly">
-    <br>
-    <img src="/vnstati/br-hotspot_vnstat_t.png" width="430" border="0" alt="top 25">
-</center>
 
-</main>
+
+      <h1><i class="fas fa-network-wired"></i> Network Monitor</h1>
+      <p class="subtitle">Real-time Network Performance Dashboard</p>
+    </header>
+    <section class="stats-section">
+      <div class="stats-header">
+        <h2 class="stats-title"><i class="fas fa-chart-bar"></i> Jadwal sholat untuk wilayah sragen</h2>
+      </div>
+      
+<div style="margin-bottom: 1em; text-align:center;">
+  <label for="selectKota" style="color:white; font-weight:bold;">Pilih Kota:</label>
+  <select id="selectKota" onchange="gantiKota()" style="padding: 6px; border-radius: 6px;">
+    <option value="1424">Sragen</option>
+    <option value="1301">Jakarta</option>
+    <option value="1302">Surabaya</option>
+    <option value="1371">Bandung</option>
+    <option value="1101">Aceh</option>
+    <option value="1601">Palembang</option>
+  </select>
+</div>
+
+<div id="peringatan-sholat" data-aktif="" style="
+  display: none;
+  padding: 15px;
+  margin: 10px auto;
+  max-width: 600px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  color: white;
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.4);
+  z-index: 9999;">
+</div>
+      <div class="info-chart-container">
+          <div class="info-chart-title">jadwal sholat</div>
+               <div class="status-item">
+            	<div id="tanggalwaktu" class="status-value">Loading...</div>
+          <div id="peringatan-sholat" class="status-value">Loading...</div>
+          </div><div class="button-grid">
+  <div class="status-value" id="sholat-subuh">Subuh: --:--</div>
+  <div class="status-value" id="sholat-dzuhur">Dzuhur: --:--</div>
+  <div class="status-value" id="sholat-ashar">Ashar: --:--</div>
+  <div class="status-value" id="sholat-maghrib">Maghrib: --:--</div>
+  <div class="status-value" id="sholat-isya">Isya: --:--</div>
+</div>
+<div id="countdown" style="text-align:center; font-weight:bold; color:white; margin-top:10px;">
+  <span id="countdown-text">Menuju waktu sholat berikutnya:</span> <span id="countdown-timer">--:--:--</span>
+</div>
+</div>
+    </section>
+
+    <section class="charts-section">
+      <h2 class="charts-title"><i class="fas fa-chart-line"></i> Network Performance Metrics</h2>
+      
+      <div class="charts-grid">
+        <div class="chart-container">
+          <div data-netdata="net.eth1" data-title="MODEM" data-chart-library="gauge" data-after="-100" data-width="100%" data-points="720" data-gauge-generate-gradient="[0,5,10,60,100]" data-gauge-gradient-percent-color-0="#fa709a" data-gauge-gradient-percent-color-5="#fa709a" data-gauge-gradient-percent-color-10="#f093fb" data-gauge-gradient-percent-color-60="#4facfe" data-gauge-gradient-percent-color-100="#43e97b" data-colors="#667eea"></div>
+        </div>
+        <div class="chart-container">
+          <div data-netdata="net.br-lan" data-title="LAN" data-chart-library="easypiechart" data-after="-150" data-width="100%" data-points="720" data-colors="#4facfe"></div>
+        </div>
+        <div class="chart-container">
+          <div data-netdata="net.usb0" data-title="USB" data-chart-library="gauge" data-after="-100" data-width="100%" data-points="720" data-gauge-generate-gradient="[0,5,10,60,100]" data-gauge-gradient-percent-color-0="#fa709a" data-gauge-gradient-percent-color-5="#fa709a" data-gauge-gradient-percent-color-10="#f093fb" data-gauge-gradient-percent-color-60="#4facfe" data-gauge-gradient-percent-color-100="#43e97b" data-colors="#43e97b"></div>
+        </div>
+      </div>
+
+      <div class="charts-grid-secondary">
+        <div class="chart-container">
+          <div data-netdata="system.net" data-dimensions="received" data-chart-library="easypiechart" data-title="DATA RECEIVED" data-width="100%" data-points="720" data-common-units="system.net.mainhead" data-colors="#4facfe"></div>
+        </div>
+        <div class="chart-container">
+          <div data-netdata="system.cpu" data-chart-library="easypiechart" data-title="CPU USAGE" data-units="%" data-easypiechart-max-value="100" data-width="100%" data-points="720" data-colors="#f093fb"></div>
+        </div>
+        <div class="chart-container">
+          <div data-netdata="system.ram" data-dimensions="used|buffers|active|wired" data-append-options="percentage" data-chart-library="easypiechart" data-title="RAM USAGE" data-units="%" data-easypiechart-max-value="100" data-width="100%" data-points="720" data-colors="#43e97b"></div>
+        </div>
+        <div class="chart-container">
+          <div data-netdata="system.net" data-dimensions="sent" data-chart-library="easypiechart" data-title="DATA SENT" data-width="100%" data-points="720" data-common-units="system.net.mainhead" data-colors="#667eea"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats-section">
+      <div class="stats-header">
+        <h2 class="stats-title"><i class="fas fa-chart-bar"></i> Network Statistics</h2>
+        <p class="stats-subtitle">Historical network usage data</p>
+      </div>
+      
+      <div class="button-grid" id="statsButtonGrid">
+        <button class="chart-button active" data-chart="summary"><i class="fas fa-chart-pie"></i> Summary</button>
+        <button class="chart-button" data-chart="minutes"><i class="fas fa-stopwatch"></i> 5 Minutes</button>
+        <button class="chart-button" data-chart="hourly"><i class="fas fa-clock"></i> Hourly</button>
+        <button class="chart-button" data-chart="daily"><i class="fas fa-calendar-day"></i> Daily</button>
+        <button class="chart-button" data-chart="monthly"><i class="fas fa-calendar-alt"></i> Monthly</button>
+        <button class="chart-button" data-chart="yearly"><i class="fas fa-calendar"></i> Yearly</button>
+      </div>
+      
+      <div id="imageContainer">
+        <img id="summary" class="chart-image" src="/vnstati/br-lan_vnstat_s.png" alt="Network Summary" style="display: block;">
+        <img id="minutes" class="chart-image" src="/vnstati/br-lan_vnstat_5.png" alt="5 Minutes Stats">
+        <img id="hourly" class="chart-image" src="/vnstati/br-lan_vnstat_h.png" alt="Hourly Stats">
+        <img id="daily" class="chart-image" src="/vnstati/br-lan_vnstat_d.png" alt="Daily Stats" style="width: 100%; max-width: 1400px;">
+        <img id="monthly" class="chart-image" src="/vnstati/br-lan_vnstat_m.png" alt="Monthly Stats">
+        <img id="yearly" class="chart-image" src="/vnstati/br-lan_vnstat_y.png" alt="Yearly Stats">
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Optimized DOM Cache
+    const $ = {
+      clock: document.getElementById('MyClockDisplay'),
+      status: document.getElementById('connectionStatus'),
+      icon: document.getElementById('connectionIcon'),
+      imgContainer: document.getElementById('imageContainer'),
+      buttons: document.querySelectorAll('.chart-button'),
+      images: document.querySelectorAll('.chart-image')
+    };
+
+    // Efficient time display
+    const showTime = () => {
+      const t = new Date();
+      $.clock.textContent = [t.getHours(), t.getMinutes(), t.getSeconds()]
+        .map(n => n.toString().padStart(2, '0')).join(':');
+    };
+
+    // Streamlined connection checker
+    const checkConnectionStatus = () => {
+      updateConnectionUI('checking', 'Checking...');
+      
+      const urls = ['https://www.google.com/favicon.ico', 'https://www.cloudflare.com/favicon.ico'];
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+      
+      let completed = 0, success = false;
+      
+      urls.forEach(url => {
+        fetch(url, { method: 'HEAD', mode: 'no-cors', signal: controller.signal })
+          .then(() => {
+            if (!success) {
+              success = true;
+              clearTimeout(timeout);
+              updateConnectionUI('connected', 'Connected');
+            }
+          })
+          .catch(() => {
+            if (++completed === urls.length && !success) {
+              clearTimeout(timeout);
+              updateConnectionUI('disconnected', 'Not Connected');
+            }
+          });
+      });
+    };
+
+    // Efficient status updater
+    const updateConnectionUI = (status, text) => {
+      const config = {
+        connected: { icon: 'fas fa-wifi', class: 'connected' },
+        disconnected: { icon: 'fas fa-wifi-slash', class: 'disconnected' },
+        checking: { icon: 'fas fa-spinner fa-spin', class: 'checking' }
+      }[status];
+      
+      $.status.className = `info-chart-value ${config.class}`;
+      $.icon.className = `info-chart-icon ${config.class}`;
+      $.icon.innerHTML = `<i class="${config.icon}"></i>`;
+      $.status.innerHTML = `
+        <div class="status-indicator">
+          <span class="status-dot ${config.class}"></span>
+          <span>${text}</span>
+        </div>
+      `;
+    };
+
+    // Optimized chart display
+    const showChart = (chartType) => {
+      const container = $.imgContainer;
+      const img = document.getElementById(chartType);
+      
+      container.classList.add('loading');
+      $.images.forEach(i => i.style.display = 'none');
+      
+      if (img) {
+        const show = () => {
+          img.style.display = 'block';
+          container.classList.remove('loading');
+        };
+        
+        img.complete && img.naturalHeight ? show() : (img.onload = img.onerror = show);
+      }
+    };
+
+    // Event delegation for buttons
+    document.getElementById('statsButtonGrid').addEventListener('click', e => {
+      const btn = e.target.closest('.chart-button');
+      if (!btn) return;
+      
+      $.buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      showChart(btn.dataset.chart);
+    });
+
+    // Initialize
+    const init = () => {
+      showTime();
+      setInterval(showTime, 1000);
+      checkConnectionStatus();
+      setInterval(checkConnectionStatus, 120000);
+      showChart('summary');
+      $.images.forEach(img => !img.complete && (img.loading = 'lazy'));
+    };
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+  <script type="text/javascript">
+    function showTime(){
+      var a_p = "";
+			var today = new Date();
+			var curr_hour = today.getHours();
+			var curr_minute = today.getMinutes();
+			var curr_second = today.getSeconds();
+
+			if (curr_hour<12) {
+				a_p = "(sugeng Enjing houjie)";
+			}else {
+				a_p = "(sugeng dalu houjie)";
+			}
+				
+
+			if (curr_hour == 0) {
+				curr_hour=24;
+			}
+			if (curr_hour == 24) {
+				curr_hour=curr_hour-24;
+			}
+			curr_hour = checkTime(curr_hour);
+			curr_minute = checkTime(curr_minute);
+			curr_second = checkTime(curr_second);
+
+			document.getElementById('time').innerHTML= curr_hour+":"+curr_minute+":"+curr_second;
+			// document.getElementById('nama').innerHTML= a_p; // 'nama' element not found in HTML
+		}
+
+		function checkTime(i){
+			if (i<10) {
+				i = "0"+i;
+			}
+			return i;
+		}
+		setInterval(showTime,100);
+  </script>
+  <script>
+var tw = new Date();
+if (tw.getTimezoneOffset() == 0) (a=tw.getTime() + ( 7 *60*60*1000))
+else (a=tw.getTime());
+tw.setTime(a);
+var tahun= tw.getFullYear ();
+var hari= tw.getDay ();
+var bulan= tw.getMonth ();
+var tanggal= tw.getDate ();
+var hariarray=new Array("Minggu,","Senen,","Seloso,","Rebo,","Kemis,","Jum'at,","Setu,");
+var bulanarray=new Array("Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","Nopember","Desember");
+document.getElementById("tanggalwaktu").innerHTML = hariarray[hari]+" "+tanggal+" "+bulanarray[bulan]+" "+tahun;
+</script>
+
+<script>
+let kotaID = '1424';
+let waktuSholat = {};
+let waktuBerikutnyaGlobal = null;
+let namaWaktuBerikutnyaGlobal = ''; // New global variable for the prayer name
+
+function gantiKota() {
+  kotaID = document.getElementById('selectKota').value;
+  ambilJadwalSholat();
+}
+
+function ambilJadwalSholat() {
+  const today = new Date();
+  const yyyy = today.getFullYear(); // Correctly declare yyyy here
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  const url = `https://api.myquran.com/v2/sholat/jadwal/${kotaID}/${yyyy}/${mm}/${dd}`;
+
+  fetch(url)
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.json();
+    })
+    .then(data => {
+      if (data.status !== true) {
+        throw new Error(`API error: ${data.message || 'Unknown error'}`);
+      }
+      const jadwal = data.data.jadwal;
+      // document.getElementById('sholat-imsak').innerText = 'Imsak: ' + jadwal.imsak; // Removed Imsak
+      document.getElementById('sholat-subuh').innerText = 'Subuh: ' + jadwal.subuh;
+      document.getElementById('sholat-dzuhur').innerText = 'Dzuhur: ' + jadwal.dzuhur;
+      document.getElementById('sholat-ashar').innerText = 'Ashar: ' + jadwal.ashar;
+      document.getElementById('sholat-maghrib').innerText = 'Maghrib: ' + jadwal.maghrib;
+      document.getElementById('sholat-isya').innerText = 'Isya: ' + jadwal.isya;
+
+      waktuSholat = {
+        // imsak: jadwal.imsak, // Removed Imsak
+        subuh: jadwal.subuh,
+        dzuhur: jadwal.dzuhur,
+        ashar: jadwal.ashar,
+        maghrib: jadwal.maghrib,
+        isya: jadwal.isya
+      };
+
+      cekWaktuSholat();
+      cariWaktuBerikutnya(); // Call this immediately after fetching prayer times
+    })
+    .catch(error => {
+      console.error("Error fetching prayer times:", error);
+      // document.getElementById('sholat-imsak').innerText = 'Imsak: --:--'; // Removed Imsak
+      document.getElementById('sholat-subuh').innerText = 'Subuh: --:--';
+      document.getElementById('sholat-dzuhur').innerText = 'Dzuhur: --:--';
+      document.getElementById('sholat-ashar').innerText = 'Ashar: --:--';
+      document.getElementById('sholat-maghrib').innerText = 'Maghrib: --:--';
+      document.getElementById('sholat-isya').innerText = 'Isya: --:--';
+      document.getElementById('countdown-timer').innerText = '--:--:--';
+      document.getElementById('countdown-text').innerText = 'Menuju waktu sholat berikutnya:'; // Reset text
+      waktuBerikutnyaGlobal = null; // Reset to prevent old countdown
+      namaWaktuBerikutnyaGlobal = ''; // Reset the name as well
+    });
+}
+
+function cariWaktuBerikutnya() {
+  const urutan = ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya']; // Removed Imsak from order
+  const now = new Date();
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
+  const todayDate = now.getDate();
+  const todayMonth = now.getMonth();
+  const todayYear = now.getFullYear();
+
+  let foundNext = false;
+  for (let i = 0; i < urutan.length; i++) {
+    const nama = urutan[i];
+    const waktu = waktuSholat[nama];
+    if (!waktu) continue;
+    const [jam, menit] = waktu.split(':').map(Number);
+    const total = jam * 60 + menit;
+
+    if (total > nowMinutes) {
+      waktuBerikutnyaGlobal = new Date(todayYear, todayMonth, todayDate, jam, menit);
+      namaWaktuBerikutnyaGlobal = nama.charAt(0).toUpperCase() + nama.slice(1); // Capitalize first letter
+      foundNext = true;
+      break;
+    }
+  }
+
+  // If no prayer time is found for today (e.g., all have passed), set it for tomorrow's Subuh
+  if (!foundNext) {
+      const tomorrow = new Date(now);
+      tomorrow.setDate(now.getDate() + 1);
+      const tomorrowYear = tomorrow.getFullYear();
+      const tomorrowMonth = tomorrow.getMonth();
+      const tomorrowDate = tomorrow.getDate();
+
+      const subuhTomorrow = waktuSholat['subuh'] || '00:00'; // Now targeting Subuh for tomorrow
+      const [jamTomorrow, menitTomorrow] = subuhTomorrow.split(':').map(Number);
+      waktuBerikutnyaGlobal = new Date(tomorrowYear, tomorrowMonth, tomorrowDate, jamTomorrow, menitTomorrow);
+      namaWaktuBerikutnyaGlobal = 'Subuh (Besok)'; // Indicate it's for tomorrow
+  }
+}
+
+function updateCountdown() {
+  if (!waktuBerikutnyaGlobal) {
+    document.getElementById('countdown-timer').innerText = '--:--:--';
+    document.getElementById('countdown-text').innerText = 'Menuju waktu sholat berikutnya:'; // Reset text
+    return;
+  }
+  const now = new Date();
+  let selisih = waktuBerikutnyaGlobal - now;
+
+  if (selisih <= 0) {
+    ambilJadwalSholat(); // This will re-fetch and re-calculate the next prayer
+    return;
+  }
+
+  const jam = Math.floor(selisih / (1000 * 60 * 60));
+  const menit = Math.floor((selisih % (1000 * 60 * 60)) / (1000 * 60));
+  const detik = Math.floor((selisih % (1000 * 60)) / 1000);
+  
+  // Update the text to include the prayer name
+  document.getElementById('countdown-text').innerText = `Menuju waktu sholat ${namaWaktuBerikutnyaGlobal}:`;
+  document.getElementById('countdown-timer').innerText =
+    String(jam).padStart(2, '0') + ':' +
+    String(menit).padStart(2, '0') + ':' +
+    String(detik).padStart(2, '0');
+}
+
+function cekWaktuSholat() {
+    const now = new Date();
+    const totalSekarang = now.getHours() * 60 + now.getMinutes();
+
+    const urutan = ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya']; // Removed Imsak from order
+    let pesan = '';
+    let jenis = '';
+
+    for (let i = 0; i < urutan.length; i++) {
+      const nama = urutan[i];
+      const waktu = waktuSholat[nama];
+      if (!waktu) continue;
+
+      const [jam, menit] = waktu.split(':').map(Number);
+      const totalWaktu = jam * 60 + menit;
+
+      if (totalSekarang === totalWaktu - 10) {
+        pesan = `⏰ 10 menit lagi masuk waktu sholat ${nama.charAt(0).toUpperCase() + nama.slice(1)}`;
+        jenis = `10m-${nama}`;
+        break;
+      }
+
+      if (totalSekarang >= totalWaktu) {
+        let nextPrayerTimeToday = null;
+        for (let j = i + 1; j < urutan.length; j++) {
+            const nextNama = urutan[j];
+            const nextWaktu = waktuSholat[nextNama];
+            if (nextWaktu) {
+                const [nextJam, nextMenit] = nextWaktu.split(':').map(Number);
+                const nextTotalWaktu = nextJam * 60 + nextMenit;
+                if (nextTotalWaktu > totalSekarang) {
+                    nextPrayerTimeToday = nextTotalWaktu;
+                    break;
+                }
+            }
+        }
+
+        if (nextPrayerTimeToday === null || totalSekarang < nextPrayerTimeToday) {
+            pesan = `🕋 Sudah masuk waktu sholat ${nama.charAt(0).toUpperCase() + nama.slice(1)}`;
+            jenis = `masuk-${nama}`;
+            break;
+        }
+      }
+    }
+
+    const el = document.getElementById('peringatan-sholat');
+    if (jenis && el.dataset.aktif !== jenis) {
+      el.innerText = pesan;
+      el.style.display = 'block';
+      el.dataset.aktif = jenis;
+    } else if (!jenis && el.dataset.aktif) {
+        el.style.display = 'none';
+        el.dataset.aktif = '';
+    }
+}
+
+
+// Initial call to fetch prayer times and start countdown
+ambilJadwalSholat();
+setInterval(cekWaktuSholat, 60000); // Check for prayer alerts every minute
+setInterval(updateCountdown, 1000); // Update countdown every second
+</script>
+
+
+
+
 </body>
 </html>
