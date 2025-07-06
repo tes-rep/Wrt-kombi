@@ -510,7 +510,7 @@ body {
     </header>
     <section class="stats-section">
       <div class="stats-header">
-        <h2 class="stats-title"><i class="fas fa-chart-bar"></i> Jadwal sholat untuk wilayah sragen</h2>
+       <h2 class="stats-title" id="judulSholat"><i class="fas fa-chart-bar"></i> Jadwal sholat untuk wilayah Sragen</h2>
       </div>
       
 <div style="margin-bottom: 1em; text-align:center;">
@@ -543,8 +543,8 @@ body {
           <div class="info-chart-title">jadwal sholat</div>
                <div class="status-item">
             	<div id="tanggalwaktu" class="status-value">Loading...</div>
-          <div id="peringatan-sholat" class="status-value">Loading...</div>
-          </div><div class="button-grid">
+            	<div id="time" style="font-size: 1.5rem; font-weight: bold; margin-top: 10px; color: white;">00:00:00</div>
+          <div class="button-grid">
   <div class="status-value" id="sholat-subuh">Subuh: --:--</div>
   <div class="status-value" id="sholat-dzuhur">Dzuhur: --:--</div>
   <div class="status-value" id="sholat-ashar">Ashar: --:--</div>
@@ -601,6 +601,7 @@ body {
         <button class="chart-button" data-chart="daily"><i class="fas fa-calendar-day"></i> Daily</button>
         <button class="chart-button" data-chart="monthly"><i class="fas fa-calendar-alt"></i> Monthly</button>
         <button class="chart-button" data-chart="yearly"><i class="fas fa-calendar"></i> Yearly</button>
+        <button class="chart-button" data-chart="top 25"><i class="fas fa-calendar"></i> top 25</button>
       </div>
       
       <div id="imageContainer">
@@ -610,115 +611,12 @@ body {
         <img id="daily" class="chart-image" src="/vnstati/br-lan_vnstat_d.png" alt="Daily Stats" style="width: 100%; max-width: 1400px;">
         <img id="monthly" class="chart-image" src="/vnstati/br-lan_vnstat_m.png" alt="Monthly Stats">
         <img id="yearly" class="chart-image" src="/vnstati/br-lan_vnstat_y.png" alt="Yearly Stats">
+        <img id="top 25" class="chart-image" src="/vnstati/br-lan_vnstat_t.png" alt="top 25" Stats">
       </div>
     </section>
   </div>
 
-  <script>
-    // Optimized DOM Cache
-    const $ = {
-      clock: document.getElementById('MyClockDisplay'),
-      status: document.getElementById('connectionStatus'),
-      icon: document.getElementById('connectionIcon'),
-      imgContainer: document.getElementById('imageContainer'),
-      buttons: document.querySelectorAll('.chart-button'),
-      images: document.querySelectorAll('.chart-image')
-    };
 
-    // Efficient time display
-    const showTime = () => {
-      const t = new Date();
-      $.clock.textContent = [t.getHours(), t.getMinutes(), t.getSeconds()]
-        .map(n => n.toString().padStart(2, '0')).join(':');
-    };
-
-    // Streamlined connection checker
-    const checkConnectionStatus = () => {
-      updateConnectionUI('checking', 'Checking...');
-      
-      const urls = ['https://www.google.com/favicon.ico', 'https://www.cloudflare.com/favicon.ico'];
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 8000);
-      
-      let completed = 0, success = false;
-      
-      urls.forEach(url => {
-        fetch(url, { method: 'HEAD', mode: 'no-cors', signal: controller.signal })
-          .then(() => {
-            if (!success) {
-              success = true;
-              clearTimeout(timeout);
-              updateConnectionUI('connected', 'Connected');
-            }
-          })
-          .catch(() => {
-            if (++completed === urls.length && !success) {
-              clearTimeout(timeout);
-              updateConnectionUI('disconnected', 'Not Connected');
-            }
-          });
-      });
-    };
-
-    // Efficient status updater
-    const updateConnectionUI = (status, text) => {
-      const config = {
-        connected: { icon: 'fas fa-wifi', class: 'connected' },
-        disconnected: { icon: 'fas fa-wifi-slash', class: 'disconnected' },
-        checking: { icon: 'fas fa-spinner fa-spin', class: 'checking' }
-      }[status];
-      
-      $.status.className = `info-chart-value ${config.class}`;
-      $.icon.className = `info-chart-icon ${config.class}`;
-      $.icon.innerHTML = `<i class="${config.icon}"></i>`;
-      $.status.innerHTML = `
-        <div class="status-indicator">
-          <span class="status-dot ${config.class}"></span>
-          <span>${text}</span>
-        </div>
-      `;
-    };
-
-    // Optimized chart display
-    const showChart = (chartType) => {
-      const container = $.imgContainer;
-      const img = document.getElementById(chartType);
-      
-      container.classList.add('loading');
-      $.images.forEach(i => i.style.display = 'none');
-      
-      if (img) {
-        const show = () => {
-          img.style.display = 'block';
-          container.classList.remove('loading');
-        };
-        
-        img.complete && img.naturalHeight ? show() : (img.onload = img.onerror = show);
-      }
-    };
-
-    // Event delegation for buttons
-    document.getElementById('statsButtonGrid').addEventListener('click', e => {
-      const btn = e.target.closest('.chart-button');
-      if (!btn) return;
-      
-      $.buttons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      showChart(btn.dataset.chart);
-    });
-
-    // Initialize
-    const init = () => {
-      showTime();
-      setInterval(showTime, 1000);
-      checkConnectionStatus();
-      setInterval(checkConnectionStatus, 120000);
-      showChart('summary');
-      $.images.forEach(img => !img.complete && (img.loading = 'lazy'));
-    };
-
-    document.addEventListener('DOMContentLoaded', init);
-  </script>
   <script type="text/javascript">
     function showTime(){
       var a_p = "";
@@ -960,8 +858,123 @@ function cekWaktuSholat() {
 ambilJadwalSholat();
 setInterval(cekWaktuSholat, 60000); // Check for prayer alerts every minute
 setInterval(updateCountdown, 1000); // Update countdown every second
-</script>
 
+function gantiKota() {
+  kotaID = document.getElementById('selectKota').value;
+
+  // Tambahan: ambil teks dari opsi terpilih
+  var namaKota = document.getElementById('selectKota').options[document.getElementById('selectKota').selectedIndex].text;
+  document.getElementById('judulSholat').innerHTML = `<i class="fas fa-chart-bar"></i> Jadwal sholat untuk wilayah ${namaKota}`;
+
+  ambilJadwalSholat();
+}
+
+</script>
+  <script>
+    // Optimized DOM Cache
+    const $ = {
+      clock: document.getElementById('MyClockDisplay'),
+      status: document.getElementById('connectionStatus'),
+      icon: document.getElementById('connectionIcon'),
+      imgContainer: document.getElementById('imageContainer'),
+      buttons: document.querySelectorAll('.chart-button'),
+      images: document.querySelectorAll('.chart-image')
+    };
+
+    // Efficient time display
+    const showTime2 = () => {
+      const t = new Date();
+      $.clock.textContent = [t.getHours(), t.getMinutes(), t.getSeconds()]
+        .map(n => n.toString().padStart(2, '0')).join(':');
+    };
+
+    // Streamlined connection checker
+    const checkConnectionStatus = () => {
+      updateConnectionUI('checking', 'Checking...');
+      
+      const urls = ['https://www.google.com/favicon.ico', 'https://www.cloudflare.com/favicon.ico'];
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+      
+      let completed = 0, success = false;
+      
+      urls.forEach(url => {
+        fetch(url, { method: 'HEAD', mode: 'no-cors', signal: controller.signal })
+          .then(() => {
+            if (!success) {
+              success = true;
+              clearTimeout(timeout);
+              updateConnectionUI('connected', 'Connected');
+            }
+          })
+          .catch(() => {
+            if (++completed === urls.length && !success) {
+              clearTimeout(timeout);
+              updateConnectionUI('disconnected', 'Not Connected');
+            }
+          });
+      });
+    };
+
+    // Efficient status updater
+    const updateConnectionUI = (status, text) => {
+      const config = {
+        connected: { icon: 'fas fa-wifi', class: 'connected' },
+        disconnected: { icon: 'fas fa-wifi-slash', class: 'disconnected' },
+        checking: { icon: 'fas fa-spinner fa-spin', class: 'checking' }
+      }[status];
+      
+      $.status.className = `info-chart-value ${config.class}`;
+      $.icon.className = `info-chart-icon ${config.class}`;
+      $.icon.innerHTML = `<i class="${config.icon}"></i>`;
+      $.status.innerHTML = `
+        <div class="status-indicator">
+          <span class="status-dot ${config.class}"></span>
+          <span>${text}</span>
+        </div>
+      `;
+    };
+
+    // Optimized chart display
+    const showChart = (chartType) => {
+      const container = $.imgContainer;
+      const img = document.getElementById(chartType);
+      
+      container.classList.add('loading');
+      $.images.forEach(i => i.style.display = 'none');
+      
+      if (img) {
+        const show = () => {
+          img.style.display = 'block';
+          container.classList.remove('loading');
+        };
+        
+        img.complete && img.naturalHeight ? show() : (img.onload = img.onerror = show);
+      }
+    };
+
+    // Event delegation for buttons
+    document.getElementById('statsButtonGrid').addEventListener('click', e => {
+      const btn = e.target.closest('.chart-button');
+      if (!btn) return;
+      
+      $.buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      showChart(btn.dataset.chart);
+    });
+
+    // Initialize
+    const init = () => {
+      showTime();
+      setInterval(showTime, 1000);
+      checkConnectionStatus();
+      setInterval(checkConnectionStatus, 120000);
+      showChart('summary');
+      $.images.forEach(img => !img.complete && (img.loading = 'lazy'));
+    };
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
 
 
 
