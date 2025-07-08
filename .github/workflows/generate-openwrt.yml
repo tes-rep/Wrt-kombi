@@ -415,7 +415,7 @@ jobs:
               configure_arm_device "s905x3" "6.1.66-DBAI" "ULO"
               ;;
             "ULO Amlogic s905X4")
-              configure_arm_device "s905x4" "6.1.66-DBAI" "ULO"
+              configure_arm_device "s905x4" "5.4.279" "ULO"
               ;;
               
             # ULO Allwinner devices
