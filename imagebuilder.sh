@@ -296,13 +296,7 @@ download_imagebuilder() {
     sync && sleep 3
     echo -e "${INFO} [ ${make_path} ] directory status: $(ls -al 2>/dev/null)"
 }
-    # Unzip and change the directory name
-    tar --zstd -xvf *-imagebuilder-* && sync && rm -f *-imagebuilder-*.tar.zst
-    mv -f *-imagebuilder-* ${openwrt_dir}
-
-    sync && sleep 3
-    echo -e "${INFO} [ ${make_path} ] directory status: $(ls -al 2>/dev/null)"
-}
+    
 
 # Adjust related files in the ImageBuilder directory
 adjust_settings() {
