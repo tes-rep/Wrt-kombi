@@ -181,6 +181,7 @@ dl_zip_gh() {
 }
 
 # Downloading OpenWrt ImageBuilder
+
 download_imagebuilder() {
     cd ${make_path}
     echo -e "${STEPS} Start downloading OpenWrt files..."
@@ -269,12 +270,12 @@ download_imagebuilder() {
     for ext in zst xz; do
         download_file="${base_url}/${file_prefix}.${ext}"
         echo -e "${INFO} Trying: $download_file"
-        curl -fsSOL "$download_file" && {
+        if curl -fsSOL "$download_file"; then
             file_ext="$ext"
             download_success=1
             echo -e "${SUCCESS} Downloaded: $download_file"
             break
-        }
+        fi
     done
 
     [[ $download_success -eq 1 ]] || error_msg "Failed to download imagebuilder from OpenWrt"
@@ -288,11 +289,14 @@ download_imagebuilder() {
         rm -f "${file_prefix}.xz"
     fi
 
-    mv -f *-imagebuilder-* ${openwrt_dir}
+    extracted_dir=$(ls -d *-imagebuilder-* 2>/dev/null | head -n 1)
+    [[ -d "$extracted_dir" ]] || error_msg "Extracted imagebuilder directory not found!"
+    mv -f "$extracted_dir" "${openwrt_dir}"
 
     sync && sleep 3
     echo -e "${INFO} [ ${make_path} ] directory status: $(ls -al 2>/dev/null)"
-}    # Unzip and change the directory name
+}
+    # Unzip and change the directory name
     tar --zstd -xvf *-imagebuilder-* && sync && rm -f *-imagebuilder-*.tar.zst
     mv -f *-imagebuilder-* ${openwrt_dir}
 
