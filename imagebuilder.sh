@@ -259,13 +259,40 @@ download_imagebuilder() {
         ARCH_3="x86_64"
     fi
 
-    # Downloading imagebuilder files
-    download_file="https://downloads.${op_sourse}.org/releases/${op_branch}/targets/${target_system}/${op_sourse}-imagebuilder-${op_branch}-${target_name}.Linux-x86_64.tar.zst"
-    curl -fsSOL ${download_file}
-    [[ "${?}" -eq "0" ]] || error_msg "Download failed: [ ${download_file} ]"
-    echo -e "${SUCCESS} Download Base ${op_branch} ${target_name} successfully!"
+    echo -e "${STEPS} Trying to download OpenWrt ImageBuilder..."
 
-    # Unzip and change the directory name
+    base_url="https://downloads.${op_sourse}.org/releases/${op_branch}/targets/${target_system}"
+    file_prefix="${op_sourse}-imagebuilder-${op_branch}-${target_name}.Linux-x86_64.tar"
+    file_ext=""
+    download_success=0
+
+    for ext in zst xz; do
+        download_file="${base_url}/${file_prefix}.${ext}"
+        echo -e "${INFO} Trying: $download_file"
+        curl -fsSOL "$download_file" && {
+            file_ext="$ext"
+            download_success=1
+            echo -e "${SUCCESS} Downloaded: $download_file"
+            break
+        }
+    done
+
+    [[ $download_success -eq 1 ]] || error_msg "Failed to download imagebuilder from OpenWrt"
+
+    echo -e "${INFO} Extracting imagebuilder..."
+    if [[ "$file_ext" == "zst" ]]; then
+        tar --zstd -xvf "${file_prefix}.zst" || error_msg "Failed to extract .tar.zst"
+        rm -f "${file_prefix}.zst"
+    elif [[ "$file_ext" == "xz" ]]; then
+        tar -xvf "${file_prefix}.xz" || error_msg "Failed to extract .tar.xz"
+        rm -f "${file_prefix}.xz"
+    fi
+
+    mv -f *-imagebuilder-* ${openwrt_dir}
+
+    sync && sleep 3
+    echo -e "${INFO} [ ${make_path} ] directory status: $(ls -al 2>/dev/null)"
+}    # Unzip and change the directory name
     tar --zstd -xvf *-imagebuilder-* && sync && rm -f *-imagebuilder-*.tar.zst
     mv -f *-imagebuilder-* ${openwrt_dir}
 
@@ -380,7 +407,7 @@ custom_packages() {
         "modemband|https://downloads.immortalwrt.org/releases/packages-24.10/$ARCH_3/packages"
         "luci-app-modemband|https://downloads.immortalwrt.org/releases/packages-24.10/$ARCH_3/luci"
         "luci-app-sms-tool-js|https://downloads.immortalwrt.org/releases/packages-24.10/$ARCH_3/luci"
-        "luci-theme-argon|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
+        #"luci-theme-argon|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
         "luci-app-eqosplus|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
         "luci-app-tinyfilemanager|https://dl.openwrt.ai/packages-24.10/$ARCH_3/kiddin9"
     )
@@ -401,9 +428,9 @@ custom_packages() {
     fi
 
     # Mihomo
-    mihomo_api="https://api.github.com/repos/rizkikotet-dev/OpenWrt-mihomo-Mod/releases/latest"
-    mihomo_file_ipk="mihomo_${ARCH_3}-openwrt-24.10" #$op_branch | cut -d '.' -f 1-2
-    mihomo_file_ipk_down="$(curl -s ${mihomo_api} | grep "browser_download_url" | grep -oE "https.*${mihomo_file_ipk}.*.tar.gz" | head -n 1)"
+   # mihomo_api="https://api.github.com/repos/rizkikotet-dev/OpenWrt-mihomo-Mod/releases/latest"
+  #  mihomo_file_ipk="mihomo_${ARCH_3}-openwrt-24.10" #$op_branch | cut -d '.' -f 1-2
+   # mihomo_file_ipk_down="$(curl -s ${mihomo_api} | grep "browser_download_url" | grep -oE "https.*${mihomo_file_ipk}.*.tar.gz" | head -n 1)"
 
     #passwall
     passwall_api="https://api.github.com/repos/xiaorouji/openwrt-passwall/releases"
@@ -412,6 +439,9 @@ custom_packages() {
     passwall_file_ipk_down="$(curl -s ${passwall_api} | grep "browser_download_url" | grep -oE "https.*${passwall_file_ipk}.*.ipk" | head -n 1)"
     passwall_file_zip_down="$(curl -s ${passwall_api} | grep "browser_download_url" | grep -oE "https.*${passwall_file_zip}.*.zip" | head -n 1)"
 
+    #Nikki URL generation
+     nikki_file_ipk="nikki_${ARCH_3}-openwrt-24.10"
+     nikki_file_ipk_down=$(curl -s "https://api.github.com/repos/rizkikotet-dev/OpenWrt-nikki-Mod/releases" | grep "browser_download_url" | grep -oE "https.*${nikki_file_ipk}.*.tar.gz" | head -n 1)
 
     # Output download information
     echo -e "${STEPS} Installing OpenClash , Mihomo And Passwall"
@@ -428,17 +458,6 @@ custom_packages() {
     fi
     echo -e "${INFO} OpenClash Packages downloaded successfully."
 
-    echo -e "${INFO} Downloading Mihomo package"
-    curl -fsSOL ${mihomo_file_ipk_down}
-    if [ "$?" -ne 0 ]; then
-        error_msg "Error: Failed to download Mihomo package."
-    fi
-    tar -xzvf "mihomo_${ARCH_3}-openwrt-24.10.tar.gz" && rm "mihomo_${ARCH_3}-openwrt-24.10.tar.gz"
-    if [ "$?" -ne 0 ]; then
-        error_msg "Error: Failed to extract Mihomo package."
-    fi
-    echo -e "${INFO} Mihomo Packages downloaded successfully."
-
     echo -e "${INFO} Downloading Passwall package"
     curl -fsSOL ${passwall_file_ipk_down}
     if [ "$?" -ne 0 ]; then
@@ -454,6 +473,16 @@ custom_packages() {
     fi
     echo -e "${INFO} Passwall Packages downloaded successfully."
 
+    echo -e "${INFO} Downloading nikki package"
+    curl -fsSOL ${nikki_file_ipk_down}
+    if [ "$?" -ne 0 ]; then
+        error_msg "Error: Failed to download Mihomo package."
+    fi
+    tar -xzvf "nikki_${ARCH_3}-openwrt-24.10.tar.gz" && rm "nikki_${ARCH_3}-openwrt-24.10.tar.gz"
+    if [ "$?" -ne 0 ]; then
+        error_msg "Error: Failed to extract Mihomo package."
+    fi
+    echo -e "${INFO} nikki Packages downloaded successfully."
 
     echo -e "${SUCCESS} Download and extraction All complete."
     sync && sleep 3
@@ -513,21 +542,20 @@ rebuild_firmware() {
     kmod-usb-net-huawei-cdc-ncm kmod-usb-net-cdc-ether kmod-usb-net-rndis kmod-usb-net-sierrawireless kmod-usb-ohci kmod-usb-serial-sierrawireless \
     kmod-usb-uhci kmod-usb2 kmod-usb-ehci kmod-usb-net-ipheth usbmuxd libusbmuxd-utils libimobiledevice-utils usb-modeswitch kmod-nls-utf8 mbim-utils xmm-modem \
     kmod-phy-broadcom kmod-phylib-broadcom kmod-tg3 iptables-nft coreutils-stty"
-    PACKAGES+=" luci-app-base64 perl perlbase-essential perlbase-cpan perlbase-utf8 perlbase-time perlbase-xsloader perlbase-extutils"
+    PACKAGES+=" luci-app-base64 perl perlbase-essential perlbase-cpan perlbase-utf8 perlbase-time perlbase-xsloader perlbase-extutils perlbase-cpan perl"
 
     # Modem Tools
     #PACKAGES+=" modeminfo luci-app-modeminfo atinout modemband luci-app-modemband sms-tool luci-app-sms-tool-js luci-app-lite-watchdog luci-app-3ginfo-lite picocom minicom"
 
     # Tunnel option
     OPENCLASH+="coreutils-nohup bash dnsmasq-full curl ca-certificates ipset ip-full libcap libcap-bin ruby ruby-yaml kmod-tun kmod-inet-diag unzip kmod-nft-tproxy luci-compat luci luci-base luci-app-openclash"
-    MIHOMO+="mihomo luci-app-mihomo"
+    NIKKI+="nikki luci-app-nikki"
     #PASSWALL+="chinadns-ng resolveip dns2socks dns2tcp ipt2socks microsocks tcping xray-core xray-plugin luci-app-passwall"
-    PACKAGES+=" $OPENCLASH "
+    PACKAGES+=" $OPENCLASH $NIKKI"
 
-  #  PACKAGES+=" $OPENCLASH $MIHOMO"
 
     # Remote Services
-    PACKAGES+=" tailscale luci-app-tailscale  luci-app-droidnet luci-app-ipinfo luci-theme-initials luci-theme-hj"
+    PACKAGES+=" tailscale luci-app-tailscale  luci-app-droidnet luci-app-ipinfo luci-theme-initials luci-theme-argon luci-app-argon-config luci-theme-hj"
 
     # NAS and Hard disk tools
     PACKAGES+=" luci-app-diskman smartmontools kmod-usb-storage kmod-usb-storage-uas ntfs-3g"
@@ -565,7 +593,7 @@ rebuild_firmware() {
         EXCLUDED+=" "
     fi
 
-    PACKAGES+=" $misc zram-swap adb parted losetup resize2fs luci luci-ssl block-mount luci-app-ramfree htop bash curl wget wget-ssl tar unzip unrar gzip jq luci-app-ttyd nano httping screen openssh-sftp-server"
+    PACKAGES+=" $misc zram-swap adb parted losetup resize2fs luci luci-ssl block-mount luci-app-ramfree htop bash curl wget-ssl tar unzip unrar gzip jq luci-app-ttyd nano httping screen openssh-sftp-server"
 
     # Exclude package (must use - before packages name)
     EXCLUDED+=" -libgd"
