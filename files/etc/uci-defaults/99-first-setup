@@ -67,10 +67,8 @@ uci commit firewall
 
 # configure WLAN
 msg "Setup Wireless if available"
-#!/bin/sh
-# UCI-defaults: Setup WiFi dual-band otomatis (2.4GHz + 5GHz jika ada)
 
-PASS_WIFI="houjie1234"
+PASS_WIFI="sijitekowolu"
 COUNTRY="ID"
 
 echo "[WiFi-Setup] Deteksi dan konfigurasi WiFi..."
