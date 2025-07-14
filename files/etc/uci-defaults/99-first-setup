@@ -126,7 +126,7 @@ sed -i -e '/12d1:15c1/,+5d' /etc/usb-mode.json
 
 # Step 4: Remove dw5821e usb-modeswitch
 msg "Step 4: Remove dw5821e usb-modeswitch"
-sed -i -e '/413c:81d7/,+5d' /etc/usb-mode.json
+[ -f /etc/usb-mode.json ] && sed -i -e '/12d1:15c1/,+5d' /etc/usb-mode.json
 
 
 # Step 5: Disable /etc/config/xmm-modem
@@ -182,7 +182,7 @@ ln -s / /www/tinyfm/rootfs
 msg "Step 10: ganti banner"
 rm -rf /etc/profile
 rm -rf /etc/profile.d/30-sysinfo.sh
-mv /etc/profile1 /etc/profile
+[ -f /etc/profile1 ] && mv /etc/profile1 /etc/profile
 mv /etc/profile.d/30-sysinfo1.sh /etc/profile.d/30-sysinfo.sh
 chmod +x /etc/profile.d/30-sysinfo.sh
 # chmod +x /etc/profile
