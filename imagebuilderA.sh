@@ -569,15 +569,25 @@ rebuild_firmware() {
     PACKAGES+=" $misc zram-swap adb parted losetup resize2fs luci luci-ssl block-mount luci-app-ramfree htop bash curl wget-ssl tar unzip unrar gzip jq luci-app-ttyd nano httping screen openssh-sftp-server"
 
     # Exclude package (must use - before packages name)
-    EXCLUDED+=" -libgd"
-    if [ "${op_sourse}" == "openwrt" ]; then
-        EXCLUDED+=" -dnsmasq"
-    elif [ "${op_sourse}" == "immortalwrt" ]; then
-        EXCLUDED+=" -dnsmasq -automount -libustream-openssl -default-settings-chn -luci-i18n-base-zh-cn"
-        if [ "$ARCH_2" == "x86_64" ]; then
+EXCLUDED+=" -libgd"
+
+# Jika kernel dari GitHub Actions adalah 5.4
+if echo "$OPENWRT_KERNEL" | grep -q "5.4"; then
+    echo "[INFO] Detected kernel 5.4, excluding procd-ujail"
+    EXCLUDED+=" -procd-ujail"
+fi
+
+# Tambahan berdasarkan source
+if [ "${op_sourse}" == "openwrt" ]; then
+    EXCLUDED+=" -dnsmasq"
+elif [ "${op_sourse}" == "immortalwrt" ]; then
+    EXCLUDED+=" -dnsmasq -automount -libustream-openssl -default-settings-chn -luci-i18n-base-zh-cn"
+
+    # Tambahan untuk x86_64
+    if [ "$ARCH_2" == "x86_64" ]; then
         EXCLUDED+=" -kmod-usb-net-rtl8152-vendor"
-        fi
     fi
+fi
 
     # Rebuild firmware
     make clean
