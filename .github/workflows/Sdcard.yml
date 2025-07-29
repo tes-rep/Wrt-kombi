@@ -243,9 +243,8 @@ jobs:
         run: |
           cd imagebuilder
           if [[ "${{ env.TARGET_NAME }}" == "amlogic" ]]; then
-            mkdir -p ophub_builder/openwrt-armsr
-            cp -f compiled_images/*rootfs.tar.gz ophub_builder/openwrt-armsr/
-            cd ophub_builder
+            mkdir -p openwrt-armsr
+            cp -f compiled_images/*rootfs.tar.gz openwrt-armsr/
             chmod +x remake
             sudo ./remake -b ${{ env.openwrt_board }} -k ${{ inputs.openwrt_kernel }} -s ${{ inputs.rootfs_size }}
             for file in openwrt/out/*.img.gz; do cp -f "$file" ../compiled_images; done
