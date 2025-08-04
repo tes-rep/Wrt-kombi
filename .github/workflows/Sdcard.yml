@@ -239,13 +239,14 @@ jobs:
       - name: Packaging OpenWrt For Amlogic
         id: repack
         run: |
+          chmod +x remake
           cd imagebuilder
           if [[ "${{ env.TARGET_NAME }}" == "amlogic" ]]; then
             echo -e "[\033[95m STEPS \033[0m] Cloning Ophub Repacking Amlogic"
             mkdir -p ophub_builder/openwrt-armvirt
             cp -f compiled_images_${{ env.TAG_NAME }}/*rootfs.tar.gz ophub_builder/openwrt-armvirt/
             cd ophub_builder
-            sudo ../.././remake -b ${{ env.openwrt_board }} -k ${{ inputs.openwrt_kernel }} -s ${{ inputs.rootfs_size }}
+            sudo ../../remake -b ${{ env.openwrt_board }} -k ${{ inputs.openwrt_kernel }} -s ${{ inputs.rootfs_size }}
             for file in openwrt/out/*.img.gz; do cp -f "$file" ../compiled_images_${{ env.TAG_NAME }}; done
           fi
           echo "status=success" >> $GITHUB_OUTPUT
