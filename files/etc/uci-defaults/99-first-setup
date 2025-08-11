@@ -66,6 +66,7 @@ uci set firewall.@zone[1].network='wan modemmanager RAKITAN tethering'
 uci commit firewall
 
 # configure WLAN
+/*
 msg "Setup Wireless if available"
 
 PASS_WIFI="sijitekowolu"
@@ -119,6 +120,7 @@ if [ "$CONFIGURED" -eq 1 ]; then
 else
   msg "[WiFi] Tidak ada radio Wi-Fi yang tersedia, skip commit."
 fi
+*/
 
 # Step 1: Configure Password Login OpenWrt
 msg "Step 1: Configure Password Login OpenWrt"
