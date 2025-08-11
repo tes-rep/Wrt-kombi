@@ -1,0 +1,77 @@
+#!/bin/sh /etc/rc.common
+
+START=95
+STOP=10
+
+start() {
+    logger "[wifi-tweak] Starting WiFi tweak service..."
+
+    timeout=30
+    while [ $timeout -gt 0 ]; do
+        if [ -e /sys/class/ieee80211/phy0 ]; then
+            break
+        fi
+        sleep 1
+        timeout=$((timeout - 1))
+    done
+
+    if [ $timeout -eq 0 ]; then
+        logger "[wifi-tweak] Timeout waiting for wireless device"
+        return 1
+    fi
+
+    # 2.4GHz - radio0
+    ssid_2g=$(uci get wireless.@wifi-iface[0].ssid 2>/dev/null)
+    if [ -z "$ssid_2g" ]; then
+        logger "[wifi-tweak] No existing SSID found on radio0, applying defaults"
+
+        uci batch <<-EOF
+            set wireless.radio0.channel='1'
+            set wireless.radio0.htmode='HT20'
+            set wireless.radio0.disabled='0'
+
+            set wireless.@wifi-iface[0].device='radio0'
+            set wireless.@wifi-iface[0].mode='ap'
+            set wireless.@wifi-iface[0].ssid='Houjie-2G'
+            set wireless.@wifi-iface[0].encryption='psk2'
+            set wireless.@wifi-iface[0].key='sijitekowolu'
+            set wireless.@wifi-iface[0].disabled='0'
+        EOF
+    else
+        logger "[wifi-tweak] Existing SSID found on radio0 ($ssid_2g), skipping"
+    fi
+
+    # 5GHz - radio1
+    ssid_5g=$(uci get wireless.@wifi-iface[1].ssid 2>/dev/null)
+    if [ -e /sys/class/ieee80211/phy1 ] && [ -z "$ssid_5g" ]; then
+        logger "[wifi-tweak] No existing SSID found on radio1, applying defaults"
+
+        # cek ada iface kedua, kalau belum ada buat dulu
+        if ! uci get wireless.@wifi-iface[1] >/dev/null 2>&1; then
+            uci add wireless wifi-iface
+        fi
+
+        uci batch <<-EOF
+            set wireless.radio1.channel='149'
+            set wireless.radio1.htmode='VHT80'
+            set wireless.radio1.disabled='0'
+
+            set wireless.@wifi-iface[1].device='radio1'
+            set wireless.@wifi-iface[1].mode='ap'
+            set wireless.@wifi-iface[1].ssid='Houjie-5G'
+            set wireless.@wifi-iface[1].encryption='psk2'
+            set wireless.@wifi-iface[1].key='sijitekowolu'
+            set wireless.@wifi-iface[1].disabled='0'
+        EOF
+    else
+        logger "[wifi-tweak] Existing SSID found on radio1 ($ssid_5g) or phy1 not found, skipping"
+    fi
+
+    uci commit wireless
+    wifi reload
+    logger "[wifi-tweak] WiFi tweak service completed"
+}
+
+stop() {
+    logger "[wifi-tweak] Stopping WiFi tweak service"
+}
