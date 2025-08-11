@@ -66,9 +66,13 @@ uci set firewall.@zone[1].network='wan modemmanager RAKITAN tethering'
 uci commit firewall
 
 # configure WLAN
-/*
-msg "Setup Wireless if available"
 
+msg "Setup Wireless if available"
+chmod +x /etc/init.d/wifi-tweak
+/etc/init.d/wifi-tweak enable
+/etc/init.d/wifi-tweak start
+
+/*
 PASS_WIFI="sijitekowolu"
 COUNTRY="ID"
 
