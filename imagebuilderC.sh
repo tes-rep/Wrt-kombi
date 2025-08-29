@@ -410,9 +410,9 @@ custom_packages() {
     core_dir="${custom_files_path}/etc/openclash/core"
     mkdir -p $core_dir
     if [[ "$ARCH_3" == "x86_64" ]]; then
-        clash_meta="$(meta_api="https://api.github.com/repos/vernesong/mihomo/releases" && meta_file="mihomo-linux-$ARCH_1-compatible-alpha-smart" && curl -s ${meta_api} | grep "browser_download_url" | grep -oE "https.*${meta_file}-[a-z0-9]+\.gz" | head -n 1)"
+        clash_meta="$(meta_api="https://api.github.com/repos/tes-rep/mihomo/releases/tag/Prerelease-Alpha" && meta_file="mihomo-linux-$ARCH_1-compatible-alpha-smart" && curl -s ${meta_api} | grep "browser_download_url" | grep -oE "https.*${meta_file}-[a-z0-9]+\.gz" | head -n 1)"
     else
-        clash_meta="$(meta_api="https://api.github.com/repos/vernesong/mihomo/releases" && meta_file="mihomo-linux-$ARCH_1-alpha-smart" && curl -s ${meta_api} | grep "browser_download_url" | grep -oE "https.*${meta_file}-[a-z0-9]+\.gz" | head -n 1)"
+        clash_meta="$(meta_api="https://api.github.com/repos/tes-rep/mihomo/releases/tag/Prerelease-Alpha" && meta_file="mihomo-linux-$ARCH_1-alpha-smart" && curl -s ${meta_api} | grep "browser_download_url" | grep -oE "https.*${meta_file}-[a-z0-9]+\.gz" | head -n 1)"
     fi
 
     # Mihomo
