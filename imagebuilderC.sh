@@ -402,7 +402,7 @@ custom_packages() {
     download_packages "custom" other_packages[@]
 
     # OpenClash
-    openclash_api="https://api.github.com/repos/vernesong/OpenClash/releases"
+    openclash_api="https://api.github.com/repos/tes-rep/OpenClash/releases"
     openclash_file_ipk="luci-app-openclash"
     openclash_file_ipk_down="$(curl -s ${openclash_api} | grep "browser_download_url" | grep -oE "https.*${openclash_file_ipk}.*.ipk" | head -n 1)"
 
@@ -410,9 +410,9 @@ custom_packages() {
     core_dir="${custom_files_path}/etc/openclash/core"
     mkdir -p $core_dir
     if [[ "$ARCH_3" == "x86_64" ]]; then
-        clash_meta="$(meta_api="https://api.github.com/repos/MetaCubeX/mihomo/releases/latest" && meta_file="mihomo-linux-$ARCH_1-compatible" && curl -s ${meta_api} | grep "browser_download_url" | grep -oE "https.*${meta_file}-v[0-9]+\.[0-9]+\.[0-9]+\.gz" | head -n 1)"
+        clash_meta="$(meta_api="https://api.github.com/repos/vernesong/mihomo/releases" && meta_file="mihomo-linux-$ARCH_1-compatible-alpha-smart" && curl -s ${meta_api} | grep "browser_download_url" | grep -oE "https.*${meta_file}-[a-z0-9]+\.gz" | head -n 1)"
     else
-        clash_meta="$(meta_api="https://api.github.com/repos/MetaCubeX/mihomo/releases/latest" && meta_file="mihomo-linux-$ARCH_1" && curl -s ${meta_api} | grep "browser_download_url" | grep -oE "https.*${meta_file}-v[0-9]+\.[0-9]+\.[0-9]+\.gz" | head -n 1)"
+        clash_meta="$(meta_api="https://api.github.com/repos/vernesong/mihomo/releases" && meta_file="mihomo-linux-$ARCH_1-alpha-smart" && curl -s ${meta_api} | grep "browser_download_url" | grep -oE "https.*${meta_file}-[a-z0-9]+\.gz" | head -n 1)"
     fi
 
     # Mihomo
@@ -515,6 +515,37 @@ custom_files() {
         echo -e "${WARNING} No customized files were added."
     fi
 }
+# Tambahan paket Tunnel
+OPENCLASH+="coreutils-nohup bash dnsmasq-full curl ca-certificates ipset ip-full libcap libcap-bin ruby ruby-yaml kmod-tun kmod-inet-diag unzip kmod-nft-tproxy luci-compat luci luci-base luci-app-openclash"
+NIKKI+="nikki luci-app-nikki"
+PASSWALL+="chinadns-ng dns2socks dns2tcp geoview hysteria ipt2socks microsocks naiveproxy simple-obfs sing-box tcping trojan-plus tuic-client v2ray-core v2ray-plugin xray-core xray-plugin v2ray-geoip v2ray-geosite luci-app-passwall"
+
+# Fungsi memilih paket tunnel
+handle_tunnel_option() {
+    case "$1" in
+        "openclash")
+            PACKAGES+=" $OPENCLASH"
+            ;;
+        "passwall")
+            PACKAGES+=" $PASSWALL"
+            ;;
+        "nikki")
+            PACKAGES+=" $NIKKI"
+            ;;
+        "openclash-passwall")
+            PACKAGES+=" $OPENCLASH $PASSWALL"
+            ;;
+        "nikki-passwall")
+            PACKAGES+=" $NIKKI $PASSWALL"
+            ;;
+        "nikki-openclash")
+            PACKAGES+=" $NIKKI $OPENCLASH"
+            ;;
+        "all-tunnel")
+            PACKAGES+=" $OPENCLASH $PASSWALL $NIKKI"
+            ;;
+    esac
+}   
 
 # Rebuild OpenWrt firmware
 rebuild_firmware() {
@@ -534,12 +565,6 @@ rebuild_firmware() {
 
     # Modem Tools
     #PACKAGES+=" modeminfo luci-app-modeminfo atinout modemband luci-app-modemband sms-tool luci-app-sms-tool-js luci-app-lite-watchdog luci-app-3ginfo-lite picocom minicom"
-
-    # Tunnel option
-    OPENCLASH+="coreutils-nohup bash dnsmasq-full curl ca-certificates ipset ip-full libcap libcap-bin ruby ruby-yaml kmod-tun kmod-inet-diag unzip kmod-nft-tproxy luci-compat luci luci-base luci-app-openclash"
-    NIKKI+="nikki luci-app-nikki"
-    #PASSWALL+="chinadns-ng resolveip dns2socks dns2tcp ipt2socks microsocks tcping xray-core xray-plugin luci-app-passwall"
-    PACKAGES+=" $OPENCLASH $NIKKI"
 
 
     # Remote Services
@@ -592,6 +617,7 @@ if echo "$OPENWRT_KERNEL" | grep -q "5.4"; then
     EXCLUDED+=" -procd-ujail"
 fi
 
+
 # Tambahan berdasarkan source
 if [ "${op_sourse}" == "openwrt" ]; then
     EXCLUDED+=" -dnsmasq"
@@ -604,19 +630,23 @@ elif [ "${op_sourse}" == "immortalwrt" ]; then
     fi
 fi
 
+# Tambah paket tunnel jika ada pilihan
+if [ -n "$TUNNEL_OPTION" ]; then
+    echo "[INFO] Menambahkan paket tunnel: $TUNNEL_OPTION"
+    handle_tunnel_option "$TUNNEL_OPTION"
+fi
+# Rebuild firmware
+make clean
+make image PROFILE="${target_profile}" PACKAGES="${PACKAGES} ${EXCLUDED}" FILES="files"
+if [ $? -ne 0 ]; then
+    error_msg "OpenWrt build failed. Check logs for details."
+else
+    sync && sleep 3
+    echo -e "${INFO} [ ${openwrt_dir}/bin/targets/*/* ] directory status: $(ls bin/targets/*/* -al 2>/dev/null)"
+    echo -e "${SUCCESS} The rebuild is successful, the current path: [ ${PWD} ]"
+fi
 
-    # Rebuild firmware
-    make clean
-    make image PROFILE="${target_profile}" PACKAGES="${PACKAGES} ${EXCLUDED}" FILES="files"
-    if [ $? -ne 0 ]; then
-        error_msg "OpenWrt build failed. Check logs for details."
-    else
-        sync && sleep 3
-        echo -e "${INFO} [ ${openwrt_dir}/bin/targets/*/* ] directory status: $(ls bin/targets/*/* -al 2>/dev/null)"
-        echo -e "${SUCCESS} The rebuild is successful, the current path: [ ${PWD} ]"
-    fi
 }
-
 # Show welcome message
 echo -e "${STEPS} Welcome to Rebuild OpenWrt Using the Image Builder."
 [[ -x "${0}" ]] || error_msg "Please give the script permission to run: [ chmod +x ${0} ]"
@@ -627,6 +657,7 @@ echo -e "${STEPS} Welcome to Rebuild OpenWrt Using the Image Builder."
 op_sourse="${1%:*}"
 op_branch="${1#*:}"
 op_target="${2}"
+TUNNEL_OPTION="${3}"   # Argumen ketiga untuk opsi tunnel
 echo -e "${INFO} Rebuild path: [ ${PWD} ]"
 echo -e "${INFO} Rebuild Source: [ ${op_sourse} ], Branch: [ ${op_branch} ], Target: ${op_target}"
 echo -e "${INFO} Server space usage before starting to compile: \n$(df -hT ${make_path}) \n"

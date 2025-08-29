@@ -6,7 +6,7 @@
 #                https://downloads.immortalwrt.org/releases
 #=====================================================================================
 
-name: Build sdcard
+name: Build via URLnew
 
 on:
   repository_dispatch:
@@ -95,7 +95,12 @@ on:
         options:
           - imagebuilder.sh
           - imagebuilderA.sh
-          - imagebuilderB.sh  
+          - imagebuilderB.sh
+      rootfs_url:    
+        description: "Optional: Download ROOTFS archive from URL"
+        required: false
+        default: ""
+    
 
 
 env:
@@ -203,10 +208,10 @@ jobs:
       - name: Mengatur tanggal
         id: date
         run: echo "date=$(date +'%d-%m-%y %H:%M:%S')" >> $GITHUB_OUTPUT
-        
+  
       - name: Build Rootfs [ ${{ inputs.releases_branch }} ]
         id: imagebuilder
-        if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
+        if: ${{ steps.init.outputs.status == 'success' && inputs.rootfs_url == '' && !cancelled() }}
         run: |
           echo -e "[\033[95m STEPS \033[0m] Building Firmware And Rootfs"
           TARGET_NAME="${{ env.TARGET_NAME }}"
@@ -220,34 +225,80 @@ jobs:
           echo "RELEASES_TAG2=$RELEASES_TAG2" >> ${GITHUB_ENV}
           echo "status=success" >> ${GITHUB_OUTPUT}
           echo -e "[\033[92m SUCCESS \033[0m] Status: Success"
-  
-      - name: Clear server space
-        if: ${{ steps.imagebuilder.outputs.status }} == 'success' && !cancelled()
-        run: |
-          cd imagebuilder
-          rm -rf $(ls . | grep -v "^bin$" | xargs) 2>/dev/null
-          df -hT ${PWD}
 
+      - name: Download external ROOTFS (if provided)
+        if: ${{ inputs.rootfs_url != '' }}
+        run: |
+          echo -e "[\033[94m INFO \033[0m] Mengunduh rootfs dari: ${{ inputs.rootfs_url }}"
+          mkdir -p imagebuilder
+          cd imagebuilder
+          mkdir -p compiled_images
+          curl -L "${{ inputs.rootfs_url }}" -o compiled_images/external-rootfs.tar.gz
+          echo "[✓] Download selesai: $(ls -lh compiled_images)"        
+
+     
+      - name: Clear temporary files (safe)
+        if: always()
+        run: |
+         cd imagebuilder
+         echo "[ℹ️] Membersihkan file sementara kecuali bin/ dan compiled_images/"
+         find . -mindepth 1 -maxdepth 1 ! -name 'bin' ! -name 'compiled_images' -exec rm -rf {} +
+         df -hT
+
+      - name: Set Release Tags
+        id: setrelease
+        run: |
+         RELEASES_BRANCH="${{ inputs.releases_branch }}"
+         echo "RELEASES_BRANCH=$RELEASES_BRANCH" >> $GITHUB_ENV
+         echo "RELEASES_TAG=${RELEASES_BRANCH/:/_}" >> $GITHUB_ENV
+         echo "RELEASES_TAG2=${RELEASES_BRANCH#*:}" >> $GITHUB_ENV
+
+         echo "[✓] RELEASES_TAG  : ${RELEASES_BRANCH/:/_}"
+         echo "[✓] RELEASES_TAG2 : ${RELEASES_BRANCH#*:}"
+
+      
       - name: Prepare file First
         run: |
-          cd imagebuilder
-          echo -e "[\033[95m STEPS \033[0m] Prepare File.."
-          mkdir -p compiled_images/mod
-          if [[ "${{ env.TARGET_NAME }}" != "amlogic" ]]; then
-            for file in bin/targets/*/*/*.img.gz; do mv "$file" compiled_images; done
+         cd imagebuilder
+         echo -e "[\033[95m STEPS \033[0m] Prepare File.."
+         mkdir -p compiled_images/mod
+         shopt -s nullglob
+
+         if [[ "${{ env.TARGET_NAME }}" != "amlogic" ]]; then
+         files=(bin/targets/*/*/*.img.gz)
+         if [ ${#files[@]} -gt 0 ]; then
+         mv "${files[@]}" compiled_images
+         else
+          echo "[⚠️] Tidak ditemukan file .img.gz"
+         fi
+         else
+         if [ -f compiled_images/external-rootfs.tar.gz ]; then
+         echo "[✓] Menggunakan rootfs dari URL"
+         cp compiled_images/external-rootfs.tar.gz compiled_images/rootfs.tar.gz
+         else
+         files=(bin/targets/*/*/*rootfs.tar.gz)
+         if [ ${#files[@]} -gt 0 ]; then
+          mv "${files[@]}" compiled_images
           else
-            for file in bin/targets/*/*/*rootfs.tar.gz; do mv "$file" compiled_images; done
+          echo "[⚠️] Tidak ditemukan file rootfs.tar.gz"
+           fi
           fi
-          echo -e "INFO files list: \n$(ls -l compiled_images 2>/dev/null)"
+         fi
+
+         echo -e "INFO files list: \n$(ls -l compiled_images 2>/dev/null)"
+
+
 
       - name: Packaging OpenWrt For Amlogic
         id: repack
         run: |
           cd imagebuilder
           if [[ "${{ env.TARGET_NAME }}" == "amlogic" ]]; then
-            mkdir -p openwrt-armsr
-            cp -f compiled_images/*rootfs.tar.gz openwrt-armsr/
-            chmod +x remake
+            echo -e "[\033[95m STEPS \033[0m] Cloning Ophub Repacking Amlogic"
+            git clone --depth 1 https://github.com/tes-rep/amlogic-s9xxx-openwrt.git ophub_builder
+            mkdir -p ophub_builder/openwrt-armsr
+            cp -f compiled_images/*.tar.gz ophub_builder/openwrt-armsr/
+            cd ophub_builder
             sudo ./remake -b ${{ env.openwrt_board }} -k ${{ inputs.openwrt_kernel }} -s ${{ inputs.rootfs_size }}
             for file in openwrt/out/*.img.gz; do cp -f "$file" ../compiled_images; done
           fi

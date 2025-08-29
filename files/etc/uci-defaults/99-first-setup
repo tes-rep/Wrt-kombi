@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # ENV
-exec > /root/firs-setup.log 2>&1
+exec > /root/houjie-wrt.log 2>&1
 
 msg() {
     local DATE=$(date '+%d %B %Y %T')
@@ -9,24 +9,105 @@ msg() {
     logger -p "notice" "[ INFO FIRST SETUP ] $1"
 }
 
+# Fungsi setup wireless 2.4 GHz dan 5 GHz
+setup_wireless() {
+    msg "STEP: Configuring wireless networks..."
+
+    # Cek model device
+    DEVICE_MODEL=$(ubus call system board | jsonfilter -e '@.model')
+    msg "Detected device model: $DEVICE_MODEL"
+
+    # Cek file konfigurasi wireless, kalau belum ada jalankan wifi detect
+    if [ ! -f /etc/config/wireless ]; then
+        msg "WARNING: Wireless config not found, running wifi detect..."
+        wifi detect > /etc/config/wireless
+        if [ $? -ne 0 ]; then
+            msg "ERROR: Failed to detect wireless devices"
+            return 1
+        fi
+    fi
+
+    # Backup konfigurasi lama
+    cp /etc/config/wireless /etc/config/wireless.bak 2>/dev/null
+
+    # Setup radio0
+    if uci get wireless.radio0.disabled >/dev/null 2>&1; then
+        uci set wireless.radio0.disabled='0'
+
+        if [ "$DEVICE_MODEL" = "Advan AT01 (S905X4)" ]; then
+            # Radio0 dipakai untuk 5 GHz
+            uci set wireless.radio0.channel='149'
+            uci set wireless.radio0.band='5g'
+            uci set wireless.radio0.htmode='VHT80'
+            uci set wireless.@wifi-iface[0].ssid='Houjie-5G'
+        else
+            # Default radio0 untuk 2.4 GHz
+            uci set wireless.radio0.channel='1'
+            uci set wireless.radio0.band='2g'
+            uci set wireless.radio0.htmode='HT20'
+            uci set wireless.@wifi-iface[0].ssid='Houjie-2G'
+        fi
+
+        uci set wireless.@wifi-iface[0].device='radio0'
+        uci set wireless.@wifi-iface[0].mode='ap'
+        uci set wireless.@wifi-iface[0].encryption='psk2'
+        uci set wireless.@wifi-iface[0].key='sijitekowolu'
+        uci set wireless.@wifi-iface[0].disabled='0'
+    fi
+
+    # Setup radio1 untuk device selain Advan AT01
+    if [ "$DEVICE_MODEL" != "Advan AT01 (S905X4)" ] && uci get wireless.radio1.disabled >/dev/null 2>&1; then
+        uci set wireless.radio1.disabled='0'
+        uci set wireless.radio1.channel='149'
+        uci set wireless.radio1.band='5g'
+        uci set wireless.radio1.htmode='VHT80'
+
+        if ! uci show wireless | grep -q '@wifi-iface.*device=radio1'; then
+            uci add wireless wifi-iface
+            uci set wireless.@wifi-iface[-1].device='radio1'
+            uci set wireless.@wifi-iface[-1].mode='ap'
+            uci set wireless.@wifi-iface[-1].ssid='Houjie-5G'
+            uci set wireless.@wifi-iface[-1].encryption='psk2'
+            uci set wireless.@wifi-iface[-1].key='sijitekowolu'
+            uci set wireless.@wifi-iface[-1].disabled='0'
+        fi
+    fi
+
+    # Commit dan reload wireless
+    uci commit wireless
+    wifi reload
+
+    msg "Wireless configuration applied."
+}
+
+fix_branch_version() {
+    local release_file="/etc/openwrt_release"
+    local os_release="/usr/lib/os-release"
+
+    if grep -q "ImmortalWrt" "$release_file"; then
+        sed -i -E "s|(DISTRIB_DESCRIPTION='ImmortalWrt [0-9]+\.[0-9]+\.[0-9]+).*|\1'|" "$release_file"
+        sed -i -E "s|(PRETTY_NAME=\"ImmortalWrt [0-9]+\.[0-9]+\.[0-9]+).*|\1\"|" "$os_release"
+        sed -i -E "s|services/ttyd|system/ttyd|g" /usr/share/ucode/luci/template/themes/material/header.ut
+        msg "Branch version: $(grep 'DISTRIB_DESCRIPTION=' "$release_file" | awk -F"'" '{print $2}')"
+
+    elif grep -q "OpenWrt" "$release_file"; then
+        sed -i -E "s|(DISTRIB_DESCRIPTION='OpenWrt [0-9]+\.[0-9]+\.[0-9]+).*|\1'|" "$release_file"
+        sed -i -E "s|(DISTRIB_DESCRIPTION='OpenWrt [0-9]+\.[0-9]+\.[0-9]+).*|\1'|" "$os_release"
+        sed -i -E "s|(PRETTY_NAME=\"OpenWrt [0-9]+\.[0-9]+\.[0-9]+).*|\1\"|" "$os_release"
+        msg "Branch version: $(grep 'DISTRIB_DESCRIPTION=' "$release_file" | awk -F"'" '{print $2}')"
+    fi
+}
+
+
 # dont remove!
 msg "Installed Time: $(date '+%A, %d %B %Y %T')"
 msg "###############################################"
 msg "Processor: $(ubus call system board | grep '\"system\"' | sed 's/ \+/ /g' | awk -F'\"' '{print $4}')"
 msg "Device Model: $(ubus call system board | grep '\"model\"' | sed 's/ \+/ /g' | awk -F'\"' '{print $4}')"
 msg "Device Board: $(ubus call system board | grep '\"board_name\"' | sed 's/ \+/ /g' | awk -F'\"' '{print $4}')"
-#sed -i "s#_('Firmware Version'),(L.isObject(boardinfo.release)?boardinfo.release.description+' / ':'')+(luciversion||''),#_('Firmware Version'),(L.isObject(boardinfo.release)?boardinfo.release.description+' build by RTA-WRT [ Ouc3kNF6 ]':''),#g" /www/luci-static/resources/view/status/include/10_system.js
 sed -i -E "s|icons/port_%s.png|icons/port_%s.gif|g" /www/luci-static/resources/view/status/include/29_ports.js
-#sed -i 's/\[ -f \/etc\/banner \] && cat \/etc\/banner/#&/' /etc/profile
-#sed -i 's/\[ -n "$FAILSAFE" \] && cat \/etc\/banner.failsafe/& || \/usr\/bin\/neofetch/' /etc/profile
-if grep -q "ImmortalWrt" /etc/openwrt_release; then
-  sed -i "s/\(DISTRIB_DESCRIPTION='ImmortalWrt [0-9]*\.[0-9]*\.[0-9]*\).*'/\1'/g" /etc/openwrt_release
-  sed -i -E "s|services/ttyd|system/ttyd|g" /usr/share/ucode/luci/template/themes/material/header.ut
-  msg Branch version: "$(grep 'DISTRIB_DESCRIPTION=' /etc/openwrt_release | awk -F"'" '{print $2}')"
-elif grep -q "OpenWrt" /etc/openwrt_release; then
-  sed -i "s/\(DISTRIB_DESCRIPTION='OpenWrt [0-9]*\.[0-9]*\.[0-9]*\).*'/\1'/g" /etc/openwrt_release
-  msg Branch version: "$(grep 'DISTRIB_DESCRIPTION=' /etc/openwrt_release | awk -F"'" '{print $2}')"
-fi
+# ✅ panggil fungsi baru
+fix_branch_version
 msg "###############################################"
 
 # Set hostname and Timezone to Asia/Jakarta
@@ -49,7 +130,7 @@ uci set network.wan.proto='dhcp'
 uci set network.wan.device='eth1'
 uci set network.modemmanager=interface 
 uci set network.modemmanager.proto='modemmanager'
-uci set network.modemmanager.device='/sys/devices/platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb2/2-1'
+uci set network.modemmanager.device='/sys/devices/platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/0000:01:00.0/usb2/2-1'
 uci set network.modemmanager.apn='internet'
 uci set network.modemmanager.auth='none'
 uci set network.modemmanager.iptype='ipv4'
@@ -65,97 +146,36 @@ uci commit network
 uci set firewall.@zone[1].network='wan modemmanager RAKITAN tethering'
 uci commit firewall
 
-# configure WLAN
+# Setup Wireless if available
 msg "Setup Wireless if available"
-
-PASS_WIFI="sijitekowolu"
-COUNTRY="ID"
-
-echo "[WiFi-Setup] Deteksi dan konfigurasi WiFi..."
-
-# 2.4GHz - radio0
-if [ -e /sys/class/ieee80211/phy0 ]; then
-  msg "[WiFi] Mengatur radio0 (2.4GHz)"
-  uci set wireless.radio0.disabled='0'
-  uci set wireless.radio0.channel='1'
-  uci set wireless.radio0.htmode='HT20'
-  uci set wireless.radio0.country="$COUNTRY"
-
-  uci set wireless.@wifi-iface[0].device='radio0'
-  uci set wireless.@wifi-iface[0].mode='ap'
-  uci set wireless.@wifi-iface[0].ssid='Houjie-2G'
-  uci set wireless.@wifi-iface[0].encryption='psk2'
-  uci set wireless.@wifi-iface[0].key="$PASS_WIFI"
-  uci set wireless.@wifi-iface[0].disabled='0'
-fi
-
-# 5GHz - radio1
-if [ -e /sys/class/ieee80211/phy1 ]; then
-  msg "[WiFi] Mengatur radio1 (5GHz)"
-  uci set wireless.radio1.disabled='0'
-  uci set wireless.radio1.channel='149'
-  uci set wireless.radio1.htmode='VHT80'
-  uci set wireless.radio1.country="$COUNTRY"
-
-  uci add wireless wifi-iface
-  uci set wireless.@wifi-iface[-1].device='radio1'
-  uci set wireless.@wifi-iface[-1].mode='ap'
-  uci set wireless.@wifi-iface[-1].ssid='Houjie-5G'
-  uci set wireless.@wifi-iface[-1].encryption='psk2'
-  uci set wireless.@wifi-iface[-1].key="$PASS_WIFI"
-  uci set wireless.@wifi-iface[-1].disabled='0'
-fi
-
-uci commit wireless
+setup_wireless
 
 # Step 1: Configure Password Login OpenWrt
 msg "Step 1: Configure Password Login OpenWrt"
 (echo "sijitekowolu"; sleep 1; echo "sijitekowolu") | passwd > /dev/null
-
 
 # Step 2: Remove login password required when accessing terminal
 msg "Step 2: Remove login password required when accessing terminal"
 uci set ttyd.@ttyd[0].command='/bin/bash --login'
 uci commit ttyd
 
-
 # Step 3: Remove huawei me909s usb-modeswitch
 msg "Step 3: Remove huawei me909s usb-modeswitch"
 sed -i -e '/12d1:15c1/,+5d' /etc/usb-mode.json
-
 
 # Step 4: Remove dw5821e usb-modeswitch
 msg "Step 4: Remove dw5821e usb-modeswitch"
 [ -f /etc/usb-mode.json ] && sed -i -e '/12d1:15c1/,+5d' /etc/usb-mode.json
 
-
-# Step 5: Disable /etc/config/xmm-modem
-#msg "Step 5: Disable /etc/config/xmm-modem"
-#uci set xmm-modem.@xmm-modem[0].enable='0'
-#uci commit xmm-modem
-
-
-# Step 6: Setup Nlbwmon Database Dir
-# msg "Step 7: Setup Nlbwmon Database Dir"
-# uci set nlbwmon.@nlbwmon[0].database_directory='/etc/nlbwmon'
-# uci set nlbwmon.@nlbwmon[0].commit_interval='3h'
-# uci set nlbwmon.@nlbwmon[0].refresh_interval='60s'
-# uci commit nlbwmon
-# bash /etc/init.d/nlbwmon restart
-
-
-
-# Step 9: Adjusting App Catagory
-msg "Step 6: Adjusting App Catagory"
+# Step 6: Adjusting App Category
+msg "Step 6: Adjusting App Category"
 sed -i -E "s|status|services|g" /usr/lib/lua/luci/controller/base64.lua
 
-# Step 14:Default Theme #
-msg "Step 7: Set Tema"
+# Step 7: Set Theme
+msg "Step 7: Set Theme"
 uci set luci.main.mediaurlbase='/luci-static/hj' && uci commit
 
-
-
-# Step 12: Setup PHP
+# Step 8: Setup PHP
 msg "Step 8: Setup PHP"
 msg "system not using php-cgi, patching php config ..."
 uci set uhttpd.main.ubus_prefix='/ubus'
@@ -165,33 +185,29 @@ uci add_list uhttpd.main.index_page='index.html'
 uci add_list uhttpd.main.index_page='index.php'
 uci commit uhttpd
 sed -i -E "s|memory_limit = [0-9]+M|memory_limit = 100M|g" /etc/php.ini
-# sed -i -E "s|display_errors = On|display_errors = Off|g" /etc/php.ini
 sed -i '$a ; Set the default timezone\ndate.timezone = "Asia/Jakarta"' /etc/php.ini
 ln -s /usr/bin/php-cli /usr/bin/php
 [ -d /usr/lib/php8 ] && [ ! -d /usr/lib/php ] && ln -sf /usr/lib/php8 /usr/lib/php
 msg "patching system with php configuration done ..."
 msg "restarting uhttpd ..."
-/etc/init.d/uhttpd restart
+/etc/init.d/uhttpd reload
 
-
-# Step 13: Setting Tinyfm
+# Step 9: Setting Tinyfm
 msg "Step 9: Setting Tinyfm"
 ln -s / /www/tinyfm/rootfs
 
-# Step 13: Setting Tinyfm
-msg "Step 10: ganti banner"
+# Step 10: Change banner
+msg "Step 10: Change banner"
 rm -rf /etc/profile
 rm -rf /etc/profile.d/30-sysinfo.sh
 [ -f /etc/profile1 ] && mv /etc/profile1 /etc/profile
 mv /etc/profile.d/30-sysinfo1.sh /etc/profile.d/30-sysinfo.sh
 chmod +x /etc/profile.d/30-sysinfo.sh
-# chmod +x /etc/profile
 
-# Step 16: Set All permission files
-msg "Step 11: Set All permission files"
+# Step 11: Set all permission files
+msg "Step 11: Set all permission files"
 check_permission() {
     local DIR=${1:-.}
-
     find "$DIR" -type f | while read file; do
         if file "$file" | grep -q "executable"; then
             if [ ! -x "$file" ]; then
@@ -201,7 +217,6 @@ check_permission() {
         fi
     done
 }
-
 check_permission "/etc/init.d"
 check_permission "/etc/mihomo"
 check_permission "/etc/openclash"
@@ -211,64 +226,64 @@ check_permission "/sbin"
 check_permission "/usr/bin"
 check_permission "/usr/lib/ModemManager/connection.d"
 
-# Step 18: Rum
-msg "Step 12: perizinan"
+# Step 12: Permissions
+msg "Step 12: Permissions"
 chmod +x /etc/houjie-wrt
 chmod +x /sbin/auto_delete.sh
 chmod +x /www/vnstati/vnstati.sh
 chmod +x /usr/bin/cpustat
 chmod +x /usr/bin/jam.sh
 
-# Step 17: Run
-msg "Step 14: ip info"
-mv /www/luci-static/resources/view/status/include/01_ipinfo.js /www/luci-static/resources/view/status/include/11_ipinfo.js
+# Step 14: IP info
+msg "Step 14: IP info"
+rm -rf /www/luci-static/resources/view/status/include/01_ipinfo.js
 
-# Step 14:Default Theme #
-msg "Step 15: Set bahasa"
+# Step 15: Set language
+msg "Step 15: Set language"
 uci set luci.main.lang='en' && uci commit
 
-# Step 17: Run Another Process
-msg "Step 13: Run Another Process"
-bash /root/install2.sh
-
-# Step 17: Run
-msg "Step 15: ganti nama mihomo ke nikki"
+# Step 16: Rename mihomo to nikki
+msg "Step 16: Rename mihomo to nikki"
 mv /etc/mihomo /etc/nikki
 
-# Step 17: Run
-msg "Step 17: add port"
+# Step 17: Add port
+msg "Step 17: Add port"
 chmod +x /root/addport.sh && /root/addport.sh
 
-
-# Step 19: sync_time.sh
-msg "Step 16: sync_time.sh Process"
+# Step 18: sync_time.sh Process
+msg "Step 18: sync_time.sh Process"
 chmod +x /sbin/sync_time.sh
 
-# Step 20: sync_time.sh
-msg "Step 21: cek file cpustat
-# Path asal dan nama file sumber
+# Step 19: Check cpustat file
+msg "Step 19: Check cpustat file"
 file_sumber="/usr/bin/cpustat1"
-# Direktori tujuan dan nama baru
 direktori_tujuan="/usr/bin/"
 nama_baru="cpustat"
 file_tujuan="$direktori_tujuan$nama_baru"
-# Cek apakah file_tujuan sudah ada
 if [ ! -f "$file_tujuan" ]; then
   mv "$file_sumber" "$file_tujuan"
   msg "File dipindahkan dan diganti nama menjadi: $nama_baru"
- # Berikan perizinan eksekusi
   chmod +x "$file_tujuan"
   msg "Perizinan eksekusi diberikan untuk file $nama_baru"
 else
   msg "File dengan nama $nama_baru sudah ada, proses dilewati."
 fi
 
+# Step 22: Run ocmod
+msg "Step 22: Run ocmod"
+chmod +x /root/ocmod.sh && /root/ocmod.sh
 
-# Log success
+# Step 22: Run ocmod
+msg "Step 23: Run ocmod"
+chmod +x /root/temp.sh && /root/temp.sh
+
+# Step 23: Remove temp files
+msg "Step 24: Remove temp files"
+rm -rf /root/ocmod.sh /root/addport.sh /root/temp.sh
+
 msg "First Setup settings successfully applied..."
 
-
-# Remove this script after successful execution
+# Remove this script after execution
 rm -f /etc/uci-defaults/$(basename $0)
 
 exit 0

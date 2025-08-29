@@ -2,11 +2,16 @@
 
 append DRIVERS "mac80211"
 
+# ====== SETTING CHANNEL MANUAL ======
+CHANNEL_2G=6
+CHANNEL_5G=149
+CHANNEL_6G=37
+# ====================================
+
 check_mac80211_device() {
 	local device="$1"
 	local path="$2"
 	local macaddr="$3"
-
 	[ -n "$found" ] && return 0
 
 	phy_path=
@@ -38,21 +43,15 @@ check_mac80211_device() {
 	}
 
 	config_get dev_macaddr "$device" macaddr
-
 	[ -n "$macaddr" -a "$dev_macaddr" = "$macaddr" ] && found=1
 
 	return 0
 }
 
-
 __get_band_defaults() {
 	local phy="$1"
-
 	( iw phy "$phy" info; echo ) | awk '
-BEGIN {
-        bands = ""
-}
-
+BEGIN { bands = "" }
 ($1 == "Band" || $1 == "") && band {
         if (channel) {
 		mode="NOHT"
@@ -66,46 +65,22 @@ BEGIN {
         }
         band=""
 }
-
-$1 == "Band" {
-        band = $2
-        channel = ""
-	vht = ""
-	ht = ""
-	he = ""
-}
-
-$0 ~ "Capabilities:" {
-	ht=1
-}
-
-$0 ~ "VHT Capabilities" {
-	vht=1
-}
-
-$0 ~ "HE Iftypes" {
-	he=1
-}
-
-$1 == "*" && $3 == "MHz" && $0 !~ /disabled/ && band && !channel {
-        channel = $4
-}
-
-END {
-        print bands
-}'
+$1 == "Band" { band = $2; channel = ""; vht = ""; ht = ""; he = "" }
+$0 ~ "Capabilities:" { ht=1 }
+$0 ~ "VHT Capabilities" { vht=1 }
+$0 ~ "HE Iftypes" { he=1 }
+$1 == "*" && $3 == "MHz" && $0 !~ /disabled/ && band && !channel { channel = $4 }
+END { print bands }'
 }
 
 get_band_defaults() {
 	local phy="$1"
-
 	for c in $(__get_band_defaults "$phy"); do
 		local band="${c%%:*}"
 		c="${c#*:}"
 		local chan="${c%%:*}"
 		c="${c#*:}"
 		local mode="${c%%:*}"
-
 		case "$band" in
 			1) band=2g;;
 			2) band=5g;;
@@ -113,12 +88,9 @@ get_band_defaults() {
 			4) band=6g;;
 			*) band="";;
 		esac
-
 		[ -n "$band" ] || continue
 		[ -n "$mode_band" -a "$band" = "6g" ] && return
-
 		mode_band="$band"
-		channel="$chan"
 		htmode="$mode"
 	done
 }
@@ -134,11 +106,9 @@ check_devidx() {
 
 check_board_phy() {
 	local name="$2"
-
 	json_select "$name"
 	json_get_var phy_path path
 	json_select ..
-
 	if [ "$path" = "$phy_path" ]; then
 		board_dev="$name"
 	elif [ "${path%+*}" = "$phy_path" ]; then
@@ -150,25 +120,17 @@ detect_mac80211() {
 	devidx=0
 	config_load wireless
 	config_foreach check_devidx wifi-device
-
 	json_load_file /etc/board.json
 
 	for _dev in /sys/class/ieee80211/*; do
 		[ -e "$_dev" ] || continue
-
 		dev="${_dev##*/}"
-
 		mode_band=""
-		channel=""
 		htmode=""
-		ht_capab=""
-
 		get_band_defaults "$dev"
 
 		path="$(iwinfo nl80211 path "$dev")"
 		macaddr="$(cat /sys/class/ieee80211/${dev}/macaddress)"
-
-		# work around phy rename related race condition
 		[ -n "$path" -o -n "$macaddr" ] || continue
 
 		board_dev=
@@ -182,7 +144,7 @@ detect_mac80211() {
 		[ -n "$found" ] && continue
 
 		name="radio${devidx}"
-		devidx=$(($devidx + 1))
+		devidx=$((devidx + 1))
 		case "$dev" in
 			phy*)
 				if [ -n "$path" ]; then
@@ -194,6 +156,14 @@ detect_mac80211() {
 			*)
 				dev_id="set wireless.${name}.phy='$dev'"
 				;;
+		esac
+
+		# Pilih channel manual sesuai band
+		case "$mode_band" in
+			2g) channel="$CHANNEL_2G";;
+			5g) channel="$CHANNEL_5G";;
+			6g) channel="$CHANNEL_6G";;
+			*)  channel="auto";;
 		esac
 
 		uci -q batch <<-EOF
@@ -211,7 +181,7 @@ detect_mac80211() {
 			set wireless.default_${name}.mode=ap
 			set wireless.default_${name}.ssid=NOKIA-N73
 			set wireless.default_${name}.encryption=psk2
-                        set wireless.default_${name}.key=sijitekowolu
+			set wireless.default_${name}.key=sijitekowolu
 EOF
 		uci -q commit wireless
 	done

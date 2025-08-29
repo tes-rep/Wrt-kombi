@@ -798,66 +798,70 @@ function updateCountdown() {
 }
 
 function cekWaktuSholat() {
-    const now = new Date();
-    const totalSekarang = now.getHours() * 60 + now.getMinutes();
+  const now = new Date();
+  const totalSekarang = now.getHours() * 60 + now.getMinutes();
 
-    const urutan = ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya']; // Removed Imsak from order
-    let pesan = '';
-    let jenis = '';
+  const urutan = ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'];
+  let jenis = '';
+  let pesan = '';
+  let aktifNama = '';
+  let aktifWaktu = 0;
+  let nextWaktu = 1440; // max 24*60
 
-    for (let i = 0; i < urutan.length; i++) {
-      const nama = urutan[i];
-      const waktu = waktuSholat[nama];
-      if (!waktu) continue;
+  for (let i = 0; i < urutan.length; i++) {
+    const nama = urutan[i];
+    const waktu = waktuSholat[nama];
+    if (!waktu) continue;
 
-      const [jam, menit] = waktu.split(':').map(Number);
-      const totalWaktu = jam * 60 + menit;
+    const [jam, menit] = waktu.split(':').map(Number);
+    const total = jam * 60 + menit;
 
-      if (totalSekarang === totalWaktu - 10) {
-        pesan = `⏰ 10 menit lagi masuk waktu sholat ${nama.charAt(0).toUpperCase() + nama.slice(1)}`;
-        jenis = `10m-${nama}`;
-        break;
-      }
-
-      if (totalSekarang >= totalWaktu) {
-        let nextPrayerTimeToday = null;
-        for (let j = i + 1; j < urutan.length; j++) {
-            const nextNama = urutan[j];
-            const nextWaktu = waktuSholat[nextNama];
-            if (nextWaktu) {
-                const [nextJam, nextMenit] = nextWaktu.split(':').map(Number);
-                const nextTotalWaktu = nextJam * 60 + nextMenit;
-                if (nextTotalWaktu > totalSekarang) {
-                    nextPrayerTimeToday = nextTotalWaktu;
-                    break;
-                }
-            }
-        }
-
-        if (nextPrayerTimeToday === null || totalSekarang < nextPrayerTimeToday) {
-            pesan = `🕋 Sudah masuk waktu sholat ${nama.charAt(0).toUpperCase() + nama.slice(1)}`;
-            jenis = `masuk-${nama}`;
-            break;
-        }
-      }
+    if (total <= totalSekarang && total > aktifWaktu) {
+      aktifWaktu = total;
+      aktifNama = nama;
     }
 
-    const el = document.getElementById('peringatan-sholat');
-    if (jenis && el.dataset.aktif !== jenis) {
-      el.innerText = pesan;
-      el.style.display = 'block';
-      el.dataset.aktif = jenis;
-    } else if (!jenis && el.dataset.aktif) {
-        el.style.display = 'none';
-        el.dataset.aktif = '';
+    if (total > totalSekarang && total < nextWaktu) {
+      nextWaktu = total;
     }
+  }
+
+  if (aktifNama) {
+    jenis = `masuk-${aktifNama}`;
+    // Gunakan map nama sholat agar huruf depan selalu besar dan bisa disesuaikan
+    const namaMap = {
+      subuh: 'Subuh',
+      dzuhur: 'Dzuhur',
+      ashar: 'Ashar',
+      maghrib: 'Maghrib',
+      isya: 'Isya'
+    };
+    pesan = `🕋 Sudah masuk waktu sholat ${namaMap[aktifNama] || aktifNama}`;
+  }
+
+  const el = document.getElementById('peringatan-sholat');
+  if (jenis && el.dataset.aktif !== jenis) {
+    el.innerText = pesan;
+    el.style.display = 'block';
+    el.dataset.aktif = jenis;
+
+    // Refresh ulang jadwal jika waktu sholat baru masuk
+    ambilJadwalSholat();
+  } else if (!jenis && el.dataset.aktif) {
+    el.style.display = 'none';
+    el.dataset.aktif = '';
+  }
 }
 
 
-// Initial call to fetch prayer times and start countdown
+
+
+// Panggilan awal untuk mengambil waktu doa dan mulai hitung mundur
 ambilJadwalSholat();
 setInterval(cekWaktuSholat, 60000); // Check for prayer alerts every minute
 setInterval(updateCountdown, 1000); // Update countdown every second
+setInterval(ambilJadwalSholat, 1800000); // setiap 30 menit
+
 
 function gantiKota() {
   kotaID = document.getElementById('selectKota').value;

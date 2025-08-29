@@ -6,7 +6,7 @@
 #                https://downloads.immortalwrt.org/releases
 #=====================================================================================
 
-name: Build sdcard
+name: Build sdcard+via URL
 
 on:
   repository_dispatch:
@@ -96,8 +96,19 @@ on:
           - imagebuilder.sh
           - imagebuilderA.sh
           - imagebuilderB.sh  
-
-
+      rootfs_url:    
+        description: "Optional: Download ROOTFS archive from URL"
+        required: false
+        default: ""    
+      type_file:
+        description: "Select type file"
+        required: false
+        default: "img.gz"
+        type: choice
+        options:
+          - img.xz
+          - img.gz
+          - tar.gz
 env:
   TZ: Asia/Jakarta
   IMAGEBUILDER_SH: ${{ inputs.fwinfo }}
@@ -145,6 +156,9 @@ jobs:
           #sudo -E apt-get -y install $(curl -fsSL https://tinyurl.com/ubuntu2204-make-openwrt)
           # sudo -E systemctl daemon-reload
           sudo timedatectl set-timezone "$TZ"
+          sudo pip3 install gdown
+          sudo pip3 install git+https://github.com/Juvenal-Yescas/mediafire-dl
+          wget https://mega.nz/linux/repo/xUbuntu_24.04/amd64/megacmd-xUbuntu_24.04_amd64.deb && sudo apt install "$PWD/megacmd-xUbuntu_24.04_amd64.deb"
           echo "TARGET=${{ matrix.target }}" >> $GITHUB_ENV
           echo -e "[\033[94m INFO \033[0m] TARGET: ${{ matrix.target }}"
           echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
@@ -206,7 +220,7 @@ jobs:
         
       - name: Build Rootfs [ ${{ inputs.releases_branch }} ]
         id: imagebuilder
-        if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
+        if: ${{ steps.init.outputs.status == 'success' && inputs.rootfs_url == '' && !cancelled() }}
         run: |
           echo -e "[\033[95m STEPS \033[0m] Building Firmware And Rootfs"
           TARGET_NAME="${{ env.TARGET_NAME }}"
@@ -220,17 +234,111 @@ jobs:
           echo "RELEASES_TAG2=$RELEASES_TAG2" >> ${GITHUB_ENV}
           echo "status=success" >> ${GITHUB_OUTPUT}
           echo -e "[\033[92m SUCCESS \033[0m] Status: Success"
+          
+      - name: Download file ${{ github.event.inputs.type_file }}
+        if: ${{ inputs.rootfs_url != '' }}
+        run: |
+         mkdir -p build
+
+          echo "[🔍] Mendeteksi sumber dari: ${{ github.event.inputs.rootfs_url }}"
+
+         if echo "${{ github.event.inputs.rootfs_url }}" | grep -q "drive."; then
+         echo "[🌐] Sumber: Google Drive"
+         if echo "${{ github.event.inputs.rootfs_url }}" | awk -F "/" '{print $6}' | grep -q .; then
+         link_gdrive=$(echo "${{ github.event.inputs.rootfs_url }}" | awk -F "/" '{print $6}')
+          else
+         link_gdrive=$(echo "${{ github.event.inputs.rootfs_url }}" | awk -F "/" '{print $4}' | awk -F "?id=" '{print $2}' | awk -F "&export" '{print $1}')
+         fi
+         echo "[⬇️] Mengunduh dari Google Drive: ID $link_gdrive"
+         sudo gdown "$link_gdrive" -O build/file.${{ github.event.inputs.type_file }}
+
+         elif echo "${{ github.event.inputs.rootfs_url }}" | grep -q "mediafire.com"; then
+         echo "[🌐] Sumber: MediaFire"
+         echo "[⬇️] Mengunduh dari MediaFire: ${{ github.event.inputs.rootfs_url }}"
+         sudo mediafire-dl "${{ github.event.inputs.rootfs_url }}" -o build/file.${{ github.event.inputs.type_file }}
+
+         elif echo "${{ github.event.inputs.rootfs_url }}" | grep -q "mega.nz"; then
+         echo "[🌐] Sumber: MEGA.nz"
+         echo "[⬇️] Mengunduh dari MEGA: ${{ github.event.inputs.rootfs_url }}"
+         file_mega=$(sudo mega-get "${{ github.event.inputs.rootfs_url }}" | awk -F: '{print $2}')
+         sudo mv "${file_mega}" "build/file.${{ github.event.inputs.type_file }}"
+
+         else
+          echo "[🌐] Sumber: URL langsung"
+          echo "[⬇️] Mengunduh dari URL: ${{ github.event.inputs.rootfs_url }}"
+          sudo wget --no-check-certificate "${{ github.event.inputs.rootfs_url }}" -O build/file.${{ github.event.inputs.type_file }}
+         fi
+
+         echo "[✅] File berhasil diunduh ke build/file.${{ github.event.inputs.type_file }}"
+
+          
+      - name: Extract firmware
+        id: extract
+        if: ${{ inputs.rootfs_url != '' }}
+        run: |
+          echo "[🔍] Deteksi file: ${{ inputs.type_file }}"
+          mkdir -p imagebuilder/bin/targets/amlogic/${{ env.openwrt_board }}
+
+          cd build
+
+          if [ "${{ inputs.type_file }}" = "img.gz" ]; then
+          echo "[🗜] Ekstrak GZIP image..."
+          sudo mkdir -p boot rootfs img
+          sudo gunzip file.img.gz
+          los=$(sudo losetup -fP --show file.img)
+          sudo mount ${los}p2 rootfs
+          (cd rootfs && sudo tar cfz ../../imagebuilder/bin/targets/amlogic/${{ env.openwrt_board }}/openwrt-${{ env.openwrt_board }}-external-rootfs.tar.gz .)
+          sudo umount rootfs
+          sudo losetup -d $los
+
+          elif [ "${{ inputs.type_file }}" = "img.xz" ]; then
+           echo "[🗜] Ekstrak XZ image..."
+           sudo mkdir -p boot rootfs img
+           sudo unxz file.img.xz
+           los=$(sudo losetup -fP --show file.img)
+           sudo mount ${los}p2 rootfs
+           (cd rootfs && sudo tar cfz ../../imagebuilder/bin/targets/amlogic/${{ env.openwrt_board }}/openwrt-${{ env.openwrt_board }}-external-rootfs.tar.gz .)
+           sudo umount rootfs
+           sudo losetup -d $los
+
+          elif [ "${{ inputs.type_file }}" = "tar.gz" ]; then
+           echo "[📦] Menggunakan file tar.gz langsung..."
+           cp file.tar.gz ../../imagebuilder/bin/targets/amlogic/${{ env.openwrt_board }}/openwrt-${{ env.openwrt_board }}-external-rootfs.tar.gz
+
+          else
+           echo "[❌] Jenis file tidak dikenal: ${{ inputs.type_file }}"
+          exit 1
+          fi
+
+          echo "[✅] File rootfs siap di folder imagebuilder/bin/targets/amlogic/${{ env.openwrt_board }}/"
+ 
   
       - name: Clear server space
         if: ${{ steps.imagebuilder.outputs.status }} == 'success' && !cancelled()
         run: |
-          cd imagebuilder
-          rm -rf $(ls . | grep -v "^bin$" | xargs) 2>/dev/null
-          df -hT ${PWD}
+         cd imagebuilder
+         echo "[INFO] Membersihkan direktori imagebuilder (kecuali bin/)"
+         find . -mindepth 1 -maxdepth 1 ! -name 'bin' -exec rm -rf {} +
+         echo "[✓] Ruang setelah pembersihan:"
+         df -hT ${PWD}
+
+          
+      - name: Set Release Tags
+        id: setrelease
+        run: |
+          RELEASES_BRANCH="${{ inputs.releases_branch }}"
+          echo "RELEASES_BRANCH=$RELEASES_BRANCH" >> $GITHUB_ENV
+          echo "RELEASES_TAG=${RELEASES_BRANCH/:/_}" >> $GITHUB_ENV
+          echo "RELEASES_TAG2=${RELEASES_BRANCH#*:}" >> $GITHUB_ENV
+
+          echo "[✓] RELEASES_TAG  : ${RELEASES_BRANCH/:/_}"
+          echo "[✓] RELEASES_TAG2 : ${RELEASES_BRANCH#*:}"
+    
 
       - name: Prepare file First
         run: |
           cd imagebuilder
+          shopt -s nullglob
           echo -e "[\033[95m STEPS \033[0m] Prepare File.."
           mkdir -p compiled_images/mod
           if [[ "${{ env.TARGET_NAME }}" != "amlogic" ]]; then
@@ -245,9 +353,11 @@ jobs:
         run: |
           cd imagebuilder
           if [[ "${{ env.TARGET_NAME }}" == "amlogic" ]]; then
-            mkdir -p openwrt-armsr
-            cp -f compiled_images/*rootfs.tar.gz openwrt-armsr/
-            chmod +x remake
+            echo -e "[\033[95m STEPS \033[0m] Cloning Ophub Repacking Amlogic"
+            git clone --depth 1 https://github.com/tes-rep/amlogic-s9xxx-openwrt.git ophub_builder
+            mkdir -p ophub_builder/openwrt-armsr
+            cp -f compiled_images/*rootfs.tar.gz ophub_builder/openwrt-armsr/
+            cd ophub_builder
             sudo ./remake -b ${{ env.openwrt_board }} -k ${{ inputs.openwrt_kernel }} -s ${{ inputs.rootfs_size }}
             for file in openwrt/out/*.img.gz; do cp -f "$file" ../compiled_images; done
           fi
@@ -286,6 +396,7 @@ jobs:
                   kernel=""
                   if [[ "$file" =~ k[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9-]+)? ]]; then
                   kernel="${BASH_REMATCH[0]}"
+                  echo "kernel=$kernel" >> $GITHUB_ENV
             fi
              new_name="HOUJIE-WRT_${{ env.RELEASES_TAG2 }}_${replace}_${kernel}.img.gz"
             echo -e "${INFO} Renaming: $file → $new_name"
@@ -335,6 +446,6 @@ jobs:
               - Tanggal Build: ${{ steps.date.outputs.date }}
               - Devices type : ${{ inputs.target }}
               - Kernel version : ${{ inputs.openwrt_kernel }}
-              - Kernel version : $kernel
+              - Kernel Version (Parsed) : ${{ env.kernel }}
               - ROOTFS File : ${{ inputs.releases_branch }}
               - ROOTFS Size : ${{ inputs.rootfs_size }}

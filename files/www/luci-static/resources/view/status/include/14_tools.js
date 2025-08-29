@@ -4,7 +4,16 @@
 'require view';
 'require fs';
 'require uci';
-'require tools.nikki as nikki';
+
+let nikki;
+try {
+    nikki = require('tools.nikki');
+} catch (e) {
+    nikki = {
+        status: () => Promise.resolve(false),
+        version: () => Promise.resolve({ app:'', core:'' })
+    };
+}
 
 function renderBox(name, state, extra = '') {
     const gradients = {
