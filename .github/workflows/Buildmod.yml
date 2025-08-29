@@ -449,7 +449,7 @@ jobs:
             fi
              new_name="HOUJIE-WRT_${RELEASES_TAG2}_${replace}_${kernel}_${TUNNEL_OPTION}.img.gz"
             echo -e "${INFO} Renaming: $file → $new_name"
-            mv "$file" "$new_name" || echo -e "${WARNING} Failed to rename $file"
+            mv "$file" "compiled_images/$new_name" || echo -e "${WARNING} Failed to rename $file"
            done
 
            # Process .tar.gz files
@@ -457,7 +457,7 @@ jobs:
             [[ -f "$file" ]] || continue
              new_name="HOUJIE-WRT_${{ env.RELEASES_TAG2 }}_${replace}.tar.gz"
             echo -e "${INFO} Renaming: $file → $new_name"
-            mv "$file" "$new_name" || echo -e "${WARNING} Failed to rename $file"
+            mv "$file" "compiled_images/$new_name" || echo -e "${WARNING} Failed to rename $file"
            done
            done
           echo "status=success" >> ${GITHUB_OUTPUT}
