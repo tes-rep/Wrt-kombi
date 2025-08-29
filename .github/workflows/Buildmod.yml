@@ -225,11 +225,11 @@ jobs:
           elif [ "$TARGET" == "Amlogic B860H-V5" ]; then
             echo "TARGET_NAME=amlogic" >> $GITHUB_ENV
             echo "openwrt_board=s905x2-b860h-v5" >> $GITHUB_ENV
-            echo "TAG_NAME=openwrt_amlogic_s905x-b860h" >> $GITHUB_ENV
+            echo "TAG_NAME=openwrt_amlogic_s905x-s905x2" >> $GITHUB_ENV
           elif [ "$TARGET" == "Amlogic B860H-V1-V2" ]; then
             echo "TARGET_NAME=amlogic" >> $GITHUB_ENV
-            echo "openwrt_board=s905x2" >> $GITHUB_ENV
-            echo "TAG_NAME=openwrt_amlogic_s905x2" >> $GITHUB_ENV
+            echo "openwrt_board=s905x-b860h" >> $GITHUB_ENV
+            echo "TAG_NAME=openwrt_amlogic-b860h" >> $GITHUB_ENV
           elif [ "$TARGET" == "Amlogic AT01" ]; then
             echo "TARGET_NAME=amlogic" >> $GITHUB_ENV
             echo "openwrt_board=s905x4-advan" >> $GITHUB_ENV
