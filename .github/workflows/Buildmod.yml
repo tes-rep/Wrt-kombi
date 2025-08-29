@@ -483,7 +483,7 @@ jobs:
         uses: ncipollo/release-action@main
         if: ${{ steps.modsdcard.outputs.status }} == 'success' && !cancelled()
         with:
-          tag: HOUJIE-Wrt_${{ env.openwrt_board }}
+          tag: HOUJIE-Wrt_${{ env.openwrt_board }}-tes
           artifacts: |
             imagebuilder/compiled_images/*.tar.gz
             imagebuilder/compiled_images/*.img.gz
