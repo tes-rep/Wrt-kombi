@@ -374,7 +374,7 @@ jobs:
           cd imagebuilder
           shopt -s nullglob
           echo -e "[\033[95m STEPS \033[0m] Prepare File.."
-          mkdir -p compiled_images/mod
+          mkdir -p compiled_images
 
           if [[ "${{ env.TARGET_NAME }}" == "amlogic" ]]; then
             for file in bin/targets/*/*/*rootfs.tar.gz; do
@@ -449,7 +449,7 @@ jobs:
             fi
              new_name="HOUJIE-WRT_${RELEASES_TAG2}_${replace}_${kernel}_${TUNNEL_OPTION}.img.gz"
             echo -e "${INFO} Renaming: $file → $new_name"
-            cp "$file" "compiled_images/mod/$new_name" || echo -e "${WARNING} Failed to rename $file"
+            mv "$file" "$new_name" || echo -e "${WARNING} Failed to rename $file"
            done
 
            # Process .tar.gz files
@@ -457,13 +457,13 @@ jobs:
             [[ -f "$file" ]] || continue
              new_name="HOUJIE-WRT_${{ env.RELEASES_TAG2 }}_${replace}.tar.gz"
             echo -e "${INFO} Renaming: $file → $new_name"
-            cp "$file" "compiled_images/mod/$new_name" || echo -e "${WARNING} Failed to rename $file"
+            mv "$file" "$new_name" || echo -e "${WARNING} Failed to rename $file"
            done
            done
           echo "status=success" >> ${GITHUB_OUTPUT}
           echo -e "${MSG_SUCCESS} Status: Success"
           echo -e "INFO files list: \n$(ls -l compiled_images 2>/dev/null)"
-          echo -e "INFO files list (compiled_images/mod): \n$(ls -l compiled_images/mod 2>/dev/null)"
+          # echo -e "INFO files list (compiled_images/mod): \n$(ls -l compiled_images/mod 2>/dev/null)"
           
       - name: Mod SDCard  
         id: modsdcard
@@ -477,9 +477,7 @@ jobs:
         run: |
            echo "📂 Files in compiled_images/"
            ls -lh imagebuilder/compiled_images || true
-           echo
-           echo "📂 Files in compiled_images/mod/"
-           ls -lh imagebuilder/compiled_images/mod || true
+           
 
       - name: Upload the packaged OpenWrt
         uses: ncipollo/release-action@main
@@ -488,7 +486,7 @@ jobs:
           tag: HOUJIE-Wrt_${{ env.openwrt_board }}
           artifacts: |
             imagebuilder/compiled_images/*.tar.gz
-            imagebuilder/compiled_images/mod/*.img.gz
+            imagebuilder/compiled_images/*.img.gz
           allowUpdates: true
           removeArtifacts: false
           replacesArtifacts: true
